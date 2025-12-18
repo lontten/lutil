@@ -110,9 +110,8 @@ type downloadResult struct {
 func (r *ImageReplacer) getTempDir() (string, error) {
 	var err error
 	r.tempDirOnce.Do(func() {
-		// 在系统临时目录下创建唯一的子目录
-		tempBase := os.TempDir()
-		uniqueDir, createErr := os.MkdirTemp(tempBase, "imgutil-")
+		// 使用os.MkdirTemp创建临时目录，由操作系统管理
+		uniqueDir, createErr := os.MkdirTemp("", "imgutil-*")
 		if createErr != nil {
 			err = fmt.Errorf("创建临时目录失败: %w", createErr)
 			return
@@ -192,7 +191,7 @@ func (r *ImageReplacer) ReplaceRichTextWithContext(ctx context.Context, html str
 			result.task.node.SetAttr("src", result.newPath)
 			successCount++
 		} else if result.err != nil {
-			log.Printf("图片下载失败 [%s]: %v", result.task.src, result.err)
+			log.Printf("图片处理失败 [%s]: %v", result.task.src, result.err)
 		}
 	}
 
@@ -388,7 +387,25 @@ func (r *ImageReplacer) downloadAndSaveImage(imageURL string) (string, error) {
 
 	// 返回相对路径并上传
 	relativePath := filepath.Join(datePath, filename)
-	return r.uploadFileFun(relativePath)
+
+	// 调用上传函数
+	newURL, uploadErr := r.uploadFileFun(relativePath)
+
+	// 无论上传成功还是失败，都删除本地临时文件
+	go func() {
+		if err := os.Remove(filePath); err != nil {
+			log.Printf("删除临时文件失败: %v (文件: %s)", err, filePath)
+		} else {
+			log.Printf("临时文件已删除: %s", filePath)
+		}
+	}()
+
+	// 如果上传失败，返回上传错误
+	if uploadErr != nil {
+		return "", fmt.Errorf("上传文件失败: %w", uploadErr)
+	}
+
+	return newURL, nil
 }
 
 // saveImageToFile 将图片保存到文件
@@ -553,27 +570,7 @@ func (r *ImageReplacer) getExtension(contentType, urlStr string) string {
 	return ".jpg"
 }
 
-// Cleanup 清理临时目录
-func (r *ImageReplacer) Cleanup() error {
-	if r.tempDir == "" {
-		return nil
-	}
-
-	log.Printf("清理临时目录: %s", r.tempDir)
-	if err := os.RemoveAll(r.tempDir); err != nil {
-		return fmt.Errorf("清理临时目录失败: %w", err)
-	}
-	r.tempDir = ""
-	r.tempDirOnce = sync.Once{}
-	return nil
-}
-
 // GetTempDir 获取临时目录路径（用于调试）
 func (r *ImageReplacer) GetTempDir() string {
 	return r.tempDir
-}
-
-// Finalize 终结器，确保资源被清理
-func (r *ImageReplacer) Finalize() {
-	_ = r.Cleanup()
 }
