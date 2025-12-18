@@ -1,0 +1,5 @@
+coverage.txt
+.idea
+vendor
+.vscode
+.DS_Store
