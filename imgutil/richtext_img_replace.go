@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"mime"
 	"net/http"
@@ -16,18 +15,18 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/gofrs/uuid"
 	"golang.org/x/sync/errgroup"
 )
 
 // ImageReplacer 图片替换器
 type ImageReplacer struct {
-	MaxSize       int64                                  // 最大图片大小（字节）
-	Timeout       time.Duration                          // 下载超时
-	Concurrent    int                                    // 并发数
-	MaxRetries    int                                    // 最大重试次数
-	AllowedTypes  []string                               // 允许的图片类型
-	uploadFileFun func(localPath string) (string, error) // 上传文件函数
+	MaxSize         int64                                   // 最大图片大小（字节）
+	Timeout         time.Duration                           // 下载超时
+	Concurrent      int                                     // 并发数
+	MaxRetries      int                                     // 最大重试次数
+	AllowedTypes    []string                                // 允许的图片类型
+	uploadFileFun   func(localPath string) (string, error)  // 上传文件函数
+	downloadFileFun func(remotePath string) (string, error) // 下载文件函数
 
 	tempDir     string // 临时目录路径
 	client      *http.Client
@@ -39,14 +38,15 @@ type ImageReplacer struct {
 type Option func(*ImageReplacer)
 
 // NewImageReplacer 创建图片替换器
-func NewImageReplacer(uploadFileFun func(localPath string) (string, error), opts ...Option) *ImageReplacer {
+func NewImageReplacer(uploadFileFun, downloadFileFun func(path string) (string, error), opts ...Option) *ImageReplacer {
 	replacer := &ImageReplacer{
-		MaxSize:       10 * 1024 * 1024, // 10MB
-		Timeout:       30 * time.Second,
-		Concurrent:    5,
-		MaxRetries:    3,
-		uploadFileFun: uploadFileFun,
-		AllowedTypes:  []string{"image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml"},
+		MaxSize:         10 * 1024 * 1024, // 10MB
+		Timeout:         30 * time.Second,
+		Concurrent:      5,
+		MaxRetries:      3,
+		uploadFileFun:   uploadFileFun,
+		downloadFileFun: downloadFileFun,
+		AllowedTypes:    []string{"image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml"},
 	}
 
 	// 应用选项
@@ -316,175 +316,24 @@ func (r *ImageReplacer) downloadAndSaveImageWithRetry(imageURL string) (string, 
 
 // downloadAndSaveImage 下载并保存单张图片
 func (r *ImageReplacer) downloadAndSaveImage(imageURL string) (string, error) {
-	// 获取临时目录
-	tempDir, err := r.getTempDir()
+	localPath, err := r.downloadFileFun(imageURL)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("下载文件失败: %w", err)
 	}
-
-	// 创建HTTP客户端
-	client := r.getHTTPClient()
-
-	// 发送请求
-	req, err := http.NewRequest("GET", imageURL, nil)
-	if err != nil {
-		return "", fmt.Errorf("创建请求失败: %w", err)
-	}
-
-	// 添加请求头
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-	req.Header.Set("Accept", "image/webp,image/apng,image/*,*/*;q=0.8")
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", fmt.Errorf("下载图片失败: %w", err)
-	}
-	defer resp.Body.Close()
-
-	// 检查状态码
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("HTTP错误: %s", resp.Status)
-	}
-
-	// 检查内容类型
-	contentType := resp.Header.Get("Content-Type")
-	if !r.isAllowedType(contentType) {
-		return "", fmt.Errorf("不支持的图片类型: %s", contentType)
-	}
-
-	// 检查内容大小
-	if resp.ContentLength > r.MaxSize {
-		return "", fmt.Errorf("图片太大: %d bytes (最大允许: %d bytes)",
-			resp.ContentLength, r.MaxSize)
-	}
-
-	// 生成文件名
-	ext := r.getExtension(contentType, imageURL)
-	v7, err := uuid.NewV7()
-	if err != nil {
-		return "", fmt.Errorf("生成UUID失败: %w", err)
-	}
-	filename := fmt.Sprintf("%s%s", v7.String(), ext)
-
-	// 创建日期子目录
-	datePath := time.Now().Format("2006/01/02")
-	saveDir := filepath.Join(tempDir, datePath)
-	if err := os.MkdirAll(saveDir, 0755); err != nil {
-		return "", fmt.Errorf("创建目录失败: %w", err)
-	}
-
-	// 保存文件
-	filePath := filepath.Join(saveDir, filename)
-	if err := r.saveImageToFile(resp.Body, filePath, r.MaxSize); err != nil {
-		return "", fmt.Errorf("保存文件失败: %w", err)
-	}
-
-	// 验证图片
-	if err := r.validateImageFile(filePath); err != nil {
-		os.Remove(filePath) // 删除无效文件
-		return "", fmt.Errorf("图片验证失败: %w", err)
-	}
-
-	// 返回相对路径并上传
-	relativePath := filepath.Join(datePath, filename)
-
 	// 调用上传函数
-	newURL, uploadErr := r.uploadFileFun(relativePath)
-
+	newURL, err := r.uploadFileFun(localPath)
+	if err != nil {
+		return "", fmt.Errorf("上传文件失败: %w", err)
+	}
 	// 无论上传成功还是失败，都删除本地临时文件
 	go func() {
-		if err := os.Remove(filePath); err != nil {
-			log.Printf("删除临时文件失败: %v (文件: %s)", err, filePath)
+		if err := os.Remove(localPath); err != nil {
+			log.Printf("删除临时文件失败: %v (文件: %s)", err, localPath)
 		} else {
-			log.Printf("临时文件已删除: %s", filePath)
+			log.Printf("临时文件已删除: %s", localPath)
 		}
 	}()
-
-	// 如果上传失败，返回上传错误
-	if uploadErr != nil {
-		return "", fmt.Errorf("上传文件失败: %w", uploadErr)
-	}
-
 	return newURL, nil
-}
-
-// saveImageToFile 将图片保存到文件
-func (r *ImageReplacer) saveImageToFile(src io.Reader, filePath string, maxSize int64) error {
-	// 创建文件
-	file, err := os.Create(filePath)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	// 使用LimitReader限制大小
-	limitedReader := io.LimitReader(src, maxSize)
-
-	// 同时写入文件和内存缓冲区（用于验证）
-	var buf bytes.Buffer
-	teeReader := io.TeeReader(limitedReader, &buf)
-
-	// 先读取一部分用于验证
-	header := make([]byte, 512)
-	n, err := teeReader.Read(header)
-	if err != nil && err != io.EOF {
-		return fmt.Errorf("读取图片头部失败: %w", err)
-	}
-
-	// 验证图片头部
-	if !r.isValidImageHeader(header[:n]) {
-		return fmt.Errorf("无效的图片格式")
-	}
-
-	// 继续写入文件
-	if _, err := file.Write(header[:n]); err != nil {
-		return err
-	}
-
-	// 复制剩余内容
-	_, err = io.Copy(file, teeReader)
-	if err != nil {
-		return fmt.Errorf("写入文件失败: %w", err)
-	}
-
-	return nil
-}
-
-// validateImageFile 验证图片文件
-func (r *ImageReplacer) validateImageFile(filePath string) error {
-	file, err := os.Open(filePath)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	// 读取文件头部
-	header := make([]byte, 512)
-	n, err := file.Read(header)
-	if err != nil && err != io.EOF {
-		return err
-	}
-
-	// 检查文件大小
-	info, err := file.Stat()
-	if err != nil {
-		return err
-	}
-
-	if info.Size() == 0 {
-		return fmt.Errorf("文件为空")
-	}
-
-	if info.Size() == r.MaxSize {
-		return fmt.Errorf("文件可能被截断")
-	}
-
-	// 验证图片格式
-	if !r.isValidImageHeader(header[:n]) {
-		return fmt.Errorf("无效的图片格式")
-	}
-
-	return nil
 }
 
 // imageMagicNumbers 常见图片格式的魔数
