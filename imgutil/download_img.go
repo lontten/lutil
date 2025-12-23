@@ -14,8 +14,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-
-	"github.com/chai2010/webp"
 )
 
 // -------------------------- 私有配置 --------------------------
@@ -394,8 +392,8 @@ func (d *Downloader) compress(imgData []byte, ct string) ([]byte, error) {
 		err = jpeg.Encode(&buf, img, &jpeg.Options{Quality: d.cfg.compressQuality})
 	case "image/png":
 		err = png.Encode(&buf, img)
-	case "image/webp":
-		err = webp.Encode(&buf, img, &webp.Options{Quality: float32(d.cfg.compressQuality)})
+	//case "image/webp":
+	//	err = webp.Encode(&buf, img, &webp.Options{Quality: float32(d.cfg.compressQuality)})
 	case "image/gif":
 		return imgData, nil // GIF 暂不压缩
 	default:
