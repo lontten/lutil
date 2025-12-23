@@ -91,7 +91,7 @@ func (tb *TreeBuilder) BuildTree(items any) (any, error) {
 		return nil, err
 	}
 
-	// 构建节点映射
+	// 构建节点映射（使用内部类型）
 	idToPtr := make(map[any]reflect.Value)
 	allItems := make([]reflect.Value, sliceVal.Len())
 
@@ -105,10 +105,18 @@ func (tb *TreeBuilder) BuildTree(items any) (any, error) {
 
 		item := itemPtr.Elem()
 
-		// 获取ID
-		id := item.Field(fields.idField).Interface()
+		// 获取ID（同时支持指针类型和值类型）
+		idVal := item.Field(fields.idField)
+		id := tb.getValue(idVal)
+
+		// ID不能为nil
 		if id == nil {
-			return nil, fmt.Errorf("element %d has nil ID", i)
+			// 对于非指针类型，零值也是有效的ID
+			if idVal.Kind() == reflect.Ptr {
+				return nil, fmt.Errorf("element %d has nil ID pointer", i)
+			}
+			// 对于值类型，使用零值作为ID
+			id = reflect.Zero(idVal.Type()).Interface()
 		}
 
 		// 清空现有的子节点
@@ -200,6 +208,32 @@ func (tb *TreeBuilder) getFieldInfo(typ reflect.Type) (*fieldInfo, error) {
 	return info, nil
 }
 
+// getValue 获取字段值，同时支持指针类型和值类型
+func (tb *TreeBuilder) getValue(field reflect.Value) any {
+	if !field.IsValid() {
+		return nil
+	}
+
+	// 处理指针类型
+	if field.Kind() == reflect.Ptr {
+		if field.IsNil() {
+			return nil
+		}
+		// 递归解引用，直到不是指针
+		elem := field.Elem()
+		for elem.Kind() == reflect.Ptr {
+			if elem.IsNil() {
+				return nil
+			}
+			elem = elem.Elem()
+		}
+		return elem.Interface()
+	}
+
+	// 非指针类型，直接返回值
+	return field.Interface()
+}
+
 // buildTreeStructure 构建树形结构
 func (tb *TreeBuilder) buildTreeStructure(items []reflect.Value, idToPtr map[any]reflect.Value, fields *fieldInfo) []reflect.Value {
 	roots := make([]reflect.Value, 0)
@@ -207,18 +241,24 @@ func (tb *TreeBuilder) buildTreeStructure(items []reflect.Value, idToPtr map[any
 
 	for _, itemPtr := range items {
 		item := itemPtr.Elem()
-		parentID := item.Field(fields.parentIdField).Interface()
+
+		// 获取当前节点的ID
+		currentID := tb.getValue(item.Field(fields.idField))
+
+		// 获取ParentID（同时支持指针类型和值类型）
+		parentID := tb.getValue(item.Field(fields.parentIdField))
 
 		// 判断是否为根节点
 		if tb.isRootNode(parentID) {
-			depthMap[item.Field(fields.idField).Interface()] = 1
+			depthMap[currentID] = 1
 			roots = append(roots, itemPtr)
 			continue
 		}
 
 		// 查找父节点
 		if parentPtr, exists := idToPtr[parentID]; exists {
-			currentDepth := depthMap[parentID] + 1
+			parentDepth := depthMap[parentID]
+			currentDepth := parentDepth + 1
 
 			// 检查深度限制
 			if tb.config.MaxDepth <= 0 || currentDepth <= tb.config.MaxDepth {
@@ -228,12 +268,12 @@ func (tb *TreeBuilder) buildTreeStructure(items []reflect.Value, idToPtr map[any
 
 				if children.Kind() == reflect.Slice {
 					children.Set(reflect.Append(children, itemPtr))
-					depthMap[item.Field(fields.idField).Interface()] = currentDepth
+					depthMap[currentID] = currentDepth
 				}
 			}
 		} else {
 			// 父节点不存在，作为根节点
-			depthMap[item.Field(fields.idField).Interface()] = 1
+			depthMap[currentID] = 1
 			roots = append(roots, itemPtr)
 		}
 	}
@@ -260,9 +300,13 @@ func (tb *TreeBuilder) sortTree(nodes []reflect.Value, fields *fieldInfo) {
 
 	// 排序当前层
 	sort.Slice(nodes, func(i, j int) bool {
-		valI := nodes[i].Elem().Field(fields.sortField).Interface()
-		valJ := nodes[j].Elem().Field(fields.sortField).Interface()
-		return tb.compareSortValue(valI, valJ)
+		valI := nodes[i].Elem().Field(fields.sortField)
+		valJ := nodes[j].Elem().Field(fields.sortField)
+
+		sortI := tb.getValue(valI)
+		sortJ := tb.getValue(valJ)
+
+		return tb.compareSortValue(sortI, sortJ)
 	})
 
 	// 递归排序子节点
@@ -432,12 +476,13 @@ func (b *Builder) Build() *TreeBuilder {
 
 // ==================== 辅助函数 ====================
 
-// isZeroValue 判断是否为零值
+// isZeroValue 判断是否为零值（支持指针类型和值类型）
 func isZeroValue(v any) bool {
 	if v == nil {
 		return true
 	}
 
+	// 先检查常见类型
 	switch val := v.(type) {
 	case int:
 		return val == 0
@@ -451,12 +496,47 @@ func isZeroValue(v any) bool {
 		return !val
 	default:
 		// 尝试反射判断
-		return reflect.ValueOf(v).IsZero()
+		rv := reflect.ValueOf(v)
+		if !rv.IsValid() {
+			return true
+		}
+
+		// 处理指针类型
+		if rv.Kind() == reflect.Ptr {
+			if rv.IsNil() {
+				return true
+			}
+			// 递归解引用
+			elem := rv.Elem()
+			for elem.Kind() == reflect.Ptr {
+				if elem.IsNil() {
+					return true
+				}
+				elem = elem.Elem()
+			}
+			return elem.IsZero()
+		}
+
+		return rv.IsZero()
 	}
 }
 
-// toFloat64 尝试转换为float64
+// toFloat64 尝试转换为float64（支持指针类型和值类型）
 func toFloat64(v any) (float64, bool) {
+	// 处理nil
+	if v == nil {
+		return 0, false
+	}
+
+	// 处理指针类型
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Ptr {
+		if rv.IsNil() {
+			return 0, false
+		}
+		v = rv.Elem().Interface()
+	}
+
 	switch val := v.(type) {
 	case int:
 		return float64(val), true
@@ -471,10 +551,19 @@ func toFloat64(v any) (float64, bool) {
 	}
 }
 
-// toString 转换为字符串
+// toString 转换为字符串（支持指针类型和值类型）
 func toString(v any) string {
 	if v == nil {
 		return ""
+	}
+
+	// 处理指针类型
+	rv := reflect.ValueOf(v)
+	if rv.Kind() == reflect.Ptr {
+		if rv.IsNil() {
+			return ""
+		}
+		v = rv.Elem().Interface()
 	}
 
 	switch val := v.(type) {
