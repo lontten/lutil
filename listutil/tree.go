@@ -1,575 +1,128 @@
 package listutil
 
 import (
-	"fmt"
 	"reflect"
 	"sort"
 )
 
 // ==================== 配置结构体 ====================
 
-// TreeConfig 树形配置
-type TreeConfig struct {
-	IDField          string // ID字段名
-	ParentIDField    string // 父ID字段名
-	SortField        string // 排序字段名
-	ChildrenField    string // 子节点字段名
-	MaxDepth         int    // 最大深度，-1表示不限制
-	RootParentID     any    // 根节点的父ID值
-	AddRootNode      bool   // 是否添加根节点
-	RootNodeID       any    // 根节点ID
-	RootNodeName     string // 根节点名称
-	OnlyAddWhenMulti bool   // 只有多个根节点时才添加顶级
-}
-
 // TreeBuilder 树构建器
-type TreeBuilder struct {
-	config     *TreeConfig
-	fieldCache map[reflect.Type]*fieldInfo
-}
+type TreeBuilder[T any] struct {
+	source       map[int]*T
+	maxDepth     int // 最大深度，-1表示不限制,root是0
+	sortFun      func(a, b T) int
+	isParentNode func(a, b T) bool // 判断a是否为b父节点, true为父节点,
+	isRootNode   func(a T) bool
 
-// fieldInfo 字段信息缓存
-type fieldInfo struct {
-	idField       int
-	parentIdField int
-	sortField     int
-	childrenField int
-	hasChildren   bool
+	childrenField string
 }
 
 // ==================== 构造函数 ====================
 
-// NewTreeBuilder 创建新的树构建器
-func NewTreeBuilder(config *TreeConfig) *TreeBuilder {
-	if config == nil {
-		config = &TreeConfig{
-			IDField:       "ID",
-			ParentIDField: "ParentID",
-			SortField:     "Sort",
-			ChildrenField: "Children",
-			MaxDepth:      -1,
-		}
+func (c *TreeBuilder[T]) ToTree(list []*T) []*T {
+	if c.isRootNode == nil {
+		panic("isRootNode 函数未设置")
 	}
-
-	return &TreeBuilder{
-		config:     config,
-		fieldCache: make(map[reflect.Type]*fieldInfo),
+	if c.isParentNode == nil {
+		panic("isParentNode 函数未设置")
 	}
-}
-
-// ==================== 核心方法 ====================
-
-// BuildTree 构建树形结构（要求 []*T 类型的指针切片）
-func (tb *TreeBuilder) BuildTree(items any) (any, error) {
-	if items == nil {
-		return nil, fmt.Errorf("input items cannot be nil")
+	if c.childrenField == "" {
+		panic("childrenField 未设置")
 	}
+	c.source = make(map[int]*T)
+	var res = make([]*T, 0)
 
-	// 获取反射值
-	sliceVal := reflect.ValueOf(items)
-
-	// 验证输入类型
-	if sliceVal.Kind() != reflect.Slice {
-		return nil, fmt.Errorf("input must be a slice, got %v", sliceVal.Kind())
-	}
-
-	// 处理空切片
-	if sliceVal.Len() == 0 {
-		return items, nil
-	}
-
-	// 验证是否为指针切片
-	firstElem := sliceVal.Index(0)
-	if firstElem.Kind() != reflect.Ptr {
-		return nil, fmt.Errorf("slice elements must be pointers, got %v", firstElem.Kind())
-	}
-
-	// 获取结构体类型信息
-	elemType := firstElem.Type().Elem()
-	fields, err := tb.getFieldInfo(elemType)
-	if err != nil {
-		return nil, err
-	}
-
-	// 构建节点映射（使用内部类型）
-	idToPtr := make(map[any]reflect.Value)
-	allItems := make([]reflect.Value, sliceVal.Len())
-
-	for i := 0; i < sliceVal.Len(); i++ {
-		itemPtr := sliceVal.Index(i)
-
-		// 验证指针有效性
-		if itemPtr.Kind() != reflect.Ptr || itemPtr.IsNil() {
-			return nil, fmt.Errorf("slice element %d is not a valid pointer", i)
-		}
-
-		item := itemPtr.Elem()
-
-		// 获取ID（同时支持指针类型和值类型）
-		idVal := item.Field(fields.idField)
-		id := tb.getValue(idVal)
-
-		// ID不能为nil
-		if id == nil {
-			// 对于非指针类型，零值也是有效的ID
-			if idVal.Kind() == reflect.Ptr {
-				return nil, fmt.Errorf("element %d has nil ID pointer", i)
-			}
-			// 对于值类型，使用零值作为ID
-			id = reflect.Zero(idVal.Type()).Interface()
-		}
-
-		// 清空现有的子节点
-		if fields.hasChildren {
-			item.Field(fields.childrenField).Set(reflect.Zero(item.Field(fields.childrenField).Type()))
-		}
-
-		// 保存映射
-		idToPtr[id] = itemPtr
-		allItems[i] = itemPtr
-	}
-
-	// 构建树形结构
-	roots := tb.buildTreeStructure(allItems, idToPtr, fields)
-
-	// 排序
-	tb.sortTree(roots, fields)
-
-	// 构建结果切片
-	result := reflect.MakeSlice(sliceVal.Type(), len(roots), len(roots))
-	for i, root := range roots {
-		result.Index(i).Set(root)
-	}
-
-	// 处理根节点包装
-	return tb.processRootNode(result.Interface(), len(roots)), nil
-}
-
-// ==================== 私有方法 ====================
-
-// getFieldInfo 获取字段信息并缓存
-func (tb *TreeBuilder) getFieldInfo(typ reflect.Type) (*fieldInfo, error) {
-	// 检查缓存
-	if info, exists := tb.fieldCache[typ]; exists {
-		return info, nil
-	}
-
-	info := &fieldInfo{
-		idField:       -1,
-		parentIdField: -1,
-		sortField:     -1,
-		childrenField: -1,
-		hasChildren:   false,
-	}
-
-	// 遍历字段
-	for i := 0; i < typ.NumField(); i++ {
-		field := typ.Field(i)
-		fieldName := field.Name
-
-		// 检查tag (优先级更高)
-		if tag := field.Tag.Get("tree"); tag != "" {
-			switch tag {
-			case "id":
-				info.idField = i
-			case "parent_id", "pid":
-				info.parentIdField = i
-			case "sort", "order":
-				info.sortField = i
-			case "children":
-				info.childrenField = i
-				info.hasChildren = true
-			}
-		}
-
-		// 检查字段名
-		if fieldName == tb.config.IDField {
-			info.idField = i
-		} else if fieldName == tb.config.ParentIDField {
-			info.parentIdField = i
-		} else if fieldName == tb.config.SortField {
-			info.sortField = i
-		} else if fieldName == tb.config.ChildrenField {
-			info.childrenField = i
-			info.hasChildren = true
-		}
-	}
-
-	// 验证必要字段
-	if info.idField == -1 {
-		return nil, fmt.Errorf("ID field '%s' not found in struct", tb.config.IDField)
-	}
-	if info.parentIdField == -1 {
-		return nil, fmt.Errorf("ParentID field '%s' not found in struct", tb.config.ParentIDField)
-	}
-
-	// 缓存结果
-	tb.fieldCache[typ] = info
-	return info, nil
-}
-
-// getValue 获取字段值，同时支持指针类型和值类型
-func (tb *TreeBuilder) getValue(field reflect.Value) any {
-	if !field.IsValid() {
-		return nil
-	}
-
-	// 处理指针类型
-	if field.Kind() == reflect.Ptr {
-		if field.IsNil() {
-			return nil
-		}
-		// 递归解引用，直到不是指针
-		elem := field.Elem()
-		for elem.Kind() == reflect.Ptr {
-			if elem.IsNil() {
-				return nil
-			}
-			elem = elem.Elem()
-		}
-		return elem.Interface()
-	}
-
-	// 非指针类型，直接返回值
-	return field.Interface()
-}
-
-// buildTreeStructure 构建树形结构
-func (tb *TreeBuilder) buildTreeStructure(items []reflect.Value, idToPtr map[any]reflect.Value, fields *fieldInfo) []reflect.Value {
-	roots := make([]reflect.Value, 0)
-	depthMap := make(map[any]int)
-
-	for _, itemPtr := range items {
-		item := itemPtr.Elem()
-
-		// 获取当前节点的ID
-		currentID := tb.getValue(item.Field(fields.idField))
-
-		// 获取ParentID（同时支持指针类型和值类型）
-		parentID := tb.getValue(item.Field(fields.parentIdField))
-
-		// 判断是否为根节点
-		if tb.isRootNode(parentID) {
-			depthMap[currentID] = 1
-			roots = append(roots, itemPtr)
-			continue
-		}
-
-		// 查找父节点
-		if parentPtr, exists := idToPtr[parentID]; exists {
-			parentDepth := depthMap[parentID]
-			currentDepth := parentDepth + 1
-
-			// 检查深度限制
-			if tb.config.MaxDepth <= 0 || currentDepth <= tb.config.MaxDepth {
-				// 添加子节点到父节点
-				parent := parentPtr.Elem()
-				children := parent.Field(fields.childrenField)
-
-				if children.Kind() == reflect.Slice {
-					children.Set(reflect.Append(children, itemPtr))
-					depthMap[currentID] = currentDepth
-				}
-			}
+	for i, v := range list {
+		b := c.isRootNode(*v)
+		if b {
+			res = append(res, v)
 		} else {
-			// 父节点不存在，作为根节点
-			depthMap[currentID] = 1
-			roots = append(roots, itemPtr)
+			c.source[i] = v
 		}
 	}
-
-	return roots
-}
-
-// isRootNode 判断是否为根节点
-func (tb *TreeBuilder) isRootNode(parentID any) bool {
-	// 如果配置了根节点的父ID值
-	if tb.config.RootParentID != nil {
-		return reflect.DeepEqual(parentID, tb.config.RootParentID)
+	for _, re := range res {
+		c.list2Tree(re, 1)
 	}
-
-	// 检查常见零值
-	return isZeroValue(parentID)
+	return res
 }
-
-// sortTree 排序树
-func (tb *TreeBuilder) sortTree(nodes []reflect.Value, fields *fieldInfo) {
-	if len(nodes) == 0 {
+func (c *TreeBuilder[T]) list2Tree(target *T, deepth int) {
+	if deepth > c.maxDepth && c.maxDepth != -1 {
 		return
 	}
+	var arr = make([]*T, 0)
 
-	// 排序当前层
-	sort.Slice(nodes, func(i, j int) bool {
-		valI := nodes[i].Elem().Field(fields.sortField)
-		valJ := nodes[j].Elem().Field(fields.sortField)
+	v := reflect.ValueOf(target).Elem()
+	childrenField := v.FieldByName(c.childrenField)
 
-		sortI := tb.getValue(valI)
-		sortJ := tb.getValue(valJ)
-
-		return tb.compareSortValue(sortI, sortJ)
-	})
-
-	// 递归排序子节点
-	for _, node := range nodes {
-		elem := node.Elem()
-		if fields.hasChildren {
-			children := elem.Field(fields.childrenField)
-			if children.Len() > 0 {
-				childNodes := make([]reflect.Value, children.Len())
-				for i := 0; i < children.Len(); i++ {
-					childNodes[i] = children.Index(i)
-				}
-				tb.sortTree(childNodes, fields)
-
-				// 重建排序后的子节点切片
-				newChildren := reflect.MakeSlice(children.Type(), len(childNodes), len(childNodes))
-				for i, child := range childNodes {
-					newChildren.Index(i).Set(child)
-				}
-				elem.Field(fields.childrenField).Set(newChildren)
-			}
+	var indexs []int
+	for k, v := range c.source {
+		b := c.isParentNode(*target, *v)
+		if b {
+			arr = append(arr, v)
+			indexs = append(indexs, k)
 		}
 	}
+	for _, index := range indexs {
+		delete(c.source, index)
+	}
+	if c.sortFun != nil {
+		sort.SliceStable(arr, func(i, j int) bool {
+			return c.sortFun(*arr[i], *arr[j]) < 0
+		})
+	}
+	for _, re := range arr {
+		c.list2Tree(re, deepth+1)
+	}
+	childrenField.Set(reflect.ValueOf(arr))
+	return
 }
 
-// compareSortValue 比较排序值
-func (tb *TreeBuilder) compareSortValue(a, b any) bool {
-	if a == nil && b == nil {
-		return false
-	}
-	if a == nil {
-		return true
-	}
-	if b == nil {
-		return false
-	}
-
-	// 类型断言比较
-	switch av := a.(type) {
-	case int:
-		if bv, ok := b.(int); ok {
-			return av < bv
-		}
-	case int64:
-		if bv, ok := b.(int64); ok {
-			return av < bv
-		}
-	case float64:
-		if bv, ok := b.(float64); ok {
-			return av < bv
-		}
-	case string:
-		if bv, ok := b.(string); ok {
-			return av < bv
-		}
-	}
-
-	// 尝试数值比较
-	fa, ok1 := toFloat64(a)
-	fb, ok2 := toFloat64(b)
-	if ok1 && ok2 {
-		return fa < fb
-	}
-
-	// 默认字符串比较
-	return toString(a) < toString(b)
-}
-
-// processRootNode 处理根节点包装
-func (tb *TreeBuilder) processRootNode(tree any, rootCount int) any {
-	if !tb.config.AddRootNode {
-		return tree
-	}
-
-	// 检查是否只在多个根节点时添加顶级
-	if tb.config.OnlyAddWhenMulti && rootCount <= 1 {
-		return tree
-	}
-
-	// 创建根节点
-	root := map[string]any{
-		tb.config.IDField:       tb.config.RootNodeID,
-		"Name":                  tb.config.RootNodeName,
-		tb.config.ChildrenField: tree,
-	}
-
-	return []map[string]any{root}
-}
-
-// ==================== 链式构造器 ====================
-
-// Builder 链式构造器
-type Builder struct {
-	config *TreeConfig
-}
-
-// NewBuilder 创建新的构造器
-func NewBuilder() *Builder {
-	return &Builder{
-		config: &TreeConfig{
-			IDField:       "ID",
-			ParentIDField: "ParentID",
-			SortField:     "Sort",
-			ChildrenField: "Children",
-			MaxDepth:      -1,
-		},
+// NewTreeBuilder 创建新的树构建器
+func NewTreeBuilder[T any]() *TreeBuilder[T] {
+	return &TreeBuilder[T]{
+		childrenField: "Children",
 	}
 }
 
-// WithIDField 设置ID字段
-func (b *Builder) WithIDField(field string) *Builder {
-	b.config.IDField = field
-	return b
+func (c *TreeBuilder[T]) MaxDepth(maxDepth int) *TreeBuilder[T] {
+	c.maxDepth = maxDepth
+	return c
 }
 
-// WithParentIDField 设置父ID字段
-func (b *Builder) WithParentIDField(field string) *Builder {
-	b.config.ParentIDField = field
-	return b
-}
-
-// WithSortField 设置排序字段
-func (b *Builder) WithSortField(field string) *Builder {
-	b.config.SortField = field
-	return b
-}
-
-// WithChildrenField 设置子节点字段
-func (b *Builder) WithChildrenField(field string) *Builder {
-	b.config.ChildrenField = field
-	return b
-}
-
-// WithMaxDepth 设置最大深度
-func (b *Builder) WithMaxDepth(depth int) *Builder {
-	b.config.MaxDepth = depth
-	return b
-}
-
-// WithRootParentID 设置根节点的父ID值
-func (b *Builder) WithRootParentID(id any) *Builder {
-	b.config.RootParentID = id
-	return b
-}
-
-// AddRootNode 添加根节点
-func (b *Builder) AddRootNode(id any, name string) *Builder {
-	b.config.AddRootNode = true
-	b.config.RootNodeID = id
-	b.config.RootNodeName = name
-	return b
-}
-
-// AddRootWhenMulti 多个根节点时才添加顶级
-func (b *Builder) AddRootWhenMulti(id any, name string) *Builder {
-	b.config.AddRootNode = true
-	b.config.OnlyAddWhenMulti = true
-	b.config.RootNodeID = id
-	b.config.RootNodeName = name
-	return b
-}
-
-// Build 构建TreeBuilder
-func (b *Builder) Build() *TreeBuilder {
-	return NewTreeBuilder(b.config)
-}
-
-// ==================== 辅助函数 ====================
-
-// isZeroValue 判断是否为零值（支持指针类型和值类型）
-func isZeroValue(v any) bool {
-	if v == nil {
-		return true
+func (c *TreeBuilder[T]) ChildrenField(childrenField string) *TreeBuilder[T] {
+	var t T
+	of := reflect.TypeOf(t)
+	name, ok := of.FieldByName(childrenField)
+	if !ok {
+		panic("Children 字段不存在")
 	}
 
-	// 先检查常见类型
-	switch val := v.(type) {
-	case int:
-		return val == 0
-	case int64:
-		return val == 0
-	case float64:
-		return val == 0
-	case string:
-		return val == "" || val == "0" || val == "null" || val == "nil"
-	case bool:
-		return !val
-	default:
-		// 尝试反射判断
-		rv := reflect.ValueOf(v)
-		if !rv.IsValid() {
-			return true
-		}
-
-		// 处理指针类型
-		if rv.Kind() == reflect.Ptr {
-			if rv.IsNil() {
-				return true
-			}
-			// 递归解引用
-			elem := rv.Elem()
-			for elem.Kind() == reflect.Ptr {
-				if elem.IsNil() {
-					return true
-				}
-				elem = elem.Elem()
-			}
-			return elem.IsZero()
-		}
-
-		return rv.IsZero()
+	// 检查字段类型是否为 []*T 类型
+	if name.Type.Kind() != reflect.Slice {
+		panic("Children 字段必须是切片类型")
 	}
+
+	// 检查切片元素类型是否为 *T
+	elemType := name.Type.Elem()
+	if elemType.Kind() != reflect.Ptr || elemType.Elem() != reflect.TypeOf(t) {
+		panic("Children 字段必须是 []*T 类型")
+	}
+
+	c.childrenField = childrenField
+	return c
 }
 
-// toFloat64 尝试转换为float64（支持指针类型和值类型）
-func toFloat64(v any) (float64, bool) {
-	// 处理nil
-	if v == nil {
-		return 0, false
-	}
-
-	// 处理指针类型
-	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Ptr {
-		if rv.IsNil() {
-			return 0, false
-		}
-		v = rv.Elem().Interface()
-	}
-
-	switch val := v.(type) {
-	case int:
-		return float64(val), true
-	case int64:
-		return float64(val), true
-	case float32:
-		return float64(val), true
-	case float64:
-		return val, true
-	default:
-		return 0, false
-	}
+func (c *TreeBuilder[T]) SortFun(sortFun func(a, b T) int) *TreeBuilder[T] {
+	c.sortFun = sortFun
+	return c
 }
 
-// toString 转换为字符串（支持指针类型和值类型）
-func toString(v any) string {
-	if v == nil {
-		return ""
-	}
-
-	// 处理指针类型
-	rv := reflect.ValueOf(v)
-	if rv.Kind() == reflect.Ptr {
-		if rv.IsNil() {
-			return ""
-		}
-		v = rv.Elem().Interface()
-	}
-
-	switch val := v.(type) {
-	case string:
-		return val
-	default:
-		return fmt.Sprintf("%v", v)
-	}
+func (c *TreeBuilder[T]) IsParentNode(isParentNode func(a, b T) bool) *TreeBuilder[T] {
+	c.isParentNode = isParentNode
+	return c
+}
+func (c *TreeBuilder[T]) IsRootNode(isRootNode func(a T) bool) *TreeBuilder[T] {
+	c.isRootNode = isRootNode
+	return c
 }

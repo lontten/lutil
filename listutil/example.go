@@ -3,7 +3,6 @@ package listutil
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 )
 
 // 示例结构体
@@ -26,8 +25,6 @@ func Example() {
 	fmt.Println("\n=== 示例3: 带顶级节点的树 ===")
 	exampleWithRoot()
 
-	fmt.Println("\n=== 示例4: 性能测试 ===")
-	examplePerformance()
 }
 
 func exampleMenu() {
@@ -43,21 +40,14 @@ func exampleMenu() {
 	}
 
 	// 使用链式构造器
-	builder := NewBuilder().
-		WithIDField("ID").
-		WithParentIDField("ParentID").
-		WithSortField("Order").
-		WithChildrenField("Children").
-		WithMaxDepth(3). // 限制3层
-		WithRootParentID(0). // 父ID为0的是根节点
-		Build()
-
-	// 构建树
-	tree, err := builder.BuildTree(menus)
-	if err != nil {
-		fmt.Printf("构建失败: %v\n", err)
-		return
-	}
+	treeTool := NewTreeBuilder[Menu]().
+		IsRootNode(func(a Menu) bool {
+			return a.ParentID == 0
+		}).
+		IsParentNode(func(a, b Menu) bool {
+			return a.ParentID == b.ID
+		})
+	tree := treeTool.ToTree(menus)
 
 	// 输出结果
 	jsonData, _ := json.MarshalIndent(tree, "", "  ")
@@ -86,17 +76,15 @@ func exampleDepartment() {
 	}
 
 	// 使用链式构造器
-	builder := NewBuilder().
-		WithMaxDepth(2). // 只要前2层
-		WithRootParentID(""). // 父ID为空的是根节点
-		Build()
-
-	// 构建树
-	tree, err := builder.BuildTree(depts)
-	if err != nil {
-		fmt.Printf("构建失败: %v\n", err)
-		return
-	}
+	treeTool := NewTreeBuilder[Department]().
+		MaxDepth(2).
+		IsRootNode(func(a Department) bool {
+			return a.ParentID == ""
+		}).
+		IsParentNode(func(a, b Department) bool {
+			return a.ParentID == b.DeptID
+		})
+	tree := treeTool.ToTree(depts)
 
 	// 输出结果
 	jsonData, _ := json.MarshalIndent(tree, "", "  ")
@@ -112,82 +100,20 @@ func exampleWithRoot() {
 	}
 
 	// 使用链式构造器（多个根节点时添加顶级）
-	builder := NewBuilder().
-		WithIDField("ID").
-		WithParentIDField("ParentID").
-		WithSortField("Order").
-		WithChildrenField("Children").
-		WithRootParentID(0).
-		AddRootWhenMulti(0, "所有菜单"). // 多个根节点时才添加顶级
-		Build()
-
 	// 构建树
-	tree, err := builder.BuildTree(menus)
-	if err != nil {
-		fmt.Printf("构建失败: %v\n", err)
-		return
-	}
-
+	treeTool := NewTreeBuilder[Menu]().
+		MaxDepth(2).
+		IsRootNode(func(a Menu) bool {
+			return a.ParentID == 0
+		}).
+		IsParentNode(func(a, b Menu) bool {
+			return a.ParentID == b.ID
+		}).
+		SortFun(func(a, b Menu) int {
+			return int(a.Order - b.Order)
+		})
+	tree := treeTool.ToTree(menus)
 	// 输出结果
 	jsonData, _ := json.MarshalIndent(tree, "", "  ")
 	fmt.Println(string(jsonData))
-}
-
-func examplePerformance() {
-	// 性能测试数据结构
-	type BenchNode struct {
-		ID       int          `tree:"id"`
-		ParentID int          `tree:"pid"`
-		Name     string       `tree:"name"`
-		Sort     int          `tree:"sort"`
-		Children []*BenchNode `tree:"children"`
-	}
-
-	// 生成测试数据
-	generateData := func(count int) []*BenchNode {
-		nodes := make([]*BenchNode, count)
-		for i := 0; i < count; i++ {
-			nodes[i] = &BenchNode{
-				ID:       i,
-				ParentID: i / 10, // 创建树形结构
-				Name:     fmt.Sprintf("Node-%d", i),
-				Sort:     i % 10,
-			}
-		}
-		return nodes
-	}
-
-	// 测试不同数据量
-	testCases := []struct {
-		name  string
-		count int
-	}{
-		{"1,000 nodes", 1000},
-		{"10,000 nodes", 10000},
-		{"50,000 nodes", 50000},
-	}
-
-	builder := NewBuilder().
-		WithIDField("ID").
-		WithParentIDField("ParentID").
-		WithSortField("Sort").
-		WithChildrenField("Children").
-		WithRootParentID(-1).
-		Build()
-
-	for _, tc := range testCases {
-		fmt.Printf("\n测试 %s:\n", tc.name)
-		data := generateData(tc.count)
-
-		start := time.Now()
-		_, err := builder.BuildTree(data)
-		elapsed := time.Since(start)
-
-		if err != nil {
-			fmt.Printf("  错误: %v\n", err)
-		} else {
-			fmt.Printf("  耗时: %v\n", elapsed)
-			fmt.Printf("  平均: %v/节点\n", elapsed/time.Duration(tc.count))
-		}
-	}
 }
