@@ -45,7 +45,7 @@ func exampleMenu() {
 			return a.ParentID == 0
 		}).
 		IsParentNode(func(a, b Menu) bool {
-			return a.ParentID == b.ID
+			return a.ID == b.ParentID
 		})
 	tree := treeTool.ToTree(menus)
 
@@ -82,7 +82,7 @@ func exampleDepartment() {
 			return a.ParentID == ""
 		}).
 		IsParentNode(func(a, b Department) bool {
-			return a.ParentID == b.DeptID
+			return a.DeptID == b.ParentID
 		})
 	tree := treeTool.ToTree(depts)
 
@@ -107,7 +107,7 @@ func exampleWithRoot() {
 			return a.ParentID == 0
 		}).
 		IsParentNode(func(a, b Menu) bool {
-			return a.ParentID == b.ID
+			return a.ID == b.ParentID
 		}).
 		SortFun(func(a, b Menu) int {
 			return int(a.Order - b.Order)
