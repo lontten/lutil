@@ -82,6 +82,7 @@ func (c *TreeBuilder[T]) list2Tree(target *T, deepth int) {
 func NewTreeBuilder[T any]() *TreeBuilder[T] {
 	return &TreeBuilder[T]{
 		childrenField: "Children",
+		maxDepth:      -1,
 	}
 }
 
