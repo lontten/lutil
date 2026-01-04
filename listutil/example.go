@@ -30,13 +30,13 @@ func Example() {
 func exampleMenu() {
 	// 示例数据
 	menus := []*Menu{
-		{ID: 1, ParentID: 0, Name: "系统管理", Order: 1},
 		{ID: 2, ParentID: 1, Name: "用户管理", Order: 2},
 		{ID: 3, ParentID: 1, Name: "角色管理", Order: 1},
 		{ID: 4, ParentID: 0, Name: "业务管理", Order: 2},
 		{ID: 5, ParentID: 4, Name: "订单管理", Order: 1},
 		{ID: 6, ParentID: 5, Name: "订单列表", Order: 1},
 		{ID: 7, ParentID: 5, Name: "订单详情", Order: 2},
+		{ID: 1, ParentID: 0, Name: "系统管理", Order: 1},
 	}
 
 	// 使用链式构造器
@@ -46,6 +46,9 @@ func exampleMenu() {
 		}).
 		IsParentNode(func(a, b Menu) bool {
 			return a.ID == b.ParentID
+		}).
+		SortFun(func(a, b Menu) int {
+			return int(a.Order - b.Order)
 		})
 	tree := treeTool.ToTree(menus)
 

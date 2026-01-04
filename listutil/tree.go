@@ -41,6 +41,11 @@ func (c *TreeBuilder[T]) ToTree(list []*T) []*T {
 			c.source[i] = v
 		}
 	}
+	if c.sortFun != nil {
+		sort.SliceStable(res, func(i, j int) bool {
+			return c.sortFun(*res[i], *res[j]) < 0
+		})
+	}
 	for _, re := range res {
 		c.list2Tree(re, 1)
 	}
