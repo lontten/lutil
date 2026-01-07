@@ -13,3 +13,11 @@ func Round45(num float64) int64 {
 	// 负数：减 0.5 后向上取整
 	return int64(math.Ceil(num - 0.5))
 }
+func Round45i(num float64) int {
+	if num >= 0 {
+		// 正数：加 0.5 后向下取整
+		return int(math.Floor(num + 0.5))
+	}
+	// 负数：减 0.5 后向上取整
+	return int(math.Ceil(num - 0.5))
+}
