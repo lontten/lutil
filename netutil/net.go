@@ -43,8 +43,8 @@ func GetBase[T any](targetURL string) (int, T, error) {
 	}
 	return resp.StatusCode, result, nil
 }
-func PostJson[T any](targetURL string, data any) (T, error) {
-	statusCode, result, err := PostJsonBase[T](targetURL, data)
+func PostJsonOk[T any](targetURL string, data any) (T, error) {
+	statusCode, result, err := PostJson[T](targetURL, data)
 	if err != nil {
 		return result, err
 	}
@@ -53,7 +53,7 @@ func PostJson[T any](targetURL string, data any) (T, error) {
 	}
 	return result, nil
 }
-func PostJsonBase[T any](targetURL string, data any) (int, T, error) {
+func PostJson[T any](targetURL string, data any) (int, T, error) {
 	var result T
 	code, body, err := PostJsonNative(targetURL, data)
 	if err != nil {
@@ -106,8 +106,8 @@ func PostJsonNativeOk(targetURL string, data any) ([]byte, error) {
 	}
 	return result, nil
 }
-func PostForm[T any](targetURL string, data url.Values) (T, error) {
-	statusCode, result, err := PostFormBase[T](targetURL, data)
+func PostFormOk[T any](targetURL string, data url.Values) (T, error) {
+	statusCode, result, err := PostForm[T](targetURL, data)
 	if err != nil {
 		return result, err
 	}
@@ -116,7 +116,7 @@ func PostForm[T any](targetURL string, data url.Values) (T, error) {
 	}
 	return result, nil
 }
-func PostFormBase[T any](targetURL string, data url.Values) (int, T, error) {
+func PostForm[T any](targetURL string, data url.Values) (int, T, error) {
 	var result T
 
 	if data == nil {
