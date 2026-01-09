@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 func Get[T any](targetURL string) (T, error) {
@@ -96,6 +97,60 @@ func PostJsonNative(targetURL string, data any) (int, []byte, error) {
 	}
 	return resp.StatusCode, body, nil
 }
+func PostJsonByte[T any](targetURL string, data any) (int, []byte, T, error) {
+	var result T
+	var jsonBody []byte
+	var err error
+
+	if data == nil {
+		jsonBody = []byte("{}")
+	} else {
+		jsonBody, err = json.Marshal(data)
+		if err != nil {
+			return 0, []byte{}, result, fmt.Errorf("请求体 JSON 序列化失败: %w", err)
+		}
+	}
+	resp, err := http.Post(targetURL, "application/json", bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return 0, []byte{}, result, fmt.Errorf("发送 PostJson 请求失败: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		// 读取错误响应体（可选，用于更详细的错误信息）
+		errBody, _ := io.ReadAll(resp.Body)
+		return 0, []byte{}, result, fmt.Errorf("请求失败，状态码: %d，响应: %s", resp.StatusCode, string(errBody))
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return 0, []byte{}, result, fmt.Errorf("读取响应体失败: %w", err)
+	}
+
+	// 5. 判断响应类型（核心逻辑）
+	contentType := resp.Header.Get("Content-Type")
+	// 情况1：返回JSON错误（微信接口失败时Content-Type为application/json）
+	if strings.Contains(contentType, "application/json") {
+		if err := json.Unmarshal(body, &result); err != nil {
+			return 0, []byte{}, result, fmt.Errorf("解析微信错误响应失败: %v, 原始数据: %s", err, string(body))
+		}
+		return resp.StatusCode, nil, result, nil
+	}
+
+	return resp.StatusCode, body, result, nil
+}
+
+func PostJsonByteOk[T any](targetURL string, data any) ([]byte, T, error) {
+	statusCode, result, t, err := PostJsonByte[T](targetURL, data)
+	if err != nil {
+		return result, t, err
+	}
+	if statusCode != http.StatusOK {
+		return result, t, fmt.Errorf("请求失败，状态码: %d", statusCode)
+	}
+	return result, t, nil
+}
+
 func PostJsonNativeOk(targetURL string, data any) ([]byte, error) {
 	statusCode, result, err := PostJsonNative(targetURL, data)
 	if err != nil {
