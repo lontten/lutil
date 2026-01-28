@@ -21,6 +21,9 @@ type Pool struct {
 
 // NewPool 创建一个新的协程池
 func NewPool(maxWorkers int, queueSize int, rejectPolicy RejectPolicy) *Pool {
+	if rejectPolicy == nil {
+		rejectPolicy = CallerRunsPolicy
+	}
 	p := &Pool{
 		maxWorkers:   maxWorkers,
 		tasks:        make(chan Task, queueSize),
@@ -49,16 +52,23 @@ func (p *Pool) worker() {
 }
 
 // Submit 提交任务
-func (p *Pool) Submit(task Task) error {
+func (p *Pool) Submit(task Task) {
+	select {
+	case p.tasks <- task:
+		return
+	default:
+		p.rejectPolicy(task, p)
+		return
+	}
+}
+
+// SubmitErr 任务队列满后，直接拒绝任务并抛出错误
+func (p *Pool) SubmitErr(task Task) error {
 	select {
 	case p.tasks <- task:
 		return nil
 	default:
-		if p.rejectPolicy != nil {
-			p.rejectPolicy(task, p)
-			return nil
-		}
-		return errors.New("task queue is full and no reject policy specified")
+		return errors.New("task queue is full, executed reject policy")
 	}
 }
 
@@ -71,8 +81,8 @@ func (p *Pool) Shutdown() {
 // 拒绝策略示例
 
 // AbortPolicy 直接拒绝任务并抛出错误
-func AbortPolicy(task Task, pool *Pool) {
-}
+//func AbortPolicy(task Task, pool *Pool) {
+//}
 
 // CallerRunsPolicy 由提交任务的 Goroutine 自己执行任务
 func CallerRunsPolicy(task Task, pool *Pool) {
