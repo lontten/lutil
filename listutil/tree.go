@@ -14,6 +14,7 @@ type TreeBuilder[T any] struct {
 	sortFun      func(a, b T) int
 	isParentNode func(a, b T) bool // 判断a是否为b父节点, true为父节点,
 	isRootNode   func(a T) bool
+	tran         func(a *T)
 
 	childrenField string
 }
@@ -34,6 +35,9 @@ func (c *TreeBuilder[T]) ToTree(list []*T) []*T {
 	var res = make([]*T, 0)
 
 	for i, v := range list {
+		if c.tran != nil {
+			c.tran(v)
+		}
 		b := c.isRootNode(*v)
 		if b {
 			res = append(res, v)
@@ -130,5 +134,10 @@ func (c *TreeBuilder[T]) IsParentNode(isParentNode func(a, b T) bool) *TreeBuild
 }
 func (c *TreeBuilder[T]) IsRootNode(isRootNode func(a T) bool) *TreeBuilder[T] {
 	c.isRootNode = isRootNode
+	return c
+}
+
+func (c *TreeBuilder[T]) Transform(tran func(a *T)) *TreeBuilder[T] {
+	c.tran = tran
 	return c
 }
