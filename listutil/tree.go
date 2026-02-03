@@ -15,7 +15,8 @@ type TreeBuilder[T any] struct {
 	isParentNode func(a, b T) bool // 判断a是否为b父节点, true为父节点,
 	isRootNode   func(a T) bool
 	tranGlobal   func(a *T)
-	tranNode     func(a, parent *T)
+	tranRoot     func(a *T)
+	tranNode     func(a *T, parent T)
 
 	childrenField string
 }
@@ -41,8 +42,8 @@ func (c *TreeBuilder[T]) ToTree(list []*T) []*T {
 		}
 		b := c.isRootNode(*v)
 		if b {
-			if c.tranNode != nil {
-				c.tranNode(v, nil)
+			if c.tranRoot != nil {
+				c.tranRoot(v)
 			}
 			rootNode = append(rootNode, v)
 		} else {
@@ -73,7 +74,7 @@ func (c *TreeBuilder[T]) list2Tree(parent *T, deepth int) {
 		b := c.isParentNode(*parent, *v)
 		if b {
 			if c.tranNode != nil {
-				c.tranNode(v, parent)
+				c.tranNode(v, *parent)
 			}
 			arr = append(arr, v)
 			indexs = append(indexs, k)
@@ -149,7 +150,11 @@ func (c *TreeBuilder[T]) TransformGlobal(tranGlobal func(a *T)) *TreeBuilder[T] 
 	return c
 }
 
-func (c *TreeBuilder[T]) TransformNode(tranNode func(a, parent *T)) *TreeBuilder[T] {
+func (c *TreeBuilder[T]) TransformRoot(tranRoot func(a *T)) *TreeBuilder[T] {
+	c.tranRoot = tranRoot
+	return c
+}
+func (c *TreeBuilder[T]) TransformNode(tranNode func(a *T, parent T)) *TreeBuilder[T] {
 	c.tranNode = tranNode
 	return c
 }
