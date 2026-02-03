@@ -17,6 +17,7 @@ type TreeBuilder[T any] struct {
 	tranGlobal   func(a *T)
 	tranRoot     func(a *T)
 	tranNode     func(a *T, parent T)
+	rootNode     *T
 
 	childrenField string
 }
@@ -24,9 +25,6 @@ type TreeBuilder[T any] struct {
 // ==================== 构造函数 ====================
 
 func (c *TreeBuilder[T]) ToTree(list []*T) []*T {
-	if c.isRootNode == nil {
-		panic("isRootNode 函数未设置")
-	}
 	if c.isParentNode == nil {
 		panic("isParentNode 函数未设置")
 	}
@@ -35,21 +33,45 @@ func (c *TreeBuilder[T]) ToTree(list []*T) []*T {
 	}
 	c.otherSource = make(map[int]*T)
 	var rootNode = make([]*T, 0)
+	var rootIndex = 0
 
 	for i, v := range list {
 		if c.tranGlobal != nil {
 			c.tranGlobal(v)
 		}
-		b := c.isRootNode(*v)
-		if b {
+
+		var isRoot = false
+
+		if c.isRootNode != nil {
+			if c.isRootNode(*v) {
+				isRoot = true
+			}
+		} else {
+			var hasParent = false
+			for i2, v2 := range list {
+				if i == i2 {
+					continue
+				}
+				if c.isParentNode(*v2, *v) {
+					hasParent = true
+				}
+			}
+			if !hasParent {
+				isRoot = true
+			}
+		}
+
+		if isRoot {
 			if c.tranRoot != nil {
 				c.tranRoot(v)
 			}
 			rootNode = append(rootNode, v)
 		} else {
-			c.otherSource[i] = v
+			c.otherSource[rootIndex] = v
+			rootIndex += 1
 		}
 	}
+
 	if c.sortFun != nil {
 		sort.SliceStable(rootNode, func(i, j int) bool {
 			return c.sortFun(*rootNode[i], *rootNode[j]) < 0
@@ -57,6 +79,12 @@ func (c *TreeBuilder[T]) ToTree(list []*T) []*T {
 	}
 	for _, node := range rootNode {
 		c.list2Tree(node, 1)
+	}
+	if c.rootNode != nil {
+		v := reflect.ValueOf(c.rootNode).Elem()
+		childrenField := v.FieldByName(c.childrenField)
+		childrenField.Set(reflect.ValueOf(rootNode))
+		return []*T{c.rootNode}
 	}
 	return rootNode
 }
@@ -156,5 +184,10 @@ func (c *TreeBuilder[T]) TransformRoot(tranRoot func(a *T)) *TreeBuilder[T] {
 }
 func (c *TreeBuilder[T]) TransformNode(tranNode func(a *T, parent T)) *TreeBuilder[T] {
 	c.tranNode = tranNode
+	return c
+}
+
+func (c *TreeBuilder[T]) SetRootNode(rootNode T) *TreeBuilder[T] {
+	c.rootNode = &rootNode
 	return c
 }
