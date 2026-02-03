@@ -9,12 +9,13 @@ import (
 
 // TreeBuilder 树构建器
 type TreeBuilder[T any] struct {
-	source       map[int]*T
+	otherSource  map[int]*T
 	maxDepth     int // 最大深度，-1表示不限制,root是0
 	sortFun      func(a, b T) int
 	isParentNode func(a, b T) bool // 判断a是否为b父节点, true为父节点,
 	isRootNode   func(a T) bool
-	tran         func(a *T)
+	tranGlobal   func(a *T)
+	tranNode     func(a, parent *T)
 
 	childrenField string
 }
@@ -31,49 +32,55 @@ func (c *TreeBuilder[T]) ToTree(list []*T) []*T {
 	if c.childrenField == "" {
 		panic("childrenField 未设置")
 	}
-	c.source = make(map[int]*T)
-	var res = make([]*T, 0)
+	c.otherSource = make(map[int]*T)
+	var rootNode = make([]*T, 0)
 
 	for i, v := range list {
-		if c.tran != nil {
-			c.tran(v)
+		if c.tranGlobal != nil {
+			c.tranGlobal(v)
 		}
 		b := c.isRootNode(*v)
 		if b {
-			res = append(res, v)
+			if c.tranNode != nil {
+				c.tranNode(v, nil)
+			}
+			rootNode = append(rootNode, v)
 		} else {
-			c.source[i] = v
+			c.otherSource[i] = v
 		}
 	}
 	if c.sortFun != nil {
-		sort.SliceStable(res, func(i, j int) bool {
-			return c.sortFun(*res[i], *res[j]) < 0
+		sort.SliceStable(rootNode, func(i, j int) bool {
+			return c.sortFun(*rootNode[i], *rootNode[j]) < 0
 		})
 	}
-	for _, re := range res {
-		c.list2Tree(re, 1)
+	for _, node := range rootNode {
+		c.list2Tree(node, 1)
 	}
-	return res
+	return rootNode
 }
-func (c *TreeBuilder[T]) list2Tree(target *T, deepth int) {
+func (c *TreeBuilder[T]) list2Tree(parent *T, deepth int) {
 	if deepth > c.maxDepth && c.maxDepth != -1 {
 		return
 	}
 	var arr = make([]*T, 0)
 
-	v := reflect.ValueOf(target).Elem()
+	v := reflect.ValueOf(parent).Elem()
 	childrenField := v.FieldByName(c.childrenField)
 
 	var indexs []int
-	for k, v := range c.source {
-		b := c.isParentNode(*target, *v)
+	for k, v := range c.otherSource {
+		b := c.isParentNode(*parent, *v)
 		if b {
+			if c.tranNode != nil {
+				c.tranNode(v, parent)
+			}
 			arr = append(arr, v)
 			indexs = append(indexs, k)
 		}
 	}
 	for _, index := range indexs {
-		delete(c.source, index)
+		delete(c.otherSource, index)
 	}
 	if c.sortFun != nil {
 		sort.SliceStable(arr, func(i, j int) bool {
@@ -137,7 +144,12 @@ func (c *TreeBuilder[T]) IsRootNode(isRootNode func(a T) bool) *TreeBuilder[T] {
 	return c
 }
 
-func (c *TreeBuilder[T]) Transform(tran func(a *T)) *TreeBuilder[T] {
-	c.tran = tran
+func (c *TreeBuilder[T]) TransformGlobal(tranGlobal func(a *T)) *TreeBuilder[T] {
+	c.tranGlobal = tranGlobal
+	return c
+}
+
+func (c *TreeBuilder[T]) TransformNode(tranNode func(a, parent *T)) *TreeBuilder[T] {
+	c.tranNode = tranNode
 	return c
 }
