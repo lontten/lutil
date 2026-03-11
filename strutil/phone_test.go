@@ -1,6 +1,10 @@
 package strutil
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestCheckLandline(t *testing.T) {
 	type args struct {
@@ -51,6 +55,13 @@ func TestCheckPhoneAll(t *testing.T) {
 			},
 			want: true,
 		},
+		{
+			name: "test1",
+			args: args{
+				phoneNumber: "1883711386",
+			},
+			want: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -59,4 +70,11 @@ func TestCheckPhoneAll(t *testing.T) {
 			}
 		})
 	}
+}
+func TestCheckPhoneAll2(t *testing.T) {
+	as := assert.New(t)
+	as.False(CheckPhone("1883711386"))
+	as.False(CheckLandline("1883711386"))
+	as.False(CheckPhoneAll("1883711386"))
+
 }

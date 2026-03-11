@@ -11,8 +11,7 @@ func CheckPhoneAll(phoneNumber string) bool {
 		return true
 	}
 
-	//广义范围的电话号码
-	hyphen := isValidNumberWithHyphen(phoneNumber)
+	hyphen := CheckLandline(phoneNumber)
 	if hyphen {
 		return true
 	}
@@ -41,8 +40,9 @@ func CheckLandline(phoneNumber string) bool {
 	return false
 }
 
+// 广义范围的电话号码
 // 判断是否符合数字加横杠格式
-func isValidNumberWithHyphen(s string) bool {
+func CheckPhoneLike(s string) bool {
 	// 长度在4到30位之间
 	if len(s) < 4 || len(s) > 22 {
 		return false
