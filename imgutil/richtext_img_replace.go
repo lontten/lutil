@@ -163,11 +163,13 @@ func (r *ImageReplacer) ReplaceRichTextWithContext(ctx context.Context, html str
 
 	// 准备替换任务
 	var tasks []replaceTask
+	var index = -1
 	imgNodes.Each(func(i int, s *goquery.Selection) {
 		src, exists := s.Attr("src")
 		if exists && r.isRemoteURL(src) {
+			index++
 			tasks = append(tasks, replaceTask{
-				index: i,
+				index: index,
 				src:   src,
 				node:  s,
 			})
