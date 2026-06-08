@@ -10,10 +10,11 @@ func TestToObjList(t *testing.T) {
 	list = append(list, "a")
 	list = append(list, "b")
 	list = append(list, "c")
-	var s = ToJsonStr(list)
+	var s = ToJsonStrPanic("a")
 	fmt.Println(s)
-	objList := ToObjList[string](s)
+	objList := ToObjDefault[[]string](s)
 	for i, o := range objList {
 		fmt.Println(i, o)
 	}
+	fmt.Println(objList)
 }
