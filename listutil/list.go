@@ -1,4 +1,4 @@
-package lcutils
+package listutil
 
 // BoolDiff
 // list1-list2
