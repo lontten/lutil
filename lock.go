@@ -1,3 +1,4 @@
+// Package lutil 提供协程池与按键互斥锁等基础工具。
 package lutil
 
 import (
@@ -12,6 +13,7 @@ type KeyLock struct {
 	cache *lru.Cache[string, *sync.Mutex]
 }
 
+// NewKeyLock 创建带 LRU 缓存的按键互斥锁，size 为缓存容量。
 func NewKeyLock(size int) *KeyLock {
 	l, _ := lru.New[string, *sync.Mutex](size)
 	if l == nil {

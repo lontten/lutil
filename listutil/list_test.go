@@ -128,3 +128,41 @@ func TestBoolIntersection(t *testing.T) {
 	as.Equal([]int{}, BoolIntersection([]int{}, []int{1}))
 	as.Equal([]int{}, BoolIntersection([]int{1, 2}, []int{}))
 }
+
+func TestBoolUnion(t *testing.T) {
+	as := assert.New(t)
+	got := BoolUnion([]int{1, 2}, []int{2, 3})
+	sort.Ints(got)
+	as.Equal([]int{1, 2, 3}, got)
+	as.Equal([]int{}, BoolUnion([]int{}, []int{}))
+	as.Equal([]int{1}, BoolUnion([]int{1, 1}, []int{}))
+}
+
+func TestRemoveDuplicates(t *testing.T) {
+	as := assert.New(t)
+	got := RemoveDuplicates([]int{1, 2, 2, 3})
+	sort.Ints(got)
+	as.Equal([]int{1, 2, 3}, got)
+	as.Equal([]int{}, RemoveDuplicates([]int{}))
+}
+
+func TestListHas(t *testing.T) {
+	as := assert.New(t)
+	as.True(ListHas([]int{1, 2, 3}, 2))
+	as.False(ListHas([]int{1, 2, 3}, 4))
+	as.False(ListHas([]int{}, 1))
+}
+
+func TestListTool_Combined(t *testing.T) {
+	as := assert.New(t)
+	as.True(ListTool(1, 2, 3).Check())
+	as.True(ListTool(1, 2, 3).HasAll(1, 2).HasAny(3).Check())
+	as.False(ListTool(1, 2, 3).HasAll(1, 2).NotAll(1).Check())
+	as.True(ListTool(1, 2, 3).HasAll(1).NotAll(4).Check())
+}
+
+func TestBoolEq_emptyAndDup(t *testing.T) {
+	as := assert.New(t)
+	as.True(BoolEq([]int{}, []int{}))
+	as.True(BoolEq([]int{1, 1, 2}, []int{2, 1}))
+}

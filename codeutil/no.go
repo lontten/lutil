@@ -28,6 +28,7 @@ func RandomTimeNumberID(length int) string {
 	return RandomTimeBaseID(DigitCharset, length)
 }
 
+// RandomTimeBaseID 生成时间戳前缀加随机后缀的 ID 字符串。
 func RandomTimeBaseID(charset string, length int) string {
 	timestamp := time.Now().Format("20060102150405") // 14字符
 	randomLength := length - len(timestamp)

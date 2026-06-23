@@ -1,3 +1,4 @@
+// Package fileutil 提供临时文件、文件复制与路径解析工具。
 package fileutil
 
 import (
@@ -75,6 +76,7 @@ func NewTempReturnDirNameMust() string {
 	return dir
 }
 
+// CopyFile 将 srcPath 文件内容复制到 dstPath。
 func CopyFile(srcPath, dstPath string) error {
 	srcFile, err := os.Open(srcPath)
 	if err != nil {

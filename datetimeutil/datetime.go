@@ -1,3 +1,4 @@
+// Package datetimeutil 提供 LocalDateTime 的比较与聚合工具。
 package datetimeutil
 
 import "github.com/lontten/lcore/v2/types"

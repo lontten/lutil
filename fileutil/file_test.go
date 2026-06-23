@@ -185,3 +185,49 @@ func TestCopyTemplateToTempFileReturnPath(t *testing.T) {
 	req.NoError(err)
 	as.Equal(content, got)
 }
+
+func TestCopyFile(t *testing.T) {
+	as := assert.New(t)
+	req := require.New(t)
+
+	dir := t.TempDir()
+	src := dir + string(os.PathSeparator) + "src.txt"
+	dst := dir + string(os.PathSeparator) + "dst.txt"
+	req.NoError(os.WriteFile(src, []byte("hello"), 0644))
+	req.NoError(CopyFile(src, dst))
+	got, err := os.ReadFile(dst)
+	req.NoError(err)
+	as.Equal([]byte("hello"), got)
+}
+
+func TestNewTempFileReturnPath(t *testing.T) {
+	as := assert.New(t)
+	req := require.New(t)
+
+	path, err := NewTempFileReturnPath(".txt")
+	req.NoError(err)
+	defer os.Remove(path)
+	as.FileExists(path)
+}
+
+func TestNewTempFile(t *testing.T) {
+	req := require.New(t)
+	f, err := NewTempFile(".log")
+	req.NoError(err)
+	defer os.Remove(f.Name())
+	defer f.Close()
+	_, err = f.WriteString("x")
+	req.NoError(err)
+}
+
+func TestNewTempReturnDirName(t *testing.T) {
+	as := assert.New(t)
+	req := require.New(t)
+
+	dir, err := NewTempReturnDirName()
+	req.NoError(err)
+	defer os.RemoveAll(dir)
+	info, err := os.Stat(dir)
+	req.NoError(err)
+	as.True(info.IsDir())
+}

@@ -1,3 +1,4 @@
+// Package structutil 提供结构体与 map 之间的转换工具。
 package structutil
 
 import (
@@ -5,6 +6,8 @@ import (
 	"reflect"
 )
 
+// Struct2StringMap 将结构体字段转为 map[string]string。
+// 支持结构体或结构体指针；字段名作为 key，值转为字符串。
 func Struct2StringMap(s any) map[string]string {
 	val := reflect.ValueOf(s)
 

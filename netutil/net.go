@@ -10,6 +10,7 @@ import (
 	"strings"
 )
 
+// Get 发送 GET 请求并将 JSON 响应反序列化为 T；非 200 状态码返回 error。
 func Get[T any](targetURL string) (T, error) {
 	statusCode, result, err := GetBase[T](targetURL)
 	if err != nil {

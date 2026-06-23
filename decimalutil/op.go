@@ -1,3 +1,4 @@
+// Package decimalutil 提供 decimal.Decimal 的运算工具。
 package decimalutil
 
 import (

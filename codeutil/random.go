@@ -54,17 +54,17 @@ const (
 	LowerNumCharset = "abcdefghijklmnopqrstuvwxyz0123456789"
 )
 
-// 生成包含大小写字母+数字的随机字符串
+// RandomStr 生成包含大小写字母与数字的随机字符串。
 func RandomStr(length int) string {
 	return RandomStrFromCharset(AlphaNumCharset, length)
 }
 
-// 生成包含数字的随机字符串
+// RandomNum 生成纯数字随机字符串。
 func RandomNum(length int) string {
 	return RandomStrFromCharset(DigitCharset, length)
 }
 
-// 生成纯数字验证码
+// GenCaptcha 生成纯数字验证码字符串。
 func GenCaptcha(length int) string {
 	return RandomNum(length)
 }

@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// DownloadFileToLocal 下载 url 指向的文件到本地临时文件，返回文件路径。
 func DownloadFileToLocal(url string) (string, error) {
 	// Get the data
 	resp, err := http.Get(url)
@@ -40,7 +41,7 @@ func DownloadFileToLocal(url string) (string, error) {
 	return out.Name(), nil
 }
 
-// 检查一个文件url是否是有效链接（是否可以下载）
+// CheckFileUrlCanDownload 检查 url 是否可下载，返回是否可用及错误信息。
 func CheckFileUrlCanDownload(url string) (bool, string) {
 	client := &http.Client{
 		Timeout: 10 * time.Second,

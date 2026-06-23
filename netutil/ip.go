@@ -1,3 +1,5 @@
+// Package netutil 提供 HTTP 请求、IP 解析与文件下载工具。
+// Package netutil 提供 HTTP 请求、IP 解析与文件下载工具。
 package netutil
 
 import (
@@ -128,12 +130,12 @@ func selectIP(candidates []string, remoteIP string, config *IPConfig) string {
 	return remoteIP
 }
 
-// 简化版本
+// RealIPSimple 使用默认配置获取客户端真实 IP。
 func RealIPSimple(r *http.Request) string {
 	return RealIP(r, DefaultConfig)
 }
 
-// 中间件
+// IPMiddleware 将解析后的客户端 IP 写入请求上下文。
 func IPMiddleware(config *IPConfig) func(http.Handler) http.Handler {
 	if config == nil {
 		config = DefaultConfig
@@ -148,7 +150,7 @@ func IPMiddleware(config *IPConfig) func(http.Handler) http.Handler {
 	}
 }
 
-// 从上下文获取IP
+// IPFromContext 从上下文读取客户端 IP。
 func IPFromContext(ctx context.Context) string {
 	if ip, ok := ctx.Value(ipContextKey).(string); ok {
 		return ip

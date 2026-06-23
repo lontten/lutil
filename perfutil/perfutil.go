@@ -1,3 +1,4 @@
+// Package perfutil 提供简单的性能计时工具。
 package perfutil
 
 import (

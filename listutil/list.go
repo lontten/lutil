@@ -1,17 +1,14 @@
+// Package listutil 提供切片集合运算与 ListTool 条件检查工具。
 package listutil
 
-// BoolDiff
-// list1-list2
-// 布尔-差集,
-// 有去重逻辑
-// 移除list1 中 所有的 list2 元素
+// BoolDiff 计算 list1 与 list2 的差集（list1 - list2）。
+// 有去重逻辑；结果顺序不稳定。
 func BoolDiff[T comparable](list1, list2 []T) []T {
 	set1 := make(map[T]struct{}, len(list1))
 	for _, e := range list1 {
-		set1[e] = struct{}{} // 利用 map 自动去重 list1
+		set1[e] = struct{}{}
 	}
 
-	// 移除 list2 中存在的元素
 	for _, e := range list2 {
 		delete(set1, e)
 	}
@@ -24,9 +21,7 @@ func BoolDiff[T comparable](list1, list2 []T) []T {
 	return result
 }
 
-// BoolEq
-// 布尔-相等
-// 有去重逻辑
+// BoolEq 判断两个切片是否表示相同集合（有去重逻辑）。
 func BoolEq[T comparable](list1, list2 []T) bool {
 	set1 := make(map[T]struct{}, len(list1))
 	for _, e := range list1 {
@@ -51,13 +46,9 @@ func BoolEq[T comparable](list1, list2 []T) bool {
 	return set1Len == len(set2)
 }
 
-// BoolUnion
-// list1+list2
-// 布尔-并,
-// 有去重逻辑
-// list1 和 list2 元素，并集
+// BoolUnion 计算 list1 与 list2 的并集。
+// 有去重逻辑；结果顺序不稳定。
 func BoolUnion[T comparable](list1, list2 []T) []T {
-	// 创建集合存储list1的元素
 	set1 := make(map[T]struct{}, len(list1)+len(list2))
 	for _, e := range list1 {
 		set1[e] = struct{}{}
@@ -73,9 +64,8 @@ func BoolUnion[T comparable](list1, list2 []T) []T {
 	return result
 }
 
-// BoolIntersection
-// list1，list2相同的元素
-// 布尔-交集，有去重逻辑，list1 与 list2 均按集合处理
+// BoolIntersection 计算 list1 与 list2 的交集。
+// 有去重逻辑；结果按 list2 中首次出现的顺序排列。
 func BoolIntersection[T comparable](list1, list2 []T) []T {
 	set1 := make(map[T]struct{}, len(list1))
 	for _, e := range list1 {
@@ -96,12 +86,13 @@ func BoolIntersection[T comparable](list1, list2 []T) []T {
 	return result
 }
 
-// 去重函数，适用于任何可比较的类型
+// RemoveDuplicates 对切片去重，返回无重复元素的新切片。
+// 结果顺序不稳定。
 func RemoveDuplicates[T comparable](slice []T) []T {
 	return BoolUnion(slice, []T{})
 }
 
-// 集合中是否包含item
+// ListHas 判断 slice 中是否包含 item。
 func ListHas[T comparable](slice []T, item T) bool {
 	for _, i := range slice {
 		if i == item {
@@ -111,6 +102,7 @@ func ListHas[T comparable](slice []T, item T) bool {
 	return false
 }
 
+// ListToolBuilder 链式构建列表条件并执行 Check。
 type ListToolBuilder struct {
 	list   []any
 	hasAll []any
@@ -118,6 +110,7 @@ type ListToolBuilder struct {
 	notAll []any
 }
 
+// ListTool 创建 ListToolBuilder，list 为待检查的列表元素。
 func ListTool(list ...any) *ListToolBuilder {
 	return &ListToolBuilder{
 		list:   list,
@@ -127,18 +120,25 @@ func ListTool(list ...any) *ListToolBuilder {
 	}
 }
 
+// HasAll 要求 list 包含所有指定元素（集合语义，重复项不增加要求）。
 func (t *ListToolBuilder) HasAll(list ...any) *ListToolBuilder {
 	t.hasAll = append(t.hasAll, list...)
 	return t
 }
+
+// HasAny 要求 list 至少包含一个指定元素。
 func (t *ListToolBuilder) HasAny(list ...any) *ListToolBuilder {
 	t.hasAny = append(t.hasAny, list...)
 	return t
 }
+
+// NotAll 要求 list 不包含 notAll 中的全部元素（至少缺一个）。
 func (t *ListToolBuilder) NotAll(list ...any) *ListToolBuilder {
 	t.notAll = append(t.notAll, list...)
 	return t
 }
+
+// Check 根据已设置的条件判断 list 是否满足。
 func (t *ListToolBuilder) Check() bool {
 	if len(t.hasAll) > 0 {
 		var c = len(BoolIntersection(t.list, t.hasAll)) == len(RemoveDuplicates(t.hasAll))

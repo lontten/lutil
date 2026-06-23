@@ -2,7 +2,8 @@ package structutil
 
 import "reflect"
 
-// source copy 到 binding  并覆盖
+// CopyStruct 将 source 的同名字段复制到 binding 并覆盖。
+// source 与 binding 须为指向结构体的指针；exclude 中的字段名将被跳过。
 func CopyStruct(source any, binding any, exclude []string) {
 	bVal := reflect.ValueOf(binding).Elem() //获取reflect.Type类型
 	vVal := reflect.ValueOf(source).Elem()  //获取reflect.Type类型
