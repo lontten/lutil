@@ -50,6 +50,15 @@ func TestToJsonStrPPanic(t *testing.T) {
 	as.Panics(func() { ToJsonStrPPanic(make(chan int)) })
 }
 
+func TestToJsonStrPDefault(t *testing.T) {
+	as := assert.New(t)
+	p := ToJsonStrPDefault(map[string]int{"a": 1})
+	as.Equal(`{"a":1}`, *p)
+	p = ToJsonStrPDefault(make(chan int))
+	as.NotNil(p)
+	as.Equal("", *p)
+}
+
 func TestToObj(t *testing.T) {
 	as := assert.New(t)
 	req := require.New(t)

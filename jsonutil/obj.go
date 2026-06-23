@@ -50,6 +50,17 @@ func ToJsonStrPPanic(v any) *string {
 	return &s
 }
 
+// ToJsonStrPDefault 将 v 序列化为 JSON 字符串指针，失败时返回指向空字符串的指针。
+func ToJsonStrPDefault(v any) *string {
+	bytes, err := json.Marshal(v)
+	if err != nil {
+		s := ""
+		return &s
+	}
+	s := string(bytes)
+	return &s
+}
+
 // ToObj 将 JSON 字符串反序列化为 T，失败时返回 error。
 func ToObj[T any](str string) (T, error) {
 	var obj T
