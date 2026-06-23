@@ -98,10 +98,11 @@ func CopyTemplateToTempFileReturnPath(templatePath string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	defer tmpFile.Close()
 	return tmpFile.Name(), nil
 }
 
-// CopyTemplateToTempFile 复制模板文件到临时文件，返回临时文件路径
+// CopyTemplateToTempFile 复制模板文件到临时文件，返回已打开的文件句柄（调用方负责关闭）
 func CopyTemplateToTempFile(templatePath string) (tmpFile *os.File, err error) {
 	// 读取模板文件内容
 	content, err := os.ReadFile(templatePath)
@@ -129,16 +130,21 @@ func CopyTemplateToTempFile(templatePath string) (tmpFile *os.File, err error) {
 		err = fmt.Errorf("创建临时文件失败: %w", err)
 		return
 	}
-	defer tmpFile.Close() // 确保文件关闭
+	cleanup := func() {
+		tmpFile.Close()
+		os.Remove(tmpFile.Name())
+	}
 
 	// 写入内容
 	if _, err = tmpFile.Write(content); err != nil {
+		cleanup()
 		err = fmt.Errorf("写入临时文件失败: %w", err)
 		return
 	}
 
 	// 设置权限（与原文件一致）
 	if err = os.Chmod(tmpFile.Name(), perm); err != nil {
+		cleanup()
 		err = fmt.Errorf("设置权限失败: %w", err)
 		return
 	}

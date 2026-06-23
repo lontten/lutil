@@ -29,8 +29,7 @@ func TestStruct2StringMap(t *testing.T) {
 		Time:  nowTime,
 		Date:  nowDate,
 	}
-	m, err := Struct2StringMap(u)
-	as.Nil(err)
+	m := Struct2StringMap(u)
 	as.Equal("1", m["Uid"])
 	as.Equal("lontten", m["Name"])
 	as.Equal("18", m["Age"])

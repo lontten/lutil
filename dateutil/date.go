@@ -5,7 +5,7 @@ import "github.com/lontten/lcore/v2/types"
 // Max 返回最大值，至少需要一个参数
 func Max(list ...types.LocalDate) types.LocalDate {
 	if len(list) == 0 {
-		panic("timeutil.Max: at least one argument required")
+		panic("dateutil.Max: at least one argument required")
 	}
 	m := list[0]
 	for _, v := range list[1:] {
@@ -19,7 +19,7 @@ func Max(list ...types.LocalDate) types.LocalDate {
 // Min 返回最小值，至少需要一个参数
 func Min(list ...types.LocalDate) types.LocalDate {
 	if len(list) == 0 {
-		panic("timeutil.Min: at least one argument required")
+		panic("dateutil.Min: at least one argument required")
 	}
 	m := list[0]
 	for _, v := range list[1:] {

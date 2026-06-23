@@ -1,7 +1,12 @@
 package fileutil
 
 import (
+	"io"
+	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetFileName(t *testing.T) {
@@ -14,14 +19,14 @@ func TestGetFileName(t *testing.T) {
 		want string
 	}{
 		{
-			name: "test1",
+			name: "chinese_filename",
 			args: args{
 				path: "/Users/go/src/github.com/utils/文件.go",
 			},
 			want: "文件.go",
 		},
 		{
-			name: "test1",
+			name: "ascii_filename",
 			args: args{
 				path: "/Users/go/src/github.com/utils/file.go",
 			},
@@ -129,4 +134,54 @@ func TestGetFileSuffix(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestCopyTemplateToTempFile(t *testing.T) {
+	as := assert.New(t)
+	req := require.New(t)
+
+	templateFile, err := os.CreateTemp("", "template_*.txt")
+	req.NoError(err)
+	templatePath := templateFile.Name()
+	defer os.Remove(templatePath)
+
+	content := []byte("template content")
+	_, err = templateFile.Write(content)
+	req.NoError(err)
+	req.NoError(templateFile.Close())
+
+	tmpFile, err := CopyTemplateToTempFile(templatePath)
+	req.NoError(err)
+	defer os.Remove(tmpFile.Name())
+	defer tmpFile.Close()
+
+	_, err = tmpFile.Seek(0, io.SeekStart)
+	req.NoError(err)
+
+	got, err := io.ReadAll(tmpFile)
+	req.NoError(err)
+	as.Equal(content, got)
+}
+
+func TestCopyTemplateToTempFileReturnPath(t *testing.T) {
+	as := assert.New(t)
+	req := require.New(t)
+
+	templateFile, err := os.CreateTemp("", "template_*.txt")
+	req.NoError(err)
+	templatePath := templateFile.Name()
+	defer os.Remove(templatePath)
+
+	content := []byte("template content")
+	_, err = templateFile.Write(content)
+	req.NoError(err)
+	req.NoError(templateFile.Close())
+
+	tmpPath, err := CopyTemplateToTempFileReturnPath(templatePath)
+	req.NoError(err)
+	defer os.Remove(tmpPath)
+
+	got, err := os.ReadFile(tmpPath)
+	req.NoError(err)
+	as.Equal(content, got)
 }

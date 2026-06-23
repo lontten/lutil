@@ -75,20 +75,23 @@ func BoolUnion[T comparable](list1, list2 []T) []T {
 
 // BoolIntersection
 // list1，list2相同的元素
-// 布尔-交集,
-// 有去重逻辑
-// list1 和 list2 元素，交集
+// 布尔-交集，有去重逻辑，list1 与 list2 均按集合处理
 func BoolIntersection[T comparable](list1, list2 []T) []T {
-	// 创建集合存储list1的元素
 	set1 := make(map[T]struct{}, len(list1))
 	for _, e := range list1 {
 		set1[e] = struct{}{}
 	}
-	result := make([]T, 0, len(set1))
+	result := make([]T, 0)
+	seen := make(map[T]struct{})
 	for _, e := range list2 {
-		if _, ok := set1[e]; ok {
-			result = append(result, e)
+		if _, ok := set1[e]; !ok {
+			continue
 		}
+		if _, dup := seen[e]; dup {
+			continue
+		}
+		seen[e] = struct{}{}
+		result = append(result, e)
 	}
 	return result
 }
@@ -138,7 +141,7 @@ func (t *ListToolBuilder) NotAll(list ...any) *ListToolBuilder {
 }
 func (t *ListToolBuilder) Check() bool {
 	if len(t.hasAll) > 0 {
-		var c = len(BoolIntersection(t.list, t.hasAll)) == len(t.hasAll)
+		var c = len(BoolIntersection(t.list, t.hasAll)) == len(RemoveDuplicates(t.hasAll))
 		if !c {
 			return false
 		}

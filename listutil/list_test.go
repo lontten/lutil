@@ -23,6 +23,11 @@ func TestListTool_HasAll(t *testing.T) {
 		HasAll(1, 2, 3, 4).
 		Check()
 	as.False(check)
+
+	check = ListTool(1, 2, 3).
+		HasAll(1, 2, 2).
+		Check()
+	as.True(check)
 }
 
 func TestListTool_HasAny(t *testing.T) {
@@ -111,4 +116,15 @@ func TestBoolDiff(t *testing.T) {
 	as.Equal([]int{}, BoolDiff([]int{}, []int{1, 2, 3}))
 	as.Equal([]int{}, BoolDiff([]int{}, []int{}))
 	as.Equal([]int{}, BoolDiff([]int{1, 2, 3}, []int{1, 2, 3}))
+}
+
+func TestBoolIntersection(t *testing.T) {
+	as := assert.New(t)
+
+	as.Equal([]int{1, 2}, BoolIntersection([]int{1, 2, 3}, []int{1, 2, 4}))
+	as.Equal([]int{1, 2}, BoolIntersection([]int{1, 1, 2}, []int{1, 2, 2}))
+	as.Equal([]int{1}, BoolIntersection([]int{1}, []int{1, 1, 2}))
+	as.Equal([]int{}, BoolIntersection([]int{1, 2, 3}, []int{4, 5}))
+	as.Equal([]int{}, BoolIntersection([]int{}, []int{1}))
+	as.Equal([]int{}, BoolIntersection([]int{1, 2}, []int{}))
 }
