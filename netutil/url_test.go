@@ -14,9 +14,9 @@ func TestSanitizeURL(t *testing.T) {
 		{
 			name: "test1",
 			args: args{
-				url: "0.2+0.3.png",
+				url: "%0.2+0.3.png",
 			},
-			want: "0.2_0.3.png",
+			want: "_0.2_0.3.png",
 		},
 	}
 	for _, tt := range tests {
