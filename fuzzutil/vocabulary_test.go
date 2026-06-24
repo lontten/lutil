@@ -341,3 +341,119 @@ func TestMatch_1(t *testing.T) {
 	got := vocab.MatchFromText("四川省成都市武侯区")
 	logutil.Log(got)
 }
+
+func xinjiangVocab() *Vocabulary {
+	return NewVocabularyFromPaths(
+		NamePath{"新疆维吾尔自治区", "乌鲁木齐市", "天山区"},
+	)
+}
+
+func tibetVocab() *Vocabulary {
+	return NewVocabularyFromPaths(
+		NamePath{"西藏自治区", "拉萨市"},
+	)
+}
+
+func TestMatchFromText_RegionAliases_NoOptsNoMatch(t *testing.T) {
+	vocab := NewVocabularyFromPaths(NamePath{"新疆维吾尔自治区"})
+	got := vocab.MatchFromText("新疆")
+	if got.Matched {
+		t.Fatalf("without region aliases 新疆 should not match 新疆维吾尔自治区, got %+v", got)
+	}
+}
+
+func TestMatchFromText_WithDefaultRegionAliases_Xinjiang(t *testing.T) {
+	got := xinjiangVocab().MatchFromText(
+		"新疆乌鲁木齐市天山区",
+		MatchOpts().WithDefaultRegionAliases(),
+	)
+	want := NamePath{"新疆维吾尔自治区", "乌鲁木齐市", "天山区"}
+	if !got.Matched || !reflect.DeepEqual(got.Path, want) {
+		t.Fatalf("got %+v, want Path %v", got, want)
+	}
+}
+
+func TestMatchFromText_WithDefaultRegionAliases_Tibet(t *testing.T) {
+	got := tibetVocab().MatchFromText(
+		"西藏拉萨市",
+		MatchOpts().WithDefaultRegionAliases(),
+	)
+	want := NamePath{"西藏自治区", "拉萨市"}
+	if !got.Matched || !reflect.DeepEqual(got.Path, want) {
+		t.Fatalf("got %+v, want Path %v", got, want)
+	}
+}
+
+func TestMatchFromText_WithDefaultRegionAliases_ExistingCityMatch(t *testing.T) {
+	got := regionVocab().MatchFromText(
+		"深圳市南山区科技园",
+		MatchOpts().WithDefaultRegionAliases(),
+	)
+	want := NamePath{"广东省", "深圳"}
+	if !got.Matched || !reflect.DeepEqual(got.Path, want) {
+		t.Fatalf("got %+v, want Path %v", got, want)
+	}
+}
+
+func TestMatchFromText_NameAliases_CustomOnly(t *testing.T) {
+	vocab := NewVocabularyFromPaths(
+		NamePath{"新疆维吾尔自治区", "乌鲁木齐市"},
+	)
+	got := vocab.MatchFromText(
+		"新疆乌鲁木齐市",
+		MatchOpts().NameAliases(map[string][]string{
+			"新疆维吾尔自治区": {"新疆"},
+		}),
+	)
+	want := NamePath{"新疆维吾尔自治区", "乌鲁木齐市"}
+	if !got.Matched || !reflect.DeepEqual(got.Path, want) {
+		t.Fatalf("got %+v, want Path %v", got, want)
+	}
+}
+
+func TestMatchFromText_NameAliases_CustomOnly2(t *testing.T) {
+	vocab := NewVocabularyFromPaths(
+		NamePath{"新疆", "乌鲁木齐市"},
+	)
+	got := vocab.MatchFromText(
+		"新疆维吾尔自治区乌鲁木齐市",
+		MatchOpts().NameAliases(map[string][]string{
+			"新疆维吾尔自治区": {"新疆"},
+		}),
+	)
+	want := NamePath{"新疆", "乌鲁木齐市"}
+	if !got.Matched || !reflect.DeepEqual(got.Path, want) {
+		t.Fatalf("got %+v, want Path %v", got, want)
+	}
+}
+
+func TestMatchFromText_WithDefaultRegionAliases_CategoryUnaffected(t *testing.T) {
+	vocab := NewVocabularyFromPaths(
+		NamePath{"服饰", "运动鞋", "跑步鞋"},
+		NamePath{"服饰", "运动鞋", "篮球鞋"},
+	)
+	got := vocab.MatchFromText(
+		"男士运动跑步鞋",
+		MatchOpts().WithDefaultRegionAliases(),
+	)
+	want := NamePath{"服饰", "运动鞋", "跑步鞋"}
+	if !reflect.DeepEqual(got.Path, want) {
+		t.Fatalf("Path = %v, want %v", got.Path, want)
+	}
+}
+
+func TestMatchFromText_DefaultPlusCustomNameAliases(t *testing.T) {
+	vocab := NewVocabularyFromPaths(
+		NamePath{"广东省", "深圳市"},
+	)
+	got := vocab.MatchFromText(
+		"鹏城南山区",
+		MatchOpts().WithDefaultRegionAliases().NameAliases(map[string][]string{
+			"深圳市": {"鹏城"},
+		}),
+	)
+	want := NamePath{"广东省", "深圳市"}
+	if !got.Matched || !reflect.DeepEqual(got.Path, want) {
+		t.Fatalf("got %+v, want Path %v", got, want)
+	}
+}

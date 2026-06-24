@@ -70,9 +70,21 @@ func (v *Vocabulary) matchedNodeID(chainID string) string {
 
 // matchOpts 配置 MatchFromText 的匹配规则；通过 MatchOpts() 获取默认值后链式修改。
 type matchOpts struct {
-	minMatchLen     int
-	minOverlap      int
-	maxEditDistance int
+	minMatchLen        int
+	minOverlap         int
+	maxEditDistance    int
+	nameAliases        map[string][]string
+	stripAdminSuffixes bool
+}
+
+// aliasConfig 控制 scoreChain 是否对节点名启用别名匹配。
+type aliasConfig struct {
+	nameAliases        map[string][]string
+	stripAdminSuffixes bool
+}
+
+func (a aliasConfig) enabled() bool {
+	return a.nameAliases != nil || a.stripAdminSuffixes
 }
 
 // MatchOpts 返回默认匹配配置：MinMatchLen=2，MinOverlap=2，MaxEditDistance=1。
@@ -100,6 +112,48 @@ func (o *matchOpts) MaxEditDistance(n int) *matchOpts {
 func (o *matchOpts) MinOverlap(n int) *matchOpts {
 	o.minOverlap = n
 	return o
+}
+
+// WithDefaultRegionAliases 合并内建中国行政区划别名，并启用后缀剥离（省市区县自治区等）。
+func (o *matchOpts) WithDefaultRegionAliases() *matchOpts {
+	o.nameAliases = mergeAliasMap(o.nameAliases, DefaultRegionNameAliases())
+	o.stripAdminSuffixes = true
+	return o
+}
+
+// NameAliases 合并自定义节点名 → 额外匹配项映射；nil 时忽略。
+// 与 WithDefaultRegionAliases 联用时，同 key 下自定义项追加在默认项之后并去重。
+func (o *matchOpts) NameAliases(m map[string][]string) *matchOpts {
+	if m != nil {
+		o.nameAliases = mergeAliasMap(o.nameAliases, m)
+	}
+	return o
+}
+
+func (o *matchOpts) aliasConfig() aliasConfig {
+	return aliasConfig{
+		nameAliases:        o.nameAliases,
+		stripAdminSuffixes: o.stripAdminSuffixes,
+	}
+}
+
+func matchCandidatesForName(name string, aliases aliasConfig) []string {
+	if !aliases.enabled() {
+		return []string{name}
+	}
+
+	candidates := []string{name}
+	if aliases.nameAliases != nil {
+		if extra, ok := aliases.nameAliases[name]; ok {
+			candidates = append(candidates, extra...)
+		}
+	}
+	if aliases.stripAdminSuffixes {
+		candidates = append(candidates, adminSuffixAliases(name)...)
+	}
+	candidates = dedupeStrings(candidates)
+	sortNamesByRuneDesc(candidates)
+	return candidates
 }
 
 // NewVocabulary 从 DB 扁平节点列表构建词表。
@@ -190,12 +244,13 @@ type chainScoreResult struct {
 }
 
 // scoreChain 对一条关系链逐节点计分。
-func scoreChain(text string, path []string, weights []int, rules matchRules) chainScoreResult {
+func scoreChain(text string, path []string, weights []int, rules matchRules, aliases aliasConfig) chainScoreResult {
 	var res chainScoreResult
 	bestNodeScore := 0
 
 	for i, name := range path {
-		_, kind, ok := matchBest(text, []string{name}, rules)
+		candidates := matchCandidatesForName(name, aliases)
+		_, kind, ok := matchBest(text, candidates, rules)
 		if !ok {
 			continue
 		}
@@ -353,6 +408,7 @@ func (v *Vocabulary) MatchFromText(text string, opts ...*matchOpts) MatchResult 
 		minOverlap:      o.minOverlap,
 		maxEditDistance: o.maxEditDistance,
 	}
+	aliases := o.aliasConfig()
 
 	var (
 		found         bool
@@ -365,7 +421,7 @@ func (v *Vocabulary) MatchFromText(text string, opts ...*matchOpts) MatchResult 
 	)
 
 	for _, c := range v.chains {
-		scored := scoreChain(text, c.path, c.weights, rules)
+		scored := scoreChain(text, c.path, c.weights, rules, aliases)
 		if scored.total == 0 {
 			continue
 		}
