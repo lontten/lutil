@@ -7,7 +7,7 @@
 // 关系链词表提取（对每条链逐节点加权计分）：
 //
 //	vocab := fuzzutil.NewVocabulary(nodes)
-//	result := vocab.ExtractFromText("深圳市南山区")
+//	result := vocab.MatchFromText("深圳市南山区")
 package fuzzutil
 
 import (

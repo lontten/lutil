@@ -2,18 +2,18 @@ package fuzzutil
 
 import "strconv"
 
-// Node 表示词表中的一个节点，字段与 DB 表行一一对应：
+// VocabNode 表示词表中的一个节点，字段与 DB 表行一一对应：
 // id → ID，parent_id → ParentID，name → Name。
 // ParentID 指向上级节点 ID；词表中不存在该 ID 时，构建关系链在此停止。
 // ID 使用 string，兼容数字主键（"1"）与未来 UUID。
-type Node struct {
+type VocabNode struct {
 	ID       string
 	ParentID string
 	Name     string
 }
 
-// Path 是一条关系链的 name 序列（链顶 → 终点），例如 {"广东省", "深圳"}。
-type Path []string
+// NamePath 是一条关系链的 name 序列（链顶 → 终点），例如 {"广东省", "深圳"}。
+type NamePath []string
 
 // TreeNode 是嵌套树结构的节点，用于 JSON 配置等场景。
 // ID 为空字符串时由 NewVocabularyFromTree 自动分配合成 ID。
@@ -35,18 +35,13 @@ func (k MatchKind) String() string {
 	}
 }
 
-// ExtractResult 是 ExtractFromText 的返回结果。
-// Matched 为 false 时，MatchedNodeID、Kind、Path 均为零值。
-type ExtractResult struct {
+// MatchResult 是 MatchFromText 的返回结果。
+// Matched 为 false 时，MatchedNodeID、MatchKind、Path 均为零值。
+type MatchResult struct {
 	Matched       bool
 	MatchedNodeID string
-	Kind          MatchKind
-	Path          []string
-}
-
-// Ancestors 返回关系链 name 序列，语义同 Path。
-func (r ExtractResult) Ancestors() []string {
-	return r.Path
+	MatchKind     MatchKind
+	Path          NamePath
 }
 
 // chain 是一条可匹配的关系链及其预计算权重（权重之和为 100）。
@@ -56,49 +51,49 @@ type chain struct {
 	weights []int
 }
 
-// Vocabulary 是预编译的关系链词表，初始化一次后可反复调用 ExtractFromText。
+// Vocabulary 是预编译的关系链词表，初始化一次后可反复调用 MatchFromText。
 type Vocabulary struct {
 	chains []chain
 }
 
-type extractConfig struct {
+type matchConfig struct {
 	minMatchLen     int
 	minOverlap      int
 	maxEditDistance int
 }
 
-// ExtractOption 配置 ExtractFromText 的匹配规则。
-type ExtractOption func(*extractConfig)
+// MatchOption 配置 MatchFromText 的匹配规则。
+type MatchOption func(*matchConfig)
 
 // WithMinMatchLen 设置候选词最少 rune 数，低于此长度不算命中。默认 2。
-func WithMinMatchLen(n int) ExtractOption {
-	return func(c *extractConfig) {
+func WithMinMatchLen(n int) MatchOption {
+	return func(c *matchConfig) {
 		c.minMatchLen = n
 	}
 }
 
 // WithMaxEditDistance 设置允许的最大编辑距离；0 表示仅子串包含。默认 1。
-func WithMaxEditDistance(n int) ExtractOption {
-	return func(c *extractConfig) {
+func WithMaxEditDistance(n int) MatchOption {
+	return func(c *matchConfig) {
 		c.maxEditDistance = n
 	}
 }
 
 // WithMinOverlap 设置 text 与候选至少相同的 rune 数（多重集，不要求连续）。默认 2。
-func WithMinOverlap(n int) ExtractOption {
-	return func(c *extractConfig) {
+func WithMinOverlap(n int) MatchOption {
+	return func(c *matchConfig) {
 		c.minOverlap = n
 	}
 }
 
 // NewVocabulary 从 DB 扁平节点列表构建词表。
 // 每个节点对应一条关系链；成环的节点会被跳过。
-func NewVocabulary(nodes []Node) *Vocabulary {
+func NewVocabulary(nodes []VocabNode) *Vocabulary {
 	if nodes == nil {
-		nodes = []Node{}
+		nodes = []VocabNode{}
 	}
 
-	byID := make(map[string]Node, len(nodes))
+	byID := make(map[string]VocabNode, len(nodes))
 	for _, n := range nodes {
 		byID[n.ID] = n
 	}
@@ -122,7 +117,7 @@ func NewVocabulary(nodes []Node) *Vocabulary {
 }
 
 // buildPath 沿 ParentID 向上追溯，返回链顶→终点的 name 链；仅成环返回 false。
-func buildPath(id string, byID map[string]Node) ([]string, bool) {
+func buildPath(id string, byID map[string]VocabNode) ([]string, bool) {
 	var names []string
 	visited := make(map[string]bool)
 
@@ -238,9 +233,9 @@ func betterChain(total int, tailKind MatchKind, pathLen, tailRuneLen int, bestTo
 }
 
 // NewVocabularyFromPaths 从路径列表构建词表（测试与手工配置用）。
-// 每条 Path 对应一条关系链（终点为该路径最后一段）；共享前缀自动合并节点。
-func NewVocabularyFromPaths(paths ...Path) *Vocabulary {
-	var nodes []Node
+// 每条 NamePath 对应一条关系链（终点为该路径最后一段）；共享前缀自动合并节点。
+func NewVocabularyFromPaths(paths ...NamePath) *Vocabulary {
+	var nodes []VocabNode
 	nextID := int64(1)
 	seen := make(map[string]string)
 	endpointIDs := make([]string, 0, len(paths))
@@ -255,7 +250,7 @@ func NewVocabularyFromPaths(paths ...Path) *Vocabulary {
 				id = strconv.FormatInt(nextID, 10)
 				nextID++
 				seen[key] = id
-				nodes = append(nodes, Node{
+				nodes = append(nodes, VocabNode{
 					ID:       id,
 					ParentID: parentID,
 					Name:     seg,
@@ -289,7 +284,7 @@ func nodeKey(parentID, name string) string {
 
 // NewVocabularyFromTree 从嵌套树构建词表。
 func NewVocabularyFromTree(roots ...TreeNode) *Vocabulary {
-	var nodes []Node
+	var nodes []VocabNode
 	nextID := int64(1)
 	var walk func(children []TreeNode, parentID string)
 	walk = func(children []TreeNode, parentID string) {
@@ -301,7 +296,7 @@ func NewVocabularyFromTree(roots ...TreeNode) *Vocabulary {
 			} else {
 				bumpNextID(&nextID, id)
 			}
-			nodes = append(nodes, Node{
+			nodes = append(nodes, VocabNode{
 				ID:       id,
 				ParentID: parentID,
 				Name:     child.Name,
@@ -322,11 +317,11 @@ func bumpNextID(nextID *int64, id string) {
 	}
 }
 
-// ExtractFromText 从 text 中提取得分最高的关系链终点节点。
+// MatchFromText 从 text 中匹配得分最高的关系链终点节点。
 // 对每条链的每个节点独立匹配并加权求和（链内权重之和为 100，链尾最重）。
 // 默认 MinMatchLen=2，MinOverlap=2，MaxEditDistance=1。
-func (v *Vocabulary) ExtractFromText(text string, opts ...ExtractOption) ExtractResult {
-	cfg := extractConfig{
+func (v *Vocabulary) MatchFromText(text string, opts ...MatchOption) MatchResult {
+	cfg := matchConfig{
 		minMatchLen:     2,
 		minOverlap:      2,
 		maxEditDistance: 1,
@@ -374,15 +369,15 @@ func (v *Vocabulary) ExtractFromText(text string, opts ...ExtractOption) Extract
 	}
 
 	if !found {
-		return ExtractResult{Kind: MatchNone}
+		return MatchResult{MatchKind: MatchNone}
 	}
 
-	path := make([]string, len(bestChain.path))
+	path := make(NamePath, len(bestChain.path))
 	copy(path, bestChain.path)
-	return ExtractResult{
+	return MatchResult{
 		Matched:       true,
 		MatchedNodeID: bestChain.id,
-		Kind:          bestKind,
+		MatchKind:     bestKind,
 		Path:          path,
 	}
 }
