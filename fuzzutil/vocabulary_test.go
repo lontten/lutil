@@ -46,6 +46,47 @@ func TestNewVocabularyFromTree(t *testing.T) {
 	if !got.Matched || got.Path[len(got.Path)-1] != "广州" {
 		t.Fatalf("unexpected result: %+v", got)
 	}
+	if got.MatchedNodeID != "" {
+		t.Fatalf("MatchedNodeID = %q, want empty for auto-assigned IDs", got.MatchedNodeID)
+	}
+}
+
+func TestMatchFromText_FromPaths_NoNodeID(t *testing.T) {
+	got := regionVocab().MatchFromText("深圳市南山区科技园")
+	if !got.Matched {
+		t.Fatal("expected match")
+	}
+	if got.MatchedNodeID != "" {
+		t.Fatalf("MatchedNodeID = %q, want empty for FromPaths", got.MatchedNodeID)
+	}
+	if len(got.Path) == 0 {
+		t.Fatal("Path should be non-empty")
+	}
+}
+
+func TestMatchFromText_FromTree_WithUserID(t *testing.T) {
+	vocab := NewVocabularyFromTree(TreeNode{
+		ID:   "province-1",
+		Name: "广东省",
+		Children: []TreeNode{
+			{Name: "深圳"},
+		},
+	})
+	got := vocab.MatchFromText("深圳市")
+	if got.MatchedNodeID != "" {
+		t.Fatalf("synthetic child ID: MatchedNodeID = %q, want empty", got.MatchedNodeID)
+	}
+
+	vocab2 := NewVocabularyFromTree(TreeNode{
+		Name: "广东省",
+		Children: []TreeNode{
+			{ID: "city-sz", Name: "深圳"},
+		},
+	})
+	got2 := vocab2.MatchFromText("深圳市")
+	if got2.MatchedNodeID != "city-sz" {
+		t.Fatalf("user-provided ID: MatchedNodeID = %q, want city-sz", got2.MatchedNodeID)
+	}
 }
 
 func TestMatchFromText(t *testing.T) {

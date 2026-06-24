@@ -16,7 +16,8 @@ type VocabNode struct {
 type NamePath []string
 
 // TreeNode 是嵌套树结构的节点，用于 JSON 配置等场景。
-// ID 为空字符串时由 NewVocabularyFromTree 自动分配合成 ID。
+// ID 为空字符串时由 NewVocabularyFromTree 自动分配合成 ID；
+// 自动分配的 ID 不会出现在 MatchResult.MatchedNodeID 中。
 type TreeNode struct {
 	ID       string
 	Name     string
@@ -38,7 +39,10 @@ func (k MatchKind) String() string {
 // MatchResult 是 MatchFromText 的返回结果。
 // Matched 为 false 时，MatchedNodeID、MatchKind、Path 均为零值。
 type MatchResult struct {
-	Matched       bool
+	Matched bool
+	// MatchedNodeID 为命中终点节点的 ID，是否非空取决于词表构建方式：
+	// NewVocabulary(VocabNode) 时为业务主键；NewVocabularyFromPaths 时始终为空（请用 Path）；
+	// NewVocabularyFromTree 时仅当终点 ID 由调用方显式提供时非空。
 	MatchedNodeID string
 	MatchKind     MatchKind
 	Path          NamePath
@@ -53,7 +57,15 @@ type chain struct {
 
 // Vocabulary 是预编译的关系链词表，初始化一次后可反复调用 MatchFromText。
 type Vocabulary struct {
-	chains []chain
+	chains       []chain
+	exposableIDs map[string]bool // nil 表示全部可暴露；非 nil 时仅 map 中的 ID 可写入 MatchedNodeID
+}
+
+func (v *Vocabulary) matchedNodeID(chainID string) string {
+	if v.exposableIDs != nil && !v.exposableIDs[chainID] {
+		return ""
+	}
+	return chainID
 }
 
 type matchConfig struct {
@@ -275,7 +287,7 @@ func NewVocabularyFromPaths(paths ...NamePath) *Vocabulary {
 			chains = append(chains, c)
 		}
 	}
-	return &Vocabulary{chains: chains}
+	return &Vocabulary{chains: chains, exposableIDs: map[string]bool{}}
 }
 
 func nodeKey(parentID, name string) string {
@@ -285,6 +297,7 @@ func nodeKey(parentID, name string) string {
 // NewVocabularyFromTree 从嵌套树构建词表。
 func NewVocabularyFromTree(roots ...TreeNode) *Vocabulary {
 	var nodes []VocabNode
+	exposable := make(map[string]bool)
 	nextID := int64(1)
 	var walk func(children []TreeNode, parentID string)
 	walk = func(children []TreeNode, parentID string) {
@@ -295,6 +308,7 @@ func NewVocabularyFromTree(roots ...TreeNode) *Vocabulary {
 				nextID++
 			} else {
 				bumpNextID(&nextID, id)
+				exposable[id] = true
 			}
 			nodes = append(nodes, VocabNode{
 				ID:       id,
@@ -307,7 +321,8 @@ func NewVocabularyFromTree(roots ...TreeNode) *Vocabulary {
 		}
 	}
 	walk(roots, "")
-	return NewVocabulary(nodes)
+	full := NewVocabulary(nodes)
+	return &Vocabulary{chains: full.chains, exposableIDs: exposable}
 }
 
 // bumpNextID 在用户提供数字字符串 ID 时，推进自增计数器避免冲突。
@@ -376,7 +391,7 @@ func (v *Vocabulary) MatchFromText(text string, opts ...MatchOption) MatchResult
 	copy(path, bestChain.path)
 	return MatchResult{
 		Matched:       true,
-		MatchedNodeID: bestChain.id,
+		MatchedNodeID: v.matchedNodeID(bestChain.id),
 		MatchKind:     bestKind,
 		Path:          path,
 	}
