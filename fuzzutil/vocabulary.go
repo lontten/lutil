@@ -68,34 +68,38 @@ func (v *Vocabulary) matchedNodeID(chainID string) string {
 	return chainID
 }
 
-type matchConfig struct {
+// matchOpts 配置 MatchFromText 的匹配规则；通过 MatchOpts() 获取默认值后链式修改。
+type matchOpts struct {
 	minMatchLen     int
 	minOverlap      int
 	maxEditDistance int
 }
 
-// MatchOption 配置 MatchFromText 的匹配规则。
-type MatchOption func(*matchConfig)
-
-// WithMinMatchLen 设置候选词最少 rune 数，低于此长度不算命中。默认 2。
-func WithMinMatchLen(n int) MatchOption {
-	return func(c *matchConfig) {
-		c.minMatchLen = n
+// MatchOpts 返回默认匹配配置：MinMatchLen=2，MinOverlap=2，MaxEditDistance=1。
+func MatchOpts() *matchOpts {
+	return &matchOpts{
+		minMatchLen:     2,
+		minOverlap:      2,
+		maxEditDistance: 1,
 	}
 }
 
-// WithMaxEditDistance 设置允许的最大编辑距离；0 表示仅子串包含。默认 1。
-func WithMaxEditDistance(n int) MatchOption {
-	return func(c *matchConfig) {
-		c.maxEditDistance = n
-	}
+// MinMatchLen 设置候选词最少 rune 数，低于此长度不算命中。默认 2。
+func (o *matchOpts) MinMatchLen(n int) *matchOpts {
+	o.minMatchLen = n
+	return o
 }
 
-// WithMinOverlap 设置 text 与候选至少相同的 rune 数（多重集，不要求连续）。默认 2。
-func WithMinOverlap(n int) MatchOption {
-	return func(c *matchConfig) {
-		c.minOverlap = n
-	}
+// MaxEditDistance 设置允许的最大编辑距离；0 表示仅子串包含。默认 1。
+func (o *matchOpts) MaxEditDistance(n int) *matchOpts {
+	o.maxEditDistance = n
+	return o
+}
+
+// MinOverlap 设置 text 与候选至少相同的 rune 数（多重集，不要求连续）。默认 2。
+func (o *matchOpts) MinOverlap(n int) *matchOpts {
+	o.minOverlap = n
+	return o
 }
 
 // NewVocabulary 从 DB 扁平节点列表构建词表。
@@ -335,20 +339,19 @@ func bumpNextID(nextID *int64, id string) {
 // MatchFromText 从 text 中匹配得分最高的关系链终点节点。
 // 对每条链的每个节点独立匹配并加权求和（链内权重之和为 100，链尾最重）。
 // 默认 MinMatchLen=2，MinOverlap=2，MaxEditDistance=1。
-func (v *Vocabulary) MatchFromText(text string, opts ...MatchOption) MatchResult {
-	cfg := matchConfig{
-		minMatchLen:     2,
-		minOverlap:      2,
-		maxEditDistance: 1,
+func (v *Vocabulary) MatchFromText(text string, opts ...*matchOpts) MatchResult {
+	var o *matchOpts
+	if len(opts) > 0 {
+		o = opts[0]
 	}
-	for _, opt := range opts {
-		opt(&cfg)
+	if o == nil {
+		o = MatchOpts()
 	}
 
 	rules := matchRules{
-		minMatchLen:     cfg.minMatchLen,
-		minOverlap:      cfg.minOverlap,
-		maxEditDistance: cfg.maxEditDistance,
+		minMatchLen:     o.minMatchLen,
+		minOverlap:      o.minOverlap,
+		maxEditDistance: o.maxEditDistance,
 	}
 
 	var (

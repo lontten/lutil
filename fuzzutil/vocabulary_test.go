@@ -98,7 +98,7 @@ func TestMatchFromText(t *testing.T) {
 		matched  bool
 		wantPath NamePath
 		wantKind MatchKind
-		opts     []MatchOption
+		opts     *matchOpts
 	}{
 		{
 			name:     "省市-市命中",
@@ -130,13 +130,13 @@ func TestMatchFromText(t *testing.T) {
 			name:    "MinMatchLen 单字不命中",
 			text:    "京",
 			matched: false,
-			opts:    []MatchOption{WithMinMatchLen(2)},
+			opts:    MatchOpts().MinMatchLen(2),
 		},
 		{
 			name:    "MaxEditDistance=0 无包含则不命中",
 			text:    "江苏",
 			matched: false,
-			opts:    []MatchOption{WithMaxEditDistance(0)},
+			opts:    MatchOpts().MaxEditDistance(0),
 		},
 		{
 			name:     "成都",
@@ -149,7 +149,7 @@ func TestMatchFromText(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := vocab.MatchFromText(tt.text, tt.opts...)
+			got := vocab.MatchFromText(tt.text, tt.opts)
 			if got.Matched != tt.matched {
 				t.Fatalf("Matched = %v, want %v (result=%+v)", got.Matched, tt.matched, got)
 			}
