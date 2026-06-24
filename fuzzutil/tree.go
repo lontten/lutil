@@ -63,6 +63,7 @@ type Vocabulary struct {
 
 type extractConfig struct {
 	minMatchLen     int
+	minOverlap      int
 	maxEditDistance int
 }
 
@@ -80,6 +81,13 @@ func WithMinMatchLen(n int) ExtractOption {
 func WithMaxEditDistance(n int) ExtractOption {
 	return func(c *extractConfig) {
 		c.maxEditDistance = n
+	}
+}
+
+// WithMinOverlap 设置 text 与候选至少相同的 rune 数（多重集，不要求连续）。默认 2。
+func WithMinOverlap(n int) ExtractOption {
+	return func(c *extractConfig) {
+		c.minOverlap = n
 	}
 }
 
@@ -316,10 +324,11 @@ func bumpNextID(nextID *int64, id string) {
 
 // ExtractFromText 从 text 中提取得分最高的关系链终点节点。
 // 对每条链的每个节点独立匹配并加权求和（链内权重之和为 100，链尾最重）。
-// 默认 MinMatchLen=2，MaxEditDistance=1。
+// 默认 MinMatchLen=2，MinOverlap=2，MaxEditDistance=1。
 func (v *Vocabulary) ExtractFromText(text string, opts ...ExtractOption) ExtractResult {
 	cfg := extractConfig{
 		minMatchLen:     2,
+		minOverlap:      2,
 		maxEditDistance: 1,
 	}
 	for _, opt := range opts {
@@ -328,6 +337,7 @@ func (v *Vocabulary) ExtractFromText(text string, opts ...ExtractOption) Extract
 
 	rules := matchRules{
 		minMatchLen:     cfg.minMatchLen,
+		minOverlap:      cfg.minOverlap,
 		maxEditDistance: cfg.maxEditDistance,
 	}
 

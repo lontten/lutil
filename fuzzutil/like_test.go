@@ -1,8 +1,6 @@
 package fuzzutil
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestLike(t *testing.T) {
 	tests := []struct {
@@ -47,6 +45,18 @@ func TestLike(t *testing.T) {
 			list: []string{"北京市", "上海", "广东省", "深圳"},
 			want: "上海",
 		},
+		{
+			name: "无相同字不命中",
+			key:  "abc",
+			list: []string{"xyz"},
+			want: "",
+		},
+		{
+			name: "至少一字相同可命中",
+			key:  "abc",
+			list: []string{"axc"},
+			want: "axc",
+		},
 	}
 
 	for _, tt := range tests {
@@ -70,5 +80,52 @@ func TestMatchBest_Rules(t *testing.T) {
 	_, _, ok = matchBest("江苏", []string{"江苏省"}, onlyContain)
 	if ok {
 		t.Error("maxEditDistance=0 时不应通过编辑距离命中")
+	}
+
+	_, _, ok = matchBest("江苏", []string{"江苏省"}, matchRules{
+		minMatchLen: 2, minOverlap: 2, maxEditDistance: 1,
+	})
+	if !ok {
+		t.Error("minOverlap=2 时江苏/江苏省 应模糊命中")
+	}
+
+	_, _, ok = matchBest("哈哈", []string{"江苏省"}, matchRules{
+		minMatchLen: 2, minOverlap: 2, maxEditDistance: -1,
+	})
+	if ok {
+		t.Error("minOverlap=2 时哈哈/江苏省 无相同字不应命中")
+	}
+
+	_, _, ok = matchBest("abc", []string{"xyz"}, matchRules{
+		minMatchLen: 1, minOverlap: 1, maxEditDistance: 1,
+	})
+	if ok {
+		t.Error("minOverlap=1 时 abc/xyz 无相同字不应命中")
+	}
+
+	term, kind, ok := matchBest("深圳市", []string{"深圳"}, matchRules{
+		minMatchLen: 2, minOverlap: 2, maxEditDistance: 0,
+	})
+	if !ok || term != "深圳" || kind != MatchContain {
+		t.Errorf("子串包含+minOverlap=2: got %q %v %v", term, kind, ok)
+	}
+}
+
+func TestCommonRuneOverlap(t *testing.T) {
+	tests := []struct {
+		a, b string
+		want int
+	}{
+		{"哈哈", "江苏省", 0},
+		{"江苏", "江苏省", 2},
+		{"哈哈", "哈哈啊", 2},
+		{"aab", "aba", 3},
+		{"abc", "xyz", 0},
+	}
+	for _, tt := range tests {
+		got := commonRuneOverlap([]rune(tt.a), []rune(tt.b))
+		if got != tt.want {
+			t.Errorf("commonRuneOverlap(%q, %q) = %d, want %d", tt.a, tt.b, got, tt.want)
+		}
 	}
 }

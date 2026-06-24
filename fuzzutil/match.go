@@ -26,20 +26,23 @@ const (
 	MatchFuzzy
 )
 
-// matchRules 控制 matchBest 的匹配规则。
+// matchRules 控制 matchBest 的匹配规则；三项须同时满足（AND）才算命中。
 type matchRules struct {
 	// minMatchLen 候选词至少需要的 rune 数，低于此长度的候选不参与匹配。
 	minMatchLen int
+	// minOverlap text 与候选按 rune 多重集计相同字数下限；0 表示不检查。
+	// 仅当 text 非空时生效。
+	minOverlap int
 	// maxEditDistance 允许的最大编辑距离；0 表示禁用编辑距离阶段（仅子串包含）；
-	// -1 表示不限制距离（Like 使用，始终返回编辑距离最小的候选）。
+	// -1 表示不限制距离（Like 使用，在 minOverlap 等约束下返回编辑距离最小的候选）。
 	maxEditDistance int
 }
 
 // matchBest 从 candidates 中找出与 text 最匹配的一项。
 // candidates 建议已按 rune 长度降序排列，同阶段多命中时仍会在结果中取最长者。
 //
-// 两阶段策略：
-//  1. 子串包含：text 包含 candidate，且 len(candidate) >= minMatchLen
+// 每个候选须同时满足 minMatchLen、minOverlap（>0 时）及阶段匹配条件：
+//  1. 子串包含：text 包含 candidate
 //  2. 编辑距离：仅当 maxEditDistance != 0 且无包含命中时执行
 func matchBest(text string, candidates []string, rules matchRules) (term string, kind MatchKind, ok bool) {
 	if len(candidates) == 0 {
@@ -57,7 +60,7 @@ func matchBest(text string, candidates []string, rules matchRules) (term string,
 	var containHits []string
 	for _, c := range candidates {
 		cRunes := []rune(c)
-		if len(cRunes) < rules.minMatchLen {
+		if !candidateEligible(textRunes, cRunes, rules) {
 			continue
 		}
 		if containsRunes(textRunes, cRunes) {
@@ -87,7 +90,7 @@ func matchBest(text string, candidates []string, rules matchRules) (term string,
 
 	for _, c := range candidates {
 		cRunes := []rune(c)
-		if len(cRunes) < rules.minMatchLen {
+		if !candidateEligible(textRunes, cRunes, rules) {
 			continue
 		}
 		dist := levenshteinDistance(textRunes, cRunes)
@@ -106,6 +109,40 @@ func matchBest(text string, candidates []string, rules matchRules) (term string,
 		return bestTerm, MatchFuzzy, true
 	}
 	return "", MatchNone, false
+}
+
+// candidateEligible 检查候选是否通过 minMatchLen 与 minOverlap 前置条件。
+func candidateEligible(textRunes, cRunes []rune, rules matchRules) bool {
+	if len(cRunes) < rules.minMatchLen {
+		return false
+	}
+	if rules.minOverlap > 0 && len(textRunes) > 0 &&
+		commonRuneOverlap(textRunes, cRunes) < rules.minOverlap {
+		return false
+	}
+	return true
+}
+
+// commonRuneOverlap 按 rune 多重集统计两串相同字数（不要求连续）。
+func commonRuneOverlap(a, b []rune) int {
+	countA := make(map[rune]int, len(a))
+	for _, r := range a {
+		countA[r]++
+	}
+	countB := make(map[rune]int, len(b))
+	for _, r := range b {
+		countB[r]++
+	}
+	total := 0
+	for r, ca := range countA {
+		cb := countB[r]
+		if cb < ca {
+			total += cb
+		} else {
+			total += ca
+		}
+	}
+	return total
 }
 
 // containsRunes 检查 s 是否包含连续子串 t（非子序列）。
