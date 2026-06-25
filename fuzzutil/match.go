@@ -7,17 +7,17 @@
 // 关系链词表（显式 path，终点由 path 列表决定）：
 //
 //	vocab := fuzzutil.NewVocabulary(fuzzutil.NamePath{"广东省", "深圳"})
-//	result := vocab.MatchFromText("深圳市南山区")
+//	result := vocab.Match("深圳市南山区")
 //
 // DB 扁平 node / 嵌套 tree（必填 endpoints 约束）：
 //
 //	vocab := fuzzutil.NewVocabularyFromTree(root)
 //	vocab := fuzzutil.NewVocabularyFromNodes(nodes, fuzzutil.EndpointOpts().AtDepths(2))
-//	result := vocab.MatchFromText(text, fuzzutil.MatchOpts().WithDefaultRegionAliases())
+//	result := vocab.Match(text, fuzzutil.MatchOpts().WithDefaultRegionAliases())
 //
 // 行政区划地址匹配（简称/后缀省略）：
 //
-//	result := vocab.MatchFromText(addr, fuzzutil.MatchOpts().WithDefaultRegionAliases())
+//	result := vocab.Match(addr, fuzzutil.MatchOpts().WithDefaultRegionAliases())
 package fuzzutil
 
 import (

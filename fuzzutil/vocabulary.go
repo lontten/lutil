@@ -36,7 +36,7 @@ func (k MatchKind) String() string {
 	}
 }
 
-// MatchResult 是 MatchFromText 的返回结果。
+// MatchResult 是 Match 的返回结果。
 // Matched 为 false 时，MatchedNodeID、MatchKind、Path 均为零值。
 type MatchResult struct {
 	Matched bool
@@ -56,7 +56,7 @@ type chain struct {
 	weights []int
 }
 
-// Vocabulary 是预编译的关系链词表，初始化一次后可反复调用 MatchFromText。
+// Vocabulary 是预编译的关系链词表，初始化一次后可反复调用 Match。
 type Vocabulary struct {
 	chains       []chain
 	exposableIDs map[string]bool // nil 表示全部可暴露；非 nil 时仅 map 中的 ID 可写入 MatchedNodeID
@@ -69,7 +69,7 @@ func (v *Vocabulary) matchedNodeID(chainID string) string {
 	return chainID
 }
 
-// matchOpts 配置 MatchFromText 的匹配规则；通过 MatchOpts() 获取默认值后链式修改。
+// matchOpts 配置 Match 的匹配规则；通过 MatchOpts() 获取默认值后链式修改。
 type matchOpts struct {
 	minMatchLen        int
 	minOverlap         int
@@ -374,10 +374,10 @@ func bumpNextID(nextID *int64, id string) {
 	}
 }
 
-// MatchFromText 从 text 中匹配得分最高的关系链终点节点。
+// Match 从 text 中匹配得分最高的关系链终点节点。
 // 对每条链的每个节点独立匹配并加权求和（链内权重之和为 100，链尾最重）。
 // 默认 MinMatchLen=2，MinOverlap=2，MaxEditDistance=1。
-func (v *Vocabulary) MatchFromText(text string, opts ...*matchOpts) MatchResult {
+func (v *Vocabulary) Match(text string, opts ...*matchOpts) MatchResult {
 	var o *matchOpts
 	if len(opts) > 0 {
 		o = opts[0]
