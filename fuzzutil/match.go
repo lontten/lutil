@@ -9,6 +9,11 @@
 //	vocab := fuzzutil.NewVocabulary(nodes)
 //	result := vocab.MatchFromText("深圳市南山区")
 //
+// 限制链终点（与 FromPaths 显式 path 语义对齐）：
+//
+//	vocab := fuzzutil.NewVocabulary(nodes, fuzzutil.WithLeafEndpointsOnly())
+//	vocab := fuzzutil.NewVocabularyFromTree(root, fuzzutil.WithEndpointDepths(2, 3))
+//
 // 行政区划地址匹配（简称/后缀省略）：
 //
 //	result := vocab.MatchFromText(addr, fuzzutil.MatchOpts().WithDefaultRegionAliases())

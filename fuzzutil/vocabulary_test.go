@@ -262,6 +262,147 @@ func TestNewVocabularyFromPaths_SharedPrefix(t *testing.T) {
 	}
 }
 
+func linearABCVocabNodes() []VocabNode {
+	return []VocabNode{
+		{ID: "1", ParentID: "", Name: "a"},
+		{ID: "2", ParentID: "1", Name: "b"},
+		{ID: "3", ParentID: "2", Name: "c"},
+	}
+}
+
+func branchABCvocabNodes() []VocabNode {
+	return []VocabNode{
+		{ID: "1", ParentID: "", Name: "a"},
+		{ID: "2", ParentID: "1", Name: "b"},
+		{ID: "3", ParentID: "2", Name: "c"},
+		{ID: "4", ParentID: "1", Name: "d"},
+	}
+}
+
+func vocabChainPaths(v *Vocabulary) []NamePath {
+	paths := make([]NamePath, len(v.chains))
+	for i, c := range v.chains {
+		paths[i] = append(NamePath(nil), c.path...)
+	}
+	return paths
+}
+
+func chainPathsEqual(got, want []NamePath) bool {
+	if len(got) != len(want) {
+		return false
+	}
+	seen := make(map[string]int, len(want))
+	for _, p := range want {
+		seen[pathKey(p)]++
+	}
+	for _, p := range got {
+		k := pathKey(p)
+		if seen[k] == 0 {
+			return false
+		}
+		seen[k]--
+	}
+	return true
+}
+
+func pathKey(p NamePath) string {
+	key := ""
+	for i, s := range p {
+		if i > 0 {
+			key += "|"
+		}
+		key += s
+	}
+	return key
+}
+
+func TestNewVocabulary_DefaultAllEndpoints(t *testing.T) {
+	vocab := NewVocabulary(linearABCVocabNodes())
+	want := []NamePath{
+		{"a"},
+		{"a", "b"},
+		{"a", "b", "c"},
+	}
+	if !chainPathsEqual(vocabChainPaths(vocab), want) {
+		t.Fatalf("chains = %v, want %v", vocabChainPaths(vocab), want)
+	}
+}
+
+func TestNewVocabulary_LeafEndpointsOnly(t *testing.T) {
+	vocab := NewVocabulary(linearABCVocabNodes(), WithLeafEndpointsOnly())
+	want := []NamePath{{"a", "b", "c"}}
+	if !chainPathsEqual(vocabChainPaths(vocab), want) {
+		t.Fatalf("chains = %v, want %v", vocabChainPaths(vocab), want)
+	}
+}
+
+func TestNewVocabulary_LeafEndpointsOnly_Branch(t *testing.T) {
+	vocab := NewVocabulary(branchABCvocabNodes(), WithLeafEndpointsOnly())
+	want := []NamePath{
+		{"a", "b", "c"},
+		{"a", "d"},
+	}
+	if !chainPathsEqual(vocabChainPaths(vocab), want) {
+		t.Fatalf("chains = %v, want %v", vocabChainPaths(vocab), want)
+	}
+}
+
+func TestNewVocabulary_EndpointDepths(t *testing.T) {
+	nodes := linearABCVocabNodes()
+
+	vocabDepth2 := NewVocabulary(nodes, WithEndpointDepths(2))
+	wantDepth2 := []NamePath{{"a", "b"}}
+	if !chainPathsEqual(vocabChainPaths(vocabDepth2), wantDepth2) {
+		t.Fatalf("depth 2: chains = %v, want %v", vocabChainPaths(vocabDepth2), wantDepth2)
+	}
+
+	vocabDepth13 := NewVocabulary(nodes, WithEndpointDepths(1, 3))
+	wantDepth13 := []NamePath{{"a"}, {"a", "b", "c"}}
+	if !chainPathsEqual(vocabChainPaths(vocabDepth13), wantDepth13) {
+		t.Fatalf("depth 1,3: chains = %v, want %v", vocabChainPaths(vocabDepth13), wantDepth13)
+	}
+
+	vocabEmptyDepths := NewVocabulary(nodes, WithEndpointDepths())
+	wantAll := []NamePath{{"a"}, {"a", "b"}, {"a", "b", "c"}}
+	if !chainPathsEqual(vocabChainPaths(vocabEmptyDepths), wantAll) {
+		t.Fatalf("empty depths: chains = %v, want %v", vocabChainPaths(vocabEmptyDepths), wantAll)
+	}
+}
+
+func TestNewVocabularyFromTree_LeafEndpointsOnly(t *testing.T) {
+	root := TreeNode{
+		Name: "a",
+		Children: []TreeNode{{
+			Name: "b",
+			Children: []TreeNode{{
+				Name: "c",
+			}},
+		}},
+	}
+	fromTree := NewVocabularyFromTree(root, WithLeafEndpointsOnly())
+	fromPaths := NewVocabularyFromPaths(NamePath{"a", "b", "c"})
+	if !chainPathsEqual(vocabChainPaths(fromTree), vocabChainPaths(fromPaths)) {
+		t.Fatalf("tree = %v, paths = %v", vocabChainPaths(fromTree), vocabChainPaths(fromPaths))
+	}
+}
+
+func TestNewVocabulary_EndpointDepths_MatchBehavior(t *testing.T) {
+	nodes := []VocabNode{
+		{ID: "1", ParentID: "", Name: "安徽省"},
+		{ID: "2", ParentID: "1", Name: "滁州市"},
+		{ID: "3", ParentID: "2", Name: "天长市"},
+	}
+	vocab := NewVocabulary(nodes, WithEndpointDepths(3))
+	got := vocab.MatchFromText(
+		"安徽省天长市铜城工业园区",
+		MatchOpts().WithDefaultRegionAliases(),
+	)
+	want := NamePath{"安徽省", "滁州市", "天长市"}
+	if !got.Matched || !reflect.DeepEqual(got.Path, want) {
+		t.Fatalf("got %+v, want Path %v", got, want)
+	}
+}
+
 func TestNewVocabulary_UUIDIDs(t *testing.T) {
 	nodes := []VocabNode{
 		{ID: "550e8400-e29b-41d4-a716-446655440000", ParentID: "", Name: "广东省"},
@@ -422,6 +563,21 @@ func TestMatchFromText_NameAliases_CustomOnly2(t *testing.T) {
 		}),
 	)
 	want := NamePath{"新疆", "乌鲁木齐市"}
+	if !got.Matched || !reflect.DeepEqual(got.Path, want) {
+		t.Fatalf("got %+v, want Path %v", got, want)
+	}
+}
+
+func TestMatchFromText_NameAliases_CustomOnly3(t *testing.T) {
+	vocab := NewVocabularyFromPaths(
+		NamePath{"安徽省"},
+		NamePath{"安徽省", "滁州市"},
+		NamePath{"安徽省", "滁州市", "天长市"},
+	)
+	got := vocab.MatchFromText(
+		"安徽省天长市铜城工业园区纬三大道一号",
+	)
+	want := NamePath{"安徽省", "滁州市", "天长市"}
 	if !got.Matched || !reflect.DeepEqual(got.Path, want) {
 		t.Fatalf("got %+v, want Path %v", got, want)
 	}

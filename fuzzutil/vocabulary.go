@@ -157,33 +157,16 @@ func matchCandidatesForName(name string, aliases aliasConfig) []string {
 }
 
 // NewVocabulary 从 DB 扁平节点列表构建词表。
-// 每个节点对应一条关系链；成环的节点会被跳过。
-func NewVocabulary(nodes []VocabNode) *Vocabulary {
+// 默认每个 node 都是一条关系链的终点；成环的 node 会被跳过。
+// 可选 WithLeafEndpointsOnly / WithEndpointDepths 限制哪些 node 成为链终点，
+// 以便与 NewVocabularyFromPaths 的显式 path 语义对齐。
+func NewVocabulary(nodes []VocabNode, opts ...VocabBuildOption) *Vocabulary {
+	buildOpts := applyVocabBuildOpts(opts)
 	if nodes == nil {
 		nodes = []VocabNode{}
 	}
-
-	byID := make(map[string]VocabNode, len(nodes))
-	for _, n := range nodes {
-		byID[n.ID] = n
-	}
-
-	chains := make([]chain, 0, len(nodes))
-	for _, n := range nodes {
-		path, ok := buildPath(n.ID, byID)
-		if !ok {
-			continue
-		}
-		pathCopy := make([]string, len(path))
-		copy(pathCopy, path)
-		chains = append(chains, chain{
-			id:      n.ID,
-			path:    pathCopy,
-			weights: chainWeights(len(path)),
-		})
-	}
-
-	return &Vocabulary{chains: chains}
+	all := buildAllChains(nodes)
+	return &Vocabulary{chains: filterChainsByEndpoint(all, nodes, buildOpts)}
 }
 
 // buildPath 沿 ParentID 向上追溯，返回链顶→终点的 name 链；仅成环返回 false。
@@ -354,7 +337,13 @@ func nodeKey(parentID, name string) string {
 }
 
 // NewVocabularyFromTree 从嵌套树构建词表。
-func NewVocabularyFromTree(roots ...TreeNode) *Vocabulary {
+// 默认每个 node 都是链终点；可选 WithLeafEndpointsOnly / WithEndpointDepths 过滤终点，
+// 使行为更接近 NewVocabularyFromPaths 只传叶子 path 的场景。
+func NewVocabularyFromTree(root TreeNode, opts ...VocabBuildOption) *Vocabulary {
+	return newVocabularyFromTree(opts, root)
+}
+
+func newVocabularyFromTree(opts []VocabBuildOption, roots ...TreeNode) *Vocabulary {
 	var nodes []VocabNode
 	exposable := make(map[string]bool)
 	nextID := int64(1)
@@ -380,8 +369,12 @@ func NewVocabularyFromTree(roots ...TreeNode) *Vocabulary {
 		}
 	}
 	walk(roots, "")
-	full := NewVocabulary(nodes)
-	return &Vocabulary{chains: full.chains, exposableIDs: exposable}
+	buildOpts := applyVocabBuildOpts(opts)
+	all := buildAllChains(nodes)
+	return &Vocabulary{
+		chains:       filterChainsByEndpoint(all, nodes, buildOpts),
+		exposableIDs: exposable,
+	}
 }
 
 // bumpNextID 在用户提供数字字符串 ID 时，推进自增计数器避免冲突。
