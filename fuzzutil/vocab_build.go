@@ -3,50 +3,48 @@ package fuzzutil
 type endpointFilterMode int
 
 const (
-	endpointFilterAll endpointFilterMode = iota
-	endpointFilterLeafOnly
+	endpointFilterLeafOnly endpointFilterMode = iota + 1
 	endpointFilterDepths
 )
 
-type vocabBuildOpts struct {
+// endpointOpts 配置 Node/Tree 词表的链终点过滤；通过 EndpointOpts() 创建后链式设置。
+// 深度 depth = len(path)，根为 1。
+type endpointOpts struct {
 	mode     endpointFilterMode
 	depthSet map[int]struct{}
 }
 
-// VocabBuildOption 配置 NewVocabulary / NewVocabularyFromTree 的链终点过滤规则。
-type VocabBuildOption func(*vocabBuildOpts)
-
-// WithLeafEndpointsOnly 仅保留叶子 node 对应的链作为匹配终点。
-// 与 NewVocabularyFromPaths 只传 {a,b,c} 一条 path 时的链集合类似（无分支时等价）。
-func WithLeafEndpointsOnly() VocabBuildOption {
-	return func(o *vocabBuildOpts) {
-		o.mode = endpointFilterLeafOnly
-	}
+// EndpointOpts 返回默认 LeafOnly 的终点规则；需按层深过滤时链式调用 AtDepths。
+func EndpointOpts() *endpointOpts {
+	return &endpointOpts{mode: endpointFilterLeafOnly}
 }
 
-// WithEndpointDepths 仅保留 path 深度（len(path)，根为 1）在集合内的链。
-// depths 为空时忽略，等同默认（全部 node 为终点）。
-func WithEndpointDepths(depths ...int) VocabBuildOption {
-	return func(o *vocabBuildOpts) {
-		if len(depths) == 0 {
-			return
-		}
-		o.mode = endpointFilterDepths
-		o.depthSet = make(map[int]struct{}, len(depths))
-		for _, d := range depths {
-			o.depthSet[d] = struct{}{}
-		}
+func resolveEndpointOpts(opts ...*endpointOpts) *endpointOpts {
+	if len(opts) == 0 || opts[0] == nil {
+		return EndpointOpts()
 	}
+	return opts[0]
 }
 
-func applyVocabBuildOpts(opts []VocabBuildOption) vocabBuildOpts {
-	merged := vocabBuildOpts{mode: endpointFilterAll}
-	for _, opt := range opts {
-		if opt != nil {
-			opt(&merged)
-		}
+// LeafOnly 仅叶子 node 为终点（词表中无其他 node 以该 ID 为 ParentID）。
+// 无分支时等价于 NewVocabulary(NamePath{"a", "b", "c"}) 只传一条 path。
+func (o *endpointOpts) LeafOnly() *endpointOpts {
+	o.mode = endpointFilterLeafOnly
+	return o
+}
+
+// AtDepths 仅 len(path) 在 depths 中的链为终点；depths 为空时词表 0 链。
+func (o *endpointOpts) AtDepths(depths ...int) *endpointOpts {
+	o.mode = endpointFilterDepths
+	o.depthSet = nil
+	if len(depths) == 0 {
+		return o
 	}
-	return merged
+	o.depthSet = make(map[int]struct{}, len(depths))
+	for _, d := range depths {
+		o.depthSet[d] = struct{}{}
+	}
+	return o
 }
 
 func buildAllChains(nodes []VocabNode) []chain {
@@ -92,10 +90,11 @@ func leafNodeIDs(nodes []VocabNode) map[string]bool {
 	return leaves
 }
 
-func filterChainsByEndpoint(chains []chain, nodes []VocabNode, opts vocabBuildOpts) []chain {
+func filterChainsByEndpoint(chains []chain, nodes []VocabNode, opts *endpointOpts) []chain {
+	if opts == nil {
+		return nil
+	}
 	switch opts.mode {
-	case endpointFilterAll:
-		return chains
 	case endpointFilterLeafOnly:
 		leaves := leafNodeIDs(nodes)
 		filtered := make([]chain, 0, len(chains))
@@ -106,6 +105,9 @@ func filterChainsByEndpoint(chains []chain, nodes []VocabNode, opts vocabBuildOp
 		}
 		return filtered
 	case endpointFilterDepths:
+		if len(opts.depthSet) == 0 {
+			return nil
+		}
 		filtered := make([]chain, 0, len(chains))
 		for _, c := range chains {
 			if _, ok := opts.depthSet[len(c.path)]; ok {
@@ -114,6 +116,16 @@ func filterChainsByEndpoint(chains []chain, nodes []VocabNode, opts vocabBuildOp
 		}
 		return filtered
 	default:
-		return chains
+		return nil
 	}
+}
+
+func filterChainsByEndpointIDs(chains []chain, endpointIDs map[string]bool) []chain {
+	filtered := make([]chain, 0, len(chains))
+	for _, c := range chains {
+		if endpointIDs[c.id] {
+			filtered = append(filtered, c)
+		}
+	}
+	return filtered
 }

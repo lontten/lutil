@@ -4,15 +4,16 @@
 //
 //	fuzzutil.Like("深圳市", []string{"深圳", "广州"})
 //
-// 关系链词表提取（对每条链逐节点加权计分）：
+// 关系链词表（显式 path，终点由 path 列表决定）：
 //
-//	vocab := fuzzutil.NewVocabulary(nodes)
+//	vocab := fuzzutil.NewVocabulary(fuzzutil.NamePath{"广东省", "深圳"})
 //	result := vocab.MatchFromText("深圳市南山区")
 //
-// 限制链终点（与 FromPaths 显式 path 语义对齐）：
+// DB 扁平 node / 嵌套 tree（必填 endpoints 约束）：
 //
-//	vocab := fuzzutil.NewVocabulary(nodes, fuzzutil.WithLeafEndpointsOnly())
-//	vocab := fuzzutil.NewVocabularyFromTree(root, fuzzutil.WithEndpointDepths(2, 3))
+//	vocab := fuzzutil.NewVocabularyFromTree(root)
+//	vocab := fuzzutil.NewVocabularyFromNodes(nodes, fuzzutil.EndpointOpts().AtDepths(2))
+//	result := vocab.MatchFromText(text, fuzzutil.MatchOpts().WithDefaultRegionAliases())
 //
 // 行政区划地址匹配（简称/后缀省略）：
 //

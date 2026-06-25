@@ -8,7 +8,7 @@ import (
 )
 
 func regionVocab() *Vocabulary {
-	return NewVocabularyFromPaths(
+	return NewVocabulary(
 		NamePath{"广东省", "深圳"},
 		NamePath{"上海", "浦东新区"},
 		NamePath{"江苏省", "南京"},
@@ -23,7 +23,7 @@ func TestNewVocabularyFromNodes(t *testing.T) {
 		{ID: "2", ParentID: "1", Name: "深圳"},
 		{ID: "3", ParentID: "", Name: "江苏省"},
 	}
-	vocab := NewVocabulary(nodes)
+	vocab := NewVocabularyFromNodes(nodes, EndpointOpts().AtDepths(2))
 	got := vocab.MatchFromText("深圳市南山区")
 	wantPath := NamePath{"广东省", "深圳"}
 	if !reflect.DeepEqual(got.Path, wantPath) {
@@ -167,7 +167,7 @@ func TestMatchFromText(t *testing.T) {
 }
 
 func TestMatchFromText_CategoryThreeLevel(t *testing.T) {
-	vocab := NewVocabularyFromPaths(
+	vocab := NewVocabulary(
 		NamePath{"服饰", "运动鞋", "跑步鞋"},
 		NamePath{"服饰", "运动鞋", "篮球鞋"},
 	)
@@ -182,7 +182,7 @@ func TestMatchFromText_CategoryThreeLevel(t *testing.T) {
 }
 
 func TestMatchFromText_LongestWins(t *testing.T) {
-	vocab := NewVocabularyFromPaths(
+	vocab := NewVocabulary(
 		NamePath{"江苏省", "南京"},
 		NamePath{"江苏省", "南京市"},
 	)
@@ -193,7 +193,7 @@ func TestMatchFromText_LongestWins(t *testing.T) {
 }
 
 func TestMatchFromText_EmptyVocabulary(t *testing.T) {
-	vocab := NewVocabulary(nil)
+	vocab := NewVocabulary()
 	got := vocab.MatchFromText("深圳市")
 	if got.Matched {
 		t.Fatal("empty vocabulary should not match")
@@ -201,7 +201,10 @@ func TestMatchFromText_EmptyVocabulary(t *testing.T) {
 }
 
 func TestMatchFromText_SingleRoot(t *testing.T) {
-	vocab := NewVocabulary([]VocabNode{{ID: "1", ParentID: "", Name: "江苏省"}})
+	vocab := NewVocabularyFromNodes(
+		[]VocabNode{{ID: "1", ParentID: "", Name: "江苏省"}},
+		EndpointOpts().AtDepths(1),
+	)
 	got := vocab.MatchFromText("江苏")
 	if !got.Matched || !reflect.DeepEqual(got.Path, NamePath{"江苏省"}) {
 		t.Fatalf("unexpected: %+v", got)
@@ -213,7 +216,7 @@ func TestNewVocabulary_ParentNotInVocab(t *testing.T) {
 		{ID: "1", ParentID: "99", Name: "孤儿"},
 		{ID: "2", ParentID: "", Name: "江苏省"},
 	}
-	vocab := NewVocabulary(nodes)
+	vocab := NewVocabularyFromNodes(nodes, EndpointOpts().AtDepths(1))
 	got := vocab.MatchFromText("江苏")
 	if !got.Matched || got.MatchedNodeID != "2" {
 		t.Fatalf("江苏: unexpected %+v", got)
@@ -229,7 +232,7 @@ func TestNewVocabulary_ParentIDZero(t *testing.T) {
 		{ID: "1", ParentID: "0", Name: "广东省"},
 		{ID: "2", ParentID: "1", Name: "深圳"},
 	}
-	vocab := NewVocabulary(nodes)
+	vocab := NewVocabularyFromNodes(nodes, EndpointOpts().AtDepths(2))
 	got := vocab.MatchFromText("深圳市南山区")
 	wantPath := NamePath{"广东省", "深圳"}
 	if !reflect.DeepEqual(got.Path, wantPath) {
@@ -243,15 +246,15 @@ func TestNewVocabulary_CycleSkipped(t *testing.T) {
 		{ID: "2", ParentID: "1", Name: "B"},
 		{ID: "3", ParentID: "", Name: "江苏省"},
 	}
-	vocab := NewVocabulary(nodes)
+	vocab := NewVocabularyFromNodes(nodes, EndpointOpts().AtDepths(1))
 	got := vocab.MatchFromText("江苏")
 	if !got.Matched || got.MatchedNodeID != "3" {
 		t.Fatalf("unexpected: %+v", got)
 	}
 }
 
-func TestNewVocabularyFromPaths_SharedPrefix(t *testing.T) {
-	vocab := NewVocabularyFromPaths(
+func TestNewVocabulary_SharedPrefix(t *testing.T) {
+	vocab := NewVocabulary(
 		NamePath{"江苏省"},
 		NamePath{"江苏省", "南京"},
 	)
@@ -316,28 +319,47 @@ func pathKey(p NamePath) string {
 	return key
 }
 
-func TestNewVocabulary_DefaultAllEndpoints(t *testing.T) {
-	vocab := NewVocabulary(linearABCVocabNodes())
-	want := []NamePath{
-		{"a"},
-		{"a", "b"},
-		{"a", "b", "c"},
-	}
-	if !chainPathsEqual(vocabChainPaths(vocab), want) {
-		t.Fatalf("chains = %v, want %v", vocabChainPaths(vocab), want)
+func TestEndpointOpts_EmptyAtDepths(t *testing.T) {
+	vocab := NewVocabularyFromNodes(linearABCVocabNodes(), EndpointOpts().AtDepths())
+	if len(vocab.chains) != 0 {
+		t.Fatalf("empty depths: want 0 chains, got %d", len(vocab.chains))
 	}
 }
 
-func TestNewVocabulary_LeafEndpointsOnly(t *testing.T) {
-	vocab := NewVocabulary(linearABCVocabNodes(), WithLeafEndpointsOnly())
+func TestEndpointOpts_DefaultLeafOnly(t *testing.T) {
+	omitted := NewVocabularyFromNodes(linearABCVocabNodes())
+	defaultOpts := NewVocabularyFromNodes(linearABCVocabNodes(), EndpointOpts())
+	explicitLeaf := NewVocabularyFromNodes(linearABCVocabNodes(), EndpointOpts().LeafOnly())
+	if !chainPathsEqual(vocabChainPaths(omitted), vocabChainPaths(defaultOpts)) {
+		t.Fatalf("omitted = %v, default = %v", vocabChainPaths(omitted), vocabChainPaths(defaultOpts))
+	}
+	if !chainPathsEqual(vocabChainPaths(defaultOpts), vocabChainPaths(explicitLeaf)) {
+		t.Fatalf("default = %v, LeafOnly = %v", vocabChainPaths(defaultOpts), vocabChainPaths(explicitLeaf))
+	}
+	want := []NamePath{{"a", "b", "c"}}
+	if !chainPathsEqual(vocabChainPaths(omitted), want) {
+		t.Fatalf("chains = %v, want %v", vocabChainPaths(omitted), want)
+	}
+}
+
+func TestEndpointOpts_NilIsLeafOnly(t *testing.T) {
+	nilOpts := NewVocabularyFromNodes(linearABCVocabNodes(), nil)
+	omitted := NewVocabularyFromNodes(linearABCVocabNodes())
+	if !chainPathsEqual(vocabChainPaths(nilOpts), vocabChainPaths(omitted)) {
+		t.Fatalf("nil = %v, omitted = %v", vocabChainPaths(nilOpts), vocabChainPaths(omitted))
+	}
+}
+
+func TestNewVocabularyFromNodes_LeafEndpoints(t *testing.T) {
+	vocab := NewVocabularyFromNodes(linearABCVocabNodes())
 	want := []NamePath{{"a", "b", "c"}}
 	if !chainPathsEqual(vocabChainPaths(vocab), want) {
 		t.Fatalf("chains = %v, want %v", vocabChainPaths(vocab), want)
 	}
 }
 
-func TestNewVocabulary_LeafEndpointsOnly_Branch(t *testing.T) {
-	vocab := NewVocabulary(branchABCvocabNodes(), WithLeafEndpointsOnly())
+func TestNewVocabularyFromNodes_LeafEndpoints_Branch(t *testing.T) {
+	vocab := NewVocabularyFromNodes(branchABCvocabNodes())
 	want := []NamePath{
 		{"a", "b", "c"},
 		{"a", "d"},
@@ -347,29 +369,23 @@ func TestNewVocabulary_LeafEndpointsOnly_Branch(t *testing.T) {
 	}
 }
 
-func TestNewVocabulary_EndpointDepths(t *testing.T) {
+func TestNewVocabularyFromNodes_EndpointDepths(t *testing.T) {
 	nodes := linearABCVocabNodes()
 
-	vocabDepth2 := NewVocabulary(nodes, WithEndpointDepths(2))
+	vocabDepth2 := NewVocabularyFromNodes(nodes, EndpointOpts().AtDepths(2))
 	wantDepth2 := []NamePath{{"a", "b"}}
 	if !chainPathsEqual(vocabChainPaths(vocabDepth2), wantDepth2) {
 		t.Fatalf("depth 2: chains = %v, want %v", vocabChainPaths(vocabDepth2), wantDepth2)
 	}
 
-	vocabDepth13 := NewVocabulary(nodes, WithEndpointDepths(1, 3))
+	vocabDepth13 := NewVocabularyFromNodes(nodes, EndpointOpts().AtDepths(1, 3))
 	wantDepth13 := []NamePath{{"a"}, {"a", "b", "c"}}
 	if !chainPathsEqual(vocabChainPaths(vocabDepth13), wantDepth13) {
 		t.Fatalf("depth 1,3: chains = %v, want %v", vocabChainPaths(vocabDepth13), wantDepth13)
 	}
-
-	vocabEmptyDepths := NewVocabulary(nodes, WithEndpointDepths())
-	wantAll := []NamePath{{"a"}, {"a", "b"}, {"a", "b", "c"}}
-	if !chainPathsEqual(vocabChainPaths(vocabEmptyDepths), wantAll) {
-		t.Fatalf("empty depths: chains = %v, want %v", vocabChainPaths(vocabEmptyDepths), wantAll)
-	}
 }
 
-func TestNewVocabularyFromTree_LeafEndpointsOnly(t *testing.T) {
+func TestNewVocabularyFromTree_LeafEndpoints(t *testing.T) {
 	root := TreeNode{
 		Name: "a",
 		Children: []TreeNode{{
@@ -379,20 +395,20 @@ func TestNewVocabularyFromTree_LeafEndpointsOnly(t *testing.T) {
 			}},
 		}},
 	}
-	fromTree := NewVocabularyFromTree(root, WithLeafEndpointsOnly())
-	fromPaths := NewVocabularyFromPaths(NamePath{"a", "b", "c"})
+	fromTree := NewVocabularyFromTree(root)
+	fromPaths := NewVocabulary(NamePath{"a", "b", "c"})
 	if !chainPathsEqual(vocabChainPaths(fromTree), vocabChainPaths(fromPaths)) {
 		t.Fatalf("tree = %v, paths = %v", vocabChainPaths(fromTree), vocabChainPaths(fromPaths))
 	}
 }
 
-func TestNewVocabulary_EndpointDepths_MatchBehavior(t *testing.T) {
+func TestNewVocabularyFromNodes_EndpointDepths_MatchBehavior(t *testing.T) {
 	nodes := []VocabNode{
 		{ID: "1", ParentID: "", Name: "安徽省"},
 		{ID: "2", ParentID: "1", Name: "滁州市"},
 		{ID: "3", ParentID: "2", Name: "天长市"},
 	}
-	vocab := NewVocabulary(nodes, WithEndpointDepths(3))
+	vocab := NewVocabularyFromNodes(nodes, EndpointOpts().AtDepths(3))
 	got := vocab.MatchFromText(
 		"安徽省天长市铜城工业园区",
 		MatchOpts().WithDefaultRegionAliases(),
@@ -408,7 +424,7 @@ func TestNewVocabulary_UUIDIDs(t *testing.T) {
 		{ID: "550e8400-e29b-41d4-a716-446655440000", ParentID: "", Name: "广东省"},
 		{ID: "6ba7b810-9dad-11d1-80b4-00c04fd430c8", ParentID: "550e8400-e29b-41d4-a716-446655440000", Name: "深圳"},
 	}
-	vocab := NewVocabulary(nodes)
+	vocab := NewVocabularyFromNodes(nodes, EndpointOpts().AtDepths(2))
 	got := vocab.MatchFromText("深圳市南山区")
 	if got.MatchedNodeID != "6ba7b810-9dad-11d1-80b4-00c04fd430c8" {
 		t.Fatalf("MatchedNodeID = %q, want UUID", got.MatchedNodeID)
@@ -438,7 +454,7 @@ func TestChainWeights_Sum100(t *testing.T) {
 }
 
 func TestMatch_ChainScoringFullMatch(t *testing.T) {
-	vocab := NewVocabularyFromPaths(
+	vocab := NewVocabulary(
 		NamePath{"四川省", "成都市", "武侯区"},
 		NamePath{"四川省", "绵阳市", "德阳市", "乐山市", "宜宾市", "武侯区"},
 	)
@@ -450,7 +466,7 @@ func TestMatch_ChainScoringFullMatch(t *testing.T) {
 }
 
 func TestMatch_ChainScoringTieBreak(t *testing.T) {
-	vocab := NewVocabularyFromPaths(
+	vocab := NewVocabulary(
 		NamePath{"中国", "北京市"},
 		NamePath{"美国", "旧金山"},
 		NamePath{"旧金山", "德克萨斯州", "中国"},
@@ -464,7 +480,7 @@ func TestMatch_ChainScoringTieBreak(t *testing.T) {
 }
 
 func TestMatch_AddressPartialMiddle(t *testing.T) {
-	vocab := NewVocabularyFromPaths(
+	vocab := NewVocabulary(
 		NamePath{"亚洲", "云南省", "昆明市"},
 	)
 	got := vocab.MatchFromText("云南省昆明市人民路")
@@ -475,7 +491,7 @@ func TestMatch_AddressPartialMiddle(t *testing.T) {
 }
 
 func TestMatch_1(t *testing.T) {
-	vocab := NewVocabularyFromPaths(
+	vocab := NewVocabulary(
 		NamePath{"四川省", "成都市", "武侯区"},
 		NamePath{"四川省", "绵阳市", "德阳市", "乐山市", "宜宾市", "武侯区"},
 	)
@@ -484,19 +500,19 @@ func TestMatch_1(t *testing.T) {
 }
 
 func xinjiangVocab() *Vocabulary {
-	return NewVocabularyFromPaths(
+	return NewVocabulary(
 		NamePath{"新疆维吾尔自治区", "乌鲁木齐市", "天山区"},
 	)
 }
 
 func tibetVocab() *Vocabulary {
-	return NewVocabularyFromPaths(
+	return NewVocabulary(
 		NamePath{"西藏自治区", "拉萨市"},
 	)
 }
 
 func TestMatchFromText_RegionAliases_NoOptsNoMatch(t *testing.T) {
-	vocab := NewVocabularyFromPaths(NamePath{"新疆维吾尔自治区"})
+	vocab := NewVocabulary(NamePath{"新疆维吾尔自治区"})
 	got := vocab.MatchFromText("新疆")
 	if got.Matched {
 		t.Fatalf("without region aliases 新疆 should not match 新疆维吾尔自治区, got %+v", got)
@@ -537,7 +553,7 @@ func TestMatchFromText_WithDefaultRegionAliases_ExistingCityMatch(t *testing.T) 
 }
 
 func TestMatchFromText_NameAliases_CustomOnly(t *testing.T) {
-	vocab := NewVocabularyFromPaths(
+	vocab := NewVocabulary(
 		NamePath{"新疆维吾尔自治区", "乌鲁木齐市"},
 	)
 	got := vocab.MatchFromText(
@@ -553,7 +569,7 @@ func TestMatchFromText_NameAliases_CustomOnly(t *testing.T) {
 }
 
 func TestMatchFromText_NameAliases_CustomOnly2(t *testing.T) {
-	vocab := NewVocabularyFromPaths(
+	vocab := NewVocabulary(
 		NamePath{"新疆", "乌鲁木齐市"},
 	)
 	got := vocab.MatchFromText(
@@ -569,7 +585,7 @@ func TestMatchFromText_NameAliases_CustomOnly2(t *testing.T) {
 }
 
 func TestMatchFromText_NameAliases_CustomOnly3(t *testing.T) {
-	vocab := NewVocabularyFromPaths(
+	vocab := NewVocabulary(
 		NamePath{"安徽省"},
 		NamePath{"安徽省", "滁州市"},
 		NamePath{"安徽省", "滁州市", "天长市"},
@@ -584,7 +600,7 @@ func TestMatchFromText_NameAliases_CustomOnly3(t *testing.T) {
 }
 
 func TestMatchFromText_WithDefaultRegionAliases_CategoryUnaffected(t *testing.T) {
-	vocab := NewVocabularyFromPaths(
+	vocab := NewVocabulary(
 		NamePath{"服饰", "运动鞋", "跑步鞋"},
 		NamePath{"服饰", "运动鞋", "篮球鞋"},
 	)
@@ -599,7 +615,7 @@ func TestMatchFromText_WithDefaultRegionAliases_CategoryUnaffected(t *testing.T)
 }
 
 func TestMatchFromText_DefaultPlusCustomNameAliases(t *testing.T) {
-	vocab := NewVocabularyFromPaths(
+	vocab := NewVocabulary(
 		NamePath{"广东省", "深圳市"},
 	)
 	got := vocab.MatchFromText(

@@ -41,7 +41,7 @@ func (k MatchKind) String() string {
 type MatchResult struct {
 	Matched bool
 	// MatchedNodeID 为命中终点节点的 ID，是否非空取决于词表构建方式：
-	// NewVocabulary(VocabNode) 时为业务主键；NewVocabularyFromPaths 时始终为空（请用 Path）；
+	// NewVocabularyFromNodes 时为业务主键；NewVocabulary(path) 时始终为空（请用 Path）；
 	// NewVocabularyFromTree 时仅当终点 ID 由调用方显式提供时非空。
 	MatchedNodeID string
 	MatchKind     MatchKind
@@ -156,17 +156,58 @@ func matchCandidatesForName(name string, aliases aliasConfig) []string {
 	return candidates
 }
 
-// NewVocabulary 从 DB 扁平节点列表构建词表。
-// 默认每个 node 都是一条关系链的终点；成环的 node 会被跳过。
-// 可选 WithLeafEndpointsOnly / WithEndpointDepths 限制哪些 node 成为链终点，
-// 以便与 NewVocabularyFromPaths 的显式 path 语义对齐。
-func NewVocabulary(nodes []VocabNode, opts ...VocabBuildOption) *Vocabulary {
-	buildOpts := applyVocabBuildOpts(opts)
+// NewVocabulary 从显式 path 列表构建词表。
+// 每条 NamePath 对应一条关系链（终点为该路径最后一段）；共享前缀自动合并节点。
+func NewVocabulary(paths ...NamePath) *Vocabulary {
+	var nodes []VocabNode
+	nextID := int64(1)
+	seen := make(map[string]string)
+	endpointIDs := make(map[string]bool)
+
+	for _, p := range paths {
+		parentID := ""
+		var lastID string
+		for _, seg := range p {
+			key := nodeKey(parentID, seg)
+			id, exists := seen[key]
+			if !exists {
+				id = strconv.FormatInt(nextID, 10)
+				nextID++
+				seen[key] = id
+				nodes = append(nodes, VocabNode{
+					ID:       id,
+					ParentID: parentID,
+					Name:     seg,
+				})
+			}
+			lastID = id
+			parentID = id
+		}
+		if lastID != "" {
+			endpointIDs[lastID] = true
+		}
+	}
+
+	all := buildAllChains(nodes)
+	return &Vocabulary{
+		chains:       filterChainsByEndpointIDs(all, endpointIDs),
+		exposableIDs: map[string]bool{},
+	}
+}
+
+// NewVocabularyFromNodes 从 DB 扁平节点列表构建词表；成环的 node 会被跳过。
+// opts 可选；省略或 nil 时为 LeafOnly，层深约束用 EndpointOpts().AtDepths()。
+func NewVocabularyFromNodes(nodes []VocabNode, opts ...*endpointOpts) *Vocabulary {
 	if nodes == nil {
 		nodes = []VocabNode{}
 	}
 	all := buildAllChains(nodes)
-	return &Vocabulary{chains: filterChainsByEndpoint(all, nodes, buildOpts)}
+	ep := resolveEndpointOpts(opts...)
+	return &Vocabulary{chains: filterChainsByEndpoint(all, nodes, ep)}
+}
+
+func nodeKey(parentID, name string) string {
+	return parentID + ":" + name
 }
 
 // buildPath 沿 ParentID 向上追溯，返回链顶→终点的 name 链；仅成环返回 false。
@@ -286,64 +327,9 @@ func betterChain(total int, tailKind MatchKind, pathLen, tailRuneLen int, bestTo
 	return tailRuneLen > bestTailRuneLen
 }
 
-// NewVocabularyFromPaths 从路径列表构建词表（测试与手工配置用）。
-// 每条 NamePath 对应一条关系链（终点为该路径最后一段）；共享前缀自动合并节点。
-func NewVocabularyFromPaths(paths ...NamePath) *Vocabulary {
-	var nodes []VocabNode
-	nextID := int64(1)
-	seen := make(map[string]string)
-	endpointIDs := make([]string, 0, len(paths))
-
-	for _, p := range paths {
-		parentID := ""
-		var lastID string
-		for _, seg := range p {
-			key := nodeKey(parentID, seg)
-			id, exists := seen[key]
-			if !exists {
-				id = strconv.FormatInt(nextID, 10)
-				nextID++
-				seen[key] = id
-				nodes = append(nodes, VocabNode{
-					ID:       id,
-					ParentID: parentID,
-					Name:     seg,
-				})
-			}
-			lastID = id
-			parentID = id
-		}
-		if lastID != "" {
-			endpointIDs = append(endpointIDs, lastID)
-		}
-	}
-
-	full := NewVocabulary(nodes)
-	endpoints := make(map[string]bool, len(endpointIDs))
-	for _, id := range endpointIDs {
-		endpoints[id] = true
-	}
-	chains := make([]chain, 0, len(endpointIDs))
-	for _, c := range full.chains {
-		if endpoints[c.id] {
-			chains = append(chains, c)
-		}
-	}
-	return &Vocabulary{chains: chains, exposableIDs: map[string]bool{}}
-}
-
-func nodeKey(parentID, name string) string {
-	return parentID + ":" + name
-}
-
 // NewVocabularyFromTree 从嵌套树构建词表。
-// 默认每个 node 都是链终点；可选 WithLeafEndpointsOnly / WithEndpointDepths 过滤终点，
-// 使行为更接近 NewVocabularyFromPaths 只传叶子 path 的场景。
-func NewVocabularyFromTree(root TreeNode, opts ...VocabBuildOption) *Vocabulary {
-	return newVocabularyFromTree(opts, root)
-}
-
-func newVocabularyFromTree(opts []VocabBuildOption, roots ...TreeNode) *Vocabulary {
+// opts 可选；省略或 nil 时为 LeafOnly，层深约束用 EndpointOpts().AtDepths()。
+func NewVocabularyFromTree(root TreeNode, opts ...*endpointOpts) *Vocabulary {
 	var nodes []VocabNode
 	exposable := make(map[string]bool)
 	nextID := int64(1)
@@ -368,11 +354,11 @@ func newVocabularyFromTree(opts []VocabBuildOption, roots ...TreeNode) *Vocabula
 			}
 		}
 	}
-	walk(roots, "")
-	buildOpts := applyVocabBuildOpts(opts)
+	walk([]TreeNode{root}, "")
 	all := buildAllChains(nodes)
+	ep := resolveEndpointOpts(opts...)
 	return &Vocabulary{
-		chains:       filterChainsByEndpoint(all, nodes, buildOpts),
+		chains:       filterChainsByEndpoint(all, nodes, ep),
 		exposableIDs: exposable,
 	}
 }
