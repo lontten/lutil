@@ -17,6 +17,28 @@ func regionVocab() *Vocabulary {
 	)
 }
 
+func TestMatchResult_LastName_LastID(t *testing.T) {
+	if (MatchResult{}).LastName() != "" || (MatchResult{}).LastID() != "" {
+		t.Fatal("zero MatchResult")
+	}
+	got := regionVocab().Match("深圳市南山区科技园")
+	if got.LastName() != "深圳" {
+		t.Fatalf("LastName() = %q, want 深圳", got.LastName())
+	}
+	if got.LastID() != "" {
+		t.Fatalf("LastID() = %q, want empty for FromPaths", got.LastID())
+	}
+
+	nodes := []VocabNode{
+		{ID: "1", ParentID: "", Name: "广东省"},
+		{ID: "2", ParentID: "1", Name: "深圳"},
+	}
+	got2 := NewVocabularyFromNodes(nodes, EndpointOpts().AtDepths(2)).Match("深圳市南山区")
+	if got2.LastName() != "深圳" || got2.LastID() != "2" {
+		t.Fatalf("FromNodes: LastName=%q LastID=%q", got2.LastName(), got2.LastID())
+	}
+}
+
 func TestNewVocabularyFromNodes(t *testing.T) {
 	nodes := []VocabNode{
 		{ID: "1", ParentID: "", Name: "广东省"},
@@ -29,8 +51,12 @@ func TestNewVocabularyFromNodes(t *testing.T) {
 	if !reflect.DeepEqual(got.Path, wantPath) {
 		t.Fatalf("Path = %v, want %v", got.Path, wantPath)
 	}
-	if got.MatchedNodeID != "2" {
-		t.Fatalf("MatchedNodeID = %q, want %q", got.MatchedNodeID, "2")
+	wantPathIDs := IDPath{"1", "2"}
+	if !reflect.DeepEqual(got.PathIDs, wantPathIDs) {
+		t.Fatalf("PathIDs = %v, want %v", got.PathIDs, wantPathIDs)
+	}
+	if got.LastID() != "2" {
+		t.Fatalf("LastID() = %q, want %q", got.LastID(), "2")
 	}
 }
 
@@ -43,11 +69,11 @@ func TestNewVocabularyFromTree(t *testing.T) {
 		},
 	})
 	got := vocab.Match("广州市天河区")
-	if !got.Matched || got.Path[len(got.Path)-1] != "广州" {
+	if !got.Matched || got.LastName() != "广州" {
 		t.Fatalf("unexpected result: %+v", got)
 	}
-	if got.MatchedNodeID != "" {
-		t.Fatalf("MatchedNodeID = %q, want empty for auto-assigned IDs", got.MatchedNodeID)
+	if got.LastID() != "" {
+		t.Fatalf("LastID() = %q, want empty for auto-assigned IDs", got.LastID())
 	}
 }
 
@@ -56,11 +82,15 @@ func TestVocabulary_Match_FromPaths_NoNodeID(t *testing.T) {
 	if !got.Matched {
 		t.Fatal("expected match")
 	}
-	if got.MatchedNodeID != "" {
-		t.Fatalf("MatchedNodeID = %q, want empty for FromPaths", got.MatchedNodeID)
+	if got.LastID() != "" {
+		t.Fatalf("LastID() = %q, want empty for FromPaths", got.LastID())
 	}
 	if len(got.Path) == 0 {
 		t.Fatal("Path should be non-empty")
+	}
+	wantPathIDs := IDPath{"", ""}
+	if !reflect.DeepEqual(got.PathIDs, wantPathIDs) {
+		t.Fatalf("PathIDs = %v, want %v", got.PathIDs, wantPathIDs)
 	}
 }
 
@@ -73,8 +103,12 @@ func TestVocabulary_Match_FromTree_WithUserID(t *testing.T) {
 		},
 	})
 	got := vocab.Match("深圳市")
-	if got.MatchedNodeID != "" {
-		t.Fatalf("synthetic child ID: MatchedNodeID = %q, want empty", got.MatchedNodeID)
+	if got.LastID() != "" {
+		t.Fatalf("synthetic child ID: LastID() = %q, want empty", got.LastID())
+	}
+	wantPathIDs := IDPath{"province-1", ""}
+	if !reflect.DeepEqual(got.PathIDs, wantPathIDs) {
+		t.Fatalf("PathIDs = %v, want %v", got.PathIDs, wantPathIDs)
 	}
 
 	vocab2 := NewVocabularyFromTree(TreeNode{
@@ -84,8 +118,12 @@ func TestVocabulary_Match_FromTree_WithUserID(t *testing.T) {
 		},
 	})
 	got2 := vocab2.Match("深圳市")
-	if got2.MatchedNodeID != "city-sz" {
-		t.Fatalf("user-provided ID: MatchedNodeID = %q, want city-sz", got2.MatchedNodeID)
+	if got2.LastID() != "city-sz" {
+		t.Fatalf("user-provided ID: LastID() = %q, want city-sz", got2.LastID())
+	}
+	wantPathIDs2 := IDPath{"", "city-sz"}
+	if !reflect.DeepEqual(got2.PathIDs, wantPathIDs2) {
+		t.Fatalf("PathIDs = %v, want %v", got2.PathIDs, wantPathIDs2)
 	}
 }
 
@@ -218,12 +256,15 @@ func TestNewVocabulary_ParentNotInVocab(t *testing.T) {
 	}
 	vocab := NewVocabularyFromNodes(nodes, EndpointOpts().AtDepths(1))
 	got := vocab.Match("江苏")
-	if !got.Matched || got.MatchedNodeID != "2" {
+	if !got.Matched || got.LastID() != "2" {
 		t.Fatalf("江苏: unexpected %+v", got)
 	}
 	got = vocab.Match("孤儿")
-	if !got.Matched || got.MatchedNodeID != "1" || !reflect.DeepEqual(got.Path, NamePath{"孤儿"}) {
+	if !got.Matched || got.LastID() != "1" || !reflect.DeepEqual(got.Path, NamePath{"孤儿"}) {
 		t.Fatalf("孤儿: unexpected %+v", got)
+	}
+	if !reflect.DeepEqual(got.PathIDs, IDPath{"1"}) {
+		t.Fatalf("PathIDs = %v, want %v", got.PathIDs, IDPath{"1"})
 	}
 }
 
@@ -248,7 +289,7 @@ func TestNewVocabulary_CycleSkipped(t *testing.T) {
 	}
 	vocab := NewVocabularyFromNodes(nodes, EndpointOpts().AtDepths(1))
 	got := vocab.Match("江苏")
-	if !got.Matched || got.MatchedNodeID != "3" {
+	if !got.Matched || got.LastID() != "3" {
 		t.Fatalf("unexpected: %+v", got)
 	}
 }
@@ -426,8 +467,15 @@ func TestNewVocabulary_UUIDIDs(t *testing.T) {
 	}
 	vocab := NewVocabularyFromNodes(nodes, EndpointOpts().AtDepths(2))
 	got := vocab.Match("深圳市南山区")
-	if got.MatchedNodeID != "6ba7b810-9dad-11d1-80b4-00c04fd430c8" {
-		t.Fatalf("MatchedNodeID = %q, want UUID", got.MatchedNodeID)
+	if got.LastID() != "6ba7b810-9dad-11d1-80b4-00c04fd430c8" {
+		t.Fatalf("LastID() = %q, want UUID", got.LastID())
+	}
+	wantPathIDs := IDPath{
+		"550e8400-e29b-41d4-a716-446655440000",
+		"6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+	}
+	if !reflect.DeepEqual(got.PathIDs, wantPathIDs) {
+		t.Fatalf("PathIDs = %v, want %v", got.PathIDs, wantPathIDs)
 	}
 	if !reflect.DeepEqual(got.Path, NamePath{"广东省", "深圳"}) {
 		t.Fatalf("Path = %v", got.Path)
@@ -813,4 +861,14 @@ func TestVocabulary_Match_DefaultPlusCustomNameAliases(t *testing.T) {
 	if !got.Matched || !reflect.DeepEqual(got.Path, want) {
 		t.Fatalf("got %+v, want Path %v", got, want)
 	}
+}
+
+func TestVocabulary_Match_CategoryThreeLevel2(t *testing.T) {
+	vocab := NewVocabulary(
+		NamePath{"中国"},
+		NamePath{"中国", "四川"},
+		NamePath{"中国", "四川", "服饰"},
+	)
+	got := vocab.Match("中国四")
+	logutil.Log(got)
 }

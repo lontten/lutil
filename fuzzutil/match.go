@@ -14,6 +14,7 @@
 //	vocab := fuzzutil.NewVocabularyFromTree(root)
 //	vocab := fuzzutil.NewVocabularyFromNodes(nodes, fuzzutil.EndpointOpts().AtDepths(2))
 //	result := vocab.Match(text, fuzzutil.MatchOpts().WithDefaultRegionAliases())
+//	result.Path 与 result.PathIDs 等长同索引；链尾分别用 LastName()、LastID()
 //
 // 行政区划地址匹配（简称/后缀省略）：
 //

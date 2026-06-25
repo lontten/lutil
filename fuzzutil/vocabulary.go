@@ -15,9 +15,12 @@ type VocabNode struct {
 // NamePath 是一条关系链的 name 序列（链顶 → 终点），例如 {"广东省", "深圳"}。
 type NamePath []string
 
+// IDPath 是一条关系链的 ID 序列（链顶 → 终点），与 NamePath 等长、同索引。
+type IDPath []string
+
 // TreeNode 是嵌套树结构的节点，用于 JSON 配置等场景。
 // ID 为空字符串时由 NewVocabularyFromTree 自动分配合成 ID；
-// 自动分配的 ID 不会出现在 MatchResult.MatchedNodeID 中。
+// 自动分配的 ID 不会出现在 MatchResult.PathIDs 中。
 type TreeNode struct {
 	ID       string
 	Name     string
@@ -37,21 +40,36 @@ func (k MatchKind) String() string {
 }
 
 // MatchResult 是 Match 的返回结果。
-// Matched 为 false 时，MatchedNodeID、MatchKind、Path 均为零值。
+// Matched 为 false 时，MatchKind、Path、PathIDs 均为零值。
 type MatchResult struct {
-	Matched bool
-	// MatchedNodeID 为命中终点节点的 ID，是否非空取决于词表构建方式：
-	// NewVocabularyFromNodes 时为业务主键；NewVocabulary(path) 时始终为空（请用 Path）；
-	// NewVocabularyFromTree 时仅当终点 ID 由调用方显式提供时非空。
-	MatchedNodeID string
-	MatchKind     MatchKind
-	Path          NamePath
+	Matched   bool
+	MatchKind MatchKind
+	Path      NamePath
+	// PathIDs 与 Path 等长、同索引；空串表示该节点 ID 不可暴露（合成 ID 或未显式提供）。
+	PathIDs IDPath
+}
+
+// LastName 返回链尾 name；未匹配或 Path 为空时返回 ""。
+func (r MatchResult) LastName() string {
+	if len(r.Path) == 0 {
+		return ""
+	}
+	return r.Path[len(r.Path)-1]
+}
+
+// LastID 返回链尾 ID；未匹配或 PathIDs 为空时返回 ""。
+func (r MatchResult) LastID() string {
+	if len(r.PathIDs) == 0 {
+		return ""
+	}
+	return r.PathIDs[len(r.PathIDs)-1]
 }
 
 // chain 是一条可匹配的关系链及其预计算权重（权重之和为 100）。
 type chain struct {
 	id      string
 	path    []string // 原始 path，用于 MatchResult
+	pathIDs []string // 与 path 等长、同索引
 	aligned []string // 右对齐计分 path（前补 ""），与 weights 等长
 	weights []int
 }
@@ -59,7 +77,7 @@ type chain struct {
 // Vocabulary 是预编译的关系链词表，初始化一次后可反复调用 Match。
 type Vocabulary struct {
 	chains       []chain
-	exposableIDs map[string]bool // nil 表示全部可暴露；非 nil 时仅 map 中的 ID 可写入 MatchedNodeID
+	exposableIDs map[string]bool // nil 表示全部可暴露；非 nil 时仅 map 中的 ID 可写入 PathIDs
 }
 
 func (v *Vocabulary) matchedNodeID(chainID string) string {
@@ -67,6 +85,14 @@ func (v *Vocabulary) matchedNodeID(chainID string) string {
 		return ""
 	}
 	return chainID
+}
+
+func (v *Vocabulary) exposedPathIDs(raw []string) IDPath {
+	out := make(IDPath, len(raw))
+	for i, id := range raw {
+		out[i] = v.matchedNodeID(id)
+	}
+	return out
 }
 
 // matchOpts 配置 Match 的匹配规则；通过 MatchOpts() 获取默认值后链式修改。
@@ -211,22 +237,22 @@ func nodeKey(parentID, name string) string {
 	return parentID + ":" + name
 }
 
-// buildPath 沿 ParentID 向上追溯，返回链顶→终点的 name 链；仅成环返回 false。
-func buildPath(id string, byID map[string]VocabNode) ([]string, bool) {
-	var names []string
+// buildPathWithIDs 沿 ParentID 向上追溯，返回链顶→终点的 name 与 id 序列；仅成环返回 false。
+func buildPathWithIDs(id string, byID map[string]VocabNode) (names, ids []string, ok bool) {
 	visited := make(map[string]bool)
 
 	for {
 		if visited[id] {
-			return nil, false
+			return nil, nil, false
 		}
 		visited[id] = true
 
-		n, ok := byID[id]
-		if !ok {
-			return nil, false
+		n, exists := byID[id]
+		if !exists {
+			return nil, nil, false
 		}
 		names = append(names, n.Name)
+		ids = append(ids, n.ID)
 
 		parentID := n.ParentID
 		if _, exists := byID[parentID]; !exists {
@@ -237,8 +263,9 @@ func buildPath(id string, byID map[string]VocabNode) ([]string, bool) {
 
 	for i, j := 0, len(names)-1; i < j; i, j = i+1, j-1 {
 		names[i], names[j] = names[j], names[i]
+		ids[i], ids[j] = ids[j], ids[i]
 	}
-	return names, true
+	return names, ids, true
 }
 
 // chainWeights 返回长度为 n 的权重切片，链内权重之和为 100，链尾最重。
@@ -432,9 +459,9 @@ func (v *Vocabulary) Match(text string, opts ...*matchOpts) MatchResult {
 	path := make(NamePath, len(bestChain.path))
 	copy(path, bestChain.path)
 	return MatchResult{
-		Matched:       true,
-		MatchedNodeID: v.matchedNodeID(bestChain.id),
-		MatchKind:     bestKind,
-		Path:          path,
+		Matched:   true,
+		MatchKind: bestKind,
+		Path:      path,
+		PathIDs:   v.exposedPathIDs(bestChain.pathIDs),
 	}
 }

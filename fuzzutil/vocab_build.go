@@ -59,15 +59,18 @@ func buildAllChains(nodes []VocabNode) []chain {
 
 	chains := make([]chain, 0, len(nodes))
 	for _, n := range nodes {
-		path, ok := buildPath(n.ID, byID)
+		path, pathIDs, ok := buildPathWithIDs(n.ID, byID)
 		if !ok {
 			continue
 		}
 		pathCopy := make([]string, len(path))
 		copy(pathCopy, path)
+		pathIDsCopy := make([]string, len(pathIDs))
+		copy(pathIDsCopy, pathIDs)
 		chains = append(chains, chain{
 			id:      n.ID,
 			path:    pathCopy,
+			pathIDs: pathIDsCopy,
 			weights: chainWeights(len(path)),
 		})
 	}
@@ -152,6 +155,7 @@ func alignChains(chains []chain) []chain {
 		out[i] = chain{
 			id:      c.id,
 			path:    c.path,
+			pathIDs: c.pathIDs,
 			aligned: aligned,
 			weights: weights,
 		}
