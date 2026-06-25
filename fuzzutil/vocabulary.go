@@ -51,7 +51,8 @@ type MatchResult struct {
 // chain 是一条可匹配的关系链及其预计算权重（权重之和为 100）。
 type chain struct {
 	id      string
-	path    []string
+	path    []string // 原始 path，用于 MatchResult
+	aligned []string // 右对齐计分 path（前补 ""），与 weights 等长
 	weights []int
 }
 
@@ -190,7 +191,7 @@ func NewVocabulary(paths ...NamePath) *Vocabulary {
 
 	all := buildAllChains(nodes)
 	return &Vocabulary{
-		chains:       filterChainsByEndpointIDs(all, endpointIDs),
+		chains:       alignChains(filterChainsByEndpointIDs(all, endpointIDs)),
 		exposableIDs: map[string]bool{},
 	}
 }
@@ -203,7 +204,7 @@ func NewVocabularyFromNodes(nodes []VocabNode, opts ...*endpointOpts) *Vocabular
 	}
 	all := buildAllChains(nodes)
 	ep := resolveEndpointOpts(opts...)
-	return &Vocabulary{chains: filterChainsByEndpoint(all, nodes, ep)}
+	return &Vocabulary{chains: alignChains(filterChainsByEndpoint(all, nodes, ep))}
 }
 
 func nodeKey(parentID, name string) string {
@@ -273,6 +274,9 @@ func scoreChain(text string, path []string, weights []int, rules matchRules, ali
 	bestNodeScore := 0
 
 	for i, name := range path {
+		if name == "" {
+			continue
+		}
 		candidates := matchCandidatesForName(name, aliases)
 		_, kind, ok := matchBest(text, candidates, rules)
 		if !ok {
@@ -358,7 +362,7 @@ func NewVocabularyFromTree(root TreeNode, opts ...*endpointOpts) *Vocabulary {
 	all := buildAllChains(nodes)
 	ep := resolveEndpointOpts(opts...)
 	return &Vocabulary{
-		chains:       filterChainsByEndpoint(all, nodes, ep),
+		chains:       alignChains(filterChainsByEndpoint(all, nodes, ep)),
 		exposableIDs: exposable,
 	}
 }
@@ -400,7 +404,7 @@ func (v *Vocabulary) MatchFromText(text string, opts ...*matchOpts) MatchResult 
 	)
 
 	for _, c := range v.chains {
-		scored := scoreChain(text, c.path, c.weights, rules, aliases)
+		scored := scoreChain(text, c.aligned, c.weights, rules, aliases)
 		if scored.total == 0 {
 			continue
 		}

@@ -129,3 +129,32 @@ func filterChainsByEndpointIDs(chains []chain, endpointIDs map[string]bool) []ch
 	}
 	return filtered
 }
+
+// alignChains 将词表内各链右对齐到 maxDepth（前补 ""），并统一 weights。
+func alignChains(chains []chain) []chain {
+	if len(chains) == 0 {
+		return chains
+	}
+
+	maxDepth := 0
+	for _, c := range chains {
+		if len(c.path) > maxDepth {
+			maxDepth = len(c.path)
+		}
+	}
+
+	weights := chainWeights(maxDepth)
+	out := make([]chain, len(chains))
+	for i, c := range chains {
+		pad := maxDepth - len(c.path)
+		aligned := make([]string, maxDepth)
+		copy(aligned[pad:], c.path)
+		out[i] = chain{
+			id:      c.id,
+			path:    c.path,
+			aligned: aligned,
+			weights: weights,
+		}
+	}
+	return out
+}

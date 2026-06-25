@@ -511,6 +511,206 @@ func tibetVocab() *Vocabulary {
 	)
 }
 
+func anhuiMultiDepthVocab() *Vocabulary {
+	return NewVocabulary(
+		NamePath{"安徽省"},
+		NamePath{"安徽省", "滁州市"},
+		NamePath{"安徽省", "滁州市", "天长市"},
+	)
+}
+
+func anhuiMultiDepthNodes() []VocabNode {
+	return []VocabNode{
+		{ID: "1", ParentID: "", Name: "安徽省"},
+		{ID: "2", ParentID: "1", Name: "滁州市"},
+		{ID: "3", ParentID: "2", Name: "天长市"},
+	}
+}
+
+func anhuiMultiDepthAlignCases() []struct {
+	name     string
+	text     string
+	matched  bool
+	wantPath NamePath
+	wantKind MatchKind
+} {
+	return []struct {
+		name     string
+		text     string
+		matched  bool
+		wantPath NamePath
+		wantKind MatchKind
+	}{
+		{
+			name:     "skip_middle_level",
+			text:     "安徽省天长市铜城工业园区纬三大道一号",
+			matched:  true,
+			wantPath: NamePath{"安徽省", "滁州市", "天长市"},
+			wantKind: MatchContain,
+		},
+		{
+			name:     "province_only",
+			text:     "安徽省",
+			matched:  true,
+			wantPath: NamePath{"安徽省"},
+			wantKind: MatchContain,
+		},
+		{
+			name:     "full_hierarchy",
+			text:     "安徽省滁州市天长市",
+			matched:  true,
+			wantPath: NamePath{"安徽省", "滁州市", "天长市"},
+			wantKind: MatchContain,
+		},
+		{
+			name:     "county_only",
+			text:     "天长市",
+			matched:  true,
+			wantPath: NamePath{"安徽省", "滁州市", "天长市"},
+			wantKind: MatchContain,
+		},
+		{
+			name:     "city_and_county_no_province",
+			text:     "滁州市天长市",
+			matched:  true,
+			wantPath: NamePath{"安徽省", "滁州市", "天长市"},
+			wantKind: MatchContain,
+		},
+		{
+			name:     "city_only",
+			text:     "滁州市",
+			matched:  true,
+			wantPath: NamePath{"安徽省", "滁州市"},
+			wantKind: MatchContain,
+		},
+		{
+			name:    "no_match",
+			text:    "abcxyz",
+			matched: false,
+		},
+	}
+}
+
+func runMultiDepthAlignCases(t *testing.T, vocab *Vocabulary, cases []struct {
+	name     string
+	text     string
+	matched  bool
+	wantPath NamePath
+	wantKind MatchKind
+}) {
+	t.Helper()
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			got := vocab.MatchFromText(tt.text)
+			if got.Matched != tt.matched {
+				t.Fatalf("Matched = %v, want %v (result=%+v)", got.Matched, tt.matched, got)
+			}
+			if !tt.matched {
+				return
+			}
+			if !reflect.DeepEqual(got.Path, tt.wantPath) {
+				t.Fatalf("Path = %v, want %v", got.Path, tt.wantPath)
+			}
+			if got.MatchKind != tt.wantKind {
+				t.Fatalf("MatchKind = %v, want %v", got.MatchKind, tt.wantKind)
+			}
+			if tt.name == "skip_middle_level" {
+				for _, seg := range got.Path {
+					if seg == "" {
+						t.Fatal("Path must not contain padded empty segments")
+					}
+				}
+			}
+		})
+	}
+}
+
+func TestAlignChains(t *testing.T) {
+	vocab := anhuiMultiDepthVocab()
+	if len(vocab.chains) != 3 {
+		t.Fatalf("want 3 chains, got %d", len(vocab.chains))
+	}
+
+	byDepth := make(map[int]chain, len(vocab.chains))
+	for _, c := range vocab.chains {
+		byDepth[len(c.path)] = c
+	}
+
+	shallow, ok := byDepth[1]
+	if !ok {
+		t.Fatal("missing depth-1 chain")
+	}
+	wantShallowAligned := []string{"", "", "安徽省"}
+	if !reflect.DeepEqual(shallow.aligned, wantShallowAligned) {
+		t.Fatalf("depth 1 aligned = %v, want %v", shallow.aligned, wantShallowAligned)
+	}
+
+	mid, ok := byDepth[2]
+	if !ok {
+		t.Fatal("missing depth-2 chain")
+	}
+	wantMidAligned := []string{"", "安徽省", "滁州市"}
+	if !reflect.DeepEqual(mid.aligned, wantMidAligned) {
+		t.Fatalf("depth 2 aligned = %v, want %v", mid.aligned, wantMidAligned)
+	}
+
+	deep, ok := byDepth[3]
+	if !ok {
+		t.Fatal("missing depth-3 chain")
+	}
+	if !reflect.DeepEqual(deep.aligned, deep.path) {
+		t.Fatalf("depth 3 aligned = %v, want path %v", deep.aligned, deep.path)
+	}
+
+	baseWeights := vocab.chains[0].weights
+	if len(baseWeights) != 3 {
+		t.Fatalf("weights len = %d, want 3", len(baseWeights))
+	}
+	sum := 0
+	for _, w := range baseWeights {
+		sum += w
+	}
+	if sum != 100 {
+		t.Fatalf("weights sum = %d, want 100", sum)
+	}
+	for i, c := range vocab.chains[1:] {
+		if len(c.weights) != len(baseWeights) {
+			t.Fatalf("chain %d weights len = %d, want %d", i+1, len(c.weights), len(baseWeights))
+		}
+		if !reflect.DeepEqual(c.weights, baseWeights) {
+			t.Fatalf("chain %d weights = %v, want shared %v", i+1, c.weights, baseWeights)
+		}
+	}
+
+	if alignChains(nil) != nil {
+		t.Fatal("alignChains(nil) should return nil")
+	}
+	if got := alignChains([]chain{}); len(got) != 0 {
+		t.Fatalf("alignChains(empty) len = %d, want 0", len(got))
+	}
+
+	singleDepth := NewVocabulary(NamePath{"江苏省", "南京"})
+	if len(singleDepth.chains) != 1 {
+		t.Fatalf("single depth vocab: want 1 chain, got %d", len(singleDepth.chains))
+	}
+	c := singleDepth.chains[0]
+	if !reflect.DeepEqual(c.aligned, c.path) {
+		t.Fatalf("same-depth aligned = %v, want path %v", c.aligned, c.path)
+	}
+}
+
+func TestMatchFromText_MultiDepthChainAlignment(t *testing.T) {
+	runMultiDepthAlignCases(t, anhuiMultiDepthVocab(), anhuiMultiDepthAlignCases())
+}
+
+func TestMatchFromText_MultiDepthChainAlignment_FromNodes(t *testing.T) {
+	vocab := NewVocabularyFromNodes(
+		anhuiMultiDepthNodes(),
+		EndpointOpts().AtDepths(1, 2, 3),
+	)
+	runMultiDepthAlignCases(t, vocab, anhuiMultiDepthAlignCases())
+}
+
 func TestMatchFromText_RegionAliases_NoOptsNoMatch(t *testing.T) {
 	vocab := NewVocabulary(NamePath{"新疆维吾尔自治区"})
 	got := vocab.MatchFromText("新疆")
@@ -579,21 +779,6 @@ func TestMatchFromText_NameAliases_CustomOnly2(t *testing.T) {
 		}),
 	)
 	want := NamePath{"新疆", "乌鲁木齐市"}
-	if !got.Matched || !reflect.DeepEqual(got.Path, want) {
-		t.Fatalf("got %+v, want Path %v", got, want)
-	}
-}
-
-func TestMatchFromText_NameAliases_CustomOnly3(t *testing.T) {
-	vocab := NewVocabulary(
-		NamePath{"安徽省"},
-		NamePath{"安徽省", "滁州市"},
-		NamePath{"安徽省", "滁州市", "天长市"},
-	)
-	got := vocab.MatchFromText(
-		"安徽省天长市铜城工业园区纬三大道一号",
-	)
-	want := NamePath{"安徽省", "滁州市", "天长市"}
 	if !got.Matched || !reflect.DeepEqual(got.Path, want) {
 		t.Fatalf("got %+v, want Path %v", got, want)
 	}
