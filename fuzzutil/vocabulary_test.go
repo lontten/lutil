@@ -872,3 +872,15 @@ func TestVocabulary_Match_CategoryThreeLevel2(t *testing.T) {
 	got := vocab.Match("中国四")
 	logutil.Log(got)
 }
+
+func TestVocabulary_Match_Alias1(t *testing.T) {
+	vocab := NewVocabulary(
+		NamePath{"山西省", "大同市", "城区"},
+		NamePath{"河南省", "郑州市", "管城回族区"},
+	)
+	got := vocab.Match("郑州市管城区", MatchOpts().WithDefaultRegionAliases())
+	want := NamePath{"河南省", "郑州市", "管城回族区"}
+	if !got.Matched || !reflect.DeepEqual(got.Path, want) {
+		t.Fatalf("got %+v, want Path %v", got, want)
+	}
+}
