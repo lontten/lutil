@@ -84,3 +84,13 @@ func ToObjDefault[T any](str string) T {
 	json.Unmarshal([]byte(str), &obj)
 	return obj
 }
+
+func JsonCopy[T any](v any) (T, error) {
+	var obj T
+	str, err := ToJsonStr(v)
+	if err != nil {
+		return obj, err
+	}
+	err = json.Unmarshal([]byte(str), &obj)
+	return obj, err
+}
