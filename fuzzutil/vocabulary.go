@@ -289,10 +289,13 @@ func chainWeights(n int) []int {
 
 // chainScoreResult 是一条链的计分结果。
 type chainScoreResult struct {
-	total       int
-	tailKind    MatchKind
-	tailMatched bool
-	kind        MatchKind // 返回用：链尾命中方式，否则链内最高分节点的方式
+	total         int
+	tailKind      MatchKind
+	tailMatched   bool
+	kind          MatchKind // 返回用：链尾命中方式，否则链内最高分节点的方式
+	tailFullName  bool      // 链尾是否以节点全名命中（非 alias / 后缀剥离）
+	tailTermRunes int       // 链尾实际命中候选的 rune 数
+	tailMatchPos  int       // 链尾 contain 命中在 text 中的起始下标；-1 表示未知或未 contain 命中
 }
 
 // scoreChain 对一条关系链逐节点计分。
@@ -305,7 +308,7 @@ func scoreChain(text string, path []string, weights []int, rules matchRules, ali
 			continue
 		}
 		candidates := matchCandidatesForName(name, aliases)
-		_, kind, ok := matchBest(text, candidates, rules)
+		term, kind, ok := matchBest(text, candidates, rules)
 		if !ok {
 			continue
 		}
@@ -323,6 +326,11 @@ func scoreChain(text string, path []string, weights []int, rules matchRules, ali
 		if i == len(path)-1 {
 			res.tailMatched = true
 			res.tailKind = kind
+			res.tailFullName = term == name
+			res.tailTermRunes = len([]rune(term))
+			if kind == MatchContain {
+				res.tailMatchPos = firstIndexRunes([]rune(text), []rune(term))
+			}
 		}
 	}
 
@@ -344,18 +352,59 @@ func kindRank(k MatchKind) int {
 	}
 }
 
+// chainCompare 汇总链间同分决胜字段。
+type chainCompare struct {
+	total         int
+	tailKind      MatchKind
+	pathLen       int
+	tailRuneLen   int
+	tailFullName  bool
+	tailTermRunes int
+	tailMatchPos  int
+}
+
+func chainCompareFrom(pathLen, tailRuneLen int, scored chainScoreResult) chainCompare {
+	return chainCompare{
+		total:         scored.total,
+		tailKind:      scored.tailKind,
+		pathLen:       pathLen,
+		tailRuneLen:   tailRuneLen,
+		tailFullName:  scored.tailFullName,
+		tailTermRunes: scored.tailTermRunes,
+		tailMatchPos:  scored.tailMatchPos,
+	}
+}
+
 // betterChain 判断候选链是否优于当前最佳链（用于同分决胜）。
-func betterChain(total int, tailKind MatchKind, pathLen, tailRuneLen int, bestTotal int, bestTailKind MatchKind, bestPathLen, bestTailRuneLen int) bool {
-	if total != bestTotal {
-		return total > bestTotal
+func betterChain(cur, best chainCompare) bool {
+	if cur.total != best.total {
+		return cur.total > best.total
 	}
-	if kindRank(tailKind) != kindRank(bestTailKind) {
-		return kindRank(tailKind) > kindRank(bestTailKind)
+	if kindRank(cur.tailKind) != kindRank(best.tailKind) {
+		return kindRank(cur.tailKind) > kindRank(best.tailKind)
 	}
-	if pathLen != bestPathLen {
-		return pathLen > bestPathLen
+	if cur.pathLen != best.pathLen {
+		return cur.pathLen > best.pathLen
 	}
-	return tailRuneLen > bestTailRuneLen
+	if cur.tailRuneLen != best.tailRuneLen {
+		return cur.tailRuneLen > best.tailRuneLen
+	}
+	if cur.tailFullName != best.tailFullName {
+		return cur.tailFullName
+	}
+	if cur.tailTermRunes != best.tailTermRunes {
+		return cur.tailTermRunes > best.tailTermRunes
+	}
+	if cur.tailMatchPos != best.tailMatchPos {
+		if cur.tailMatchPos < 0 {
+			return false
+		}
+		if best.tailMatchPos < 0 {
+			return true
+		}
+		return cur.tailMatchPos < best.tailMatchPos
+	}
+	return false
 }
 
 // NewVocabularyFromTree 从嵌套树构建词表。
@@ -421,13 +470,10 @@ func (v *Vocabulary) Match(text string, opts ...*matchOpts) MatchResult {
 	aliases := o.aliasConfig()
 
 	var (
-		found         bool
-		bestTotal     int
-		bestTailKind  MatchKind
-		bestPathLen   int
-		bestTailRunes int
-		bestChain     chain
-		bestKind      MatchKind
+		found   bool
+		best    chainCompare
+		bestChain chain
+		bestKind  MatchKind
 	)
 
 	for _, c := range v.chains {
@@ -441,12 +487,10 @@ func (v *Vocabulary) Match(text string, opts ...*matchOpts) MatchResult {
 			tailRunes = len([]rune(c.path[len(c.path)-1]))
 		}
 
-		if !found || betterChain(scored.total, scored.tailKind, len(c.path), tailRunes, bestTotal, bestTailKind, bestPathLen, bestTailRunes) {
+		cur := chainCompareFrom(len(c.path), tailRunes, scored)
+		if !found || betterChain(cur, best) {
 			found = true
-			bestTotal = scored.total
-			bestTailKind = scored.tailKind
-			bestPathLen = len(c.path)
-			bestTailRunes = tailRunes
+			best = cur
 			bestChain = c
 			bestKind = scored.kind
 		}

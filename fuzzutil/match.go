@@ -158,11 +158,16 @@ func commonRuneOverlap(a, b []rune) int {
 
 // containsRunes 检查 s 是否包含连续子串 t（非子序列）。
 func containsRunes(s, t []rune) bool {
+	return firstIndexRunes(s, t) >= 0
+}
+
+// firstIndexRunes 返回 t 在 s 中首次出现的 rune 下标；未找到返回 -1。
+func firstIndexRunes(s, t []rune) int {
 	if len(t) == 0 {
-		return true
+		return 0
 	}
 	if len(s) < len(t) {
-		return false
+		return -1
 	}
 	for i := 0; i <= len(s)-len(t); i++ {
 		match := true
@@ -173,10 +178,10 @@ func containsRunes(s, t []rune) bool {
 			}
 		}
 		if match {
-			return true
+			return i
 		}
 	}
-	return false
+	return -1
 }
 
 // levenshteinDistance 计算两个 rune 切片的 Levenshtein 编辑距离。
