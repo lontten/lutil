@@ -13,12 +13,12 @@
 //
 //	vocab := fuzzutil.NewVocabularyFromTree(root)
 //	vocab := fuzzutil.NewVocabularyFromNodes(nodes, fuzzutil.EndpointOpts().AtDepths(2))
-//	result := vocab.Match(text, fuzzutil.MatchOpts().WithDefaultRegionAliases())
+//	result := vocab.Match(text, fuzzutil.MatchOpts().WithChinaAdminAddress())
 //	result.Path 与 result.PathIDs 等长同索引；链尾分别用 LastName()、LastID()
 //
 // 行政区划地址匹配（简称/后缀省略）：
 //
-//	result := vocab.Match(addr, fuzzutil.MatchOpts().WithDefaultRegionAliases())
+//	result := vocab.Match(addr, fuzzutil.MatchOpts().WithChinaAdminAddress())
 package fuzzutil
 
 import (
@@ -182,6 +182,38 @@ func firstIndexRunes(s, t []rune) int {
 		}
 	}
 	return -1
+}
+
+// isStreetSuffixRune 判断 rune 是否为常见道路/街巷后缀（用于剥离 alias 误命中道路名）。
+func isStreetSuffixRune(r rune) bool {
+	switch r {
+	case '街', '路', '道', '巷', '弄', '里', '线', '桥', '港', '站':
+		return true
+	default:
+		return false
+	}
+}
+
+// isStripAliasStreetFalsePositive 剥离/短 alias 命中后紧跟道路后缀时视为误命中（如 莲花→莲花街）。
+func isStripAliasStreetFalsePositive(text, term, nodeName string) bool {
+	if term == nodeName {
+		return false
+	}
+	termRunes := []rune(term)
+	nameRunes := []rune(nodeName)
+	if len(termRunes) >= len(nameRunes) {
+		return false
+	}
+	textRunes := []rune(text)
+	pos := firstIndexRunes(textRunes, termRunes)
+	if pos < 0 {
+		return false
+	}
+	afterIdx := pos + len(termRunes)
+	if afterIdx >= len(textRunes) {
+		return false
+	}
+	return isStreetSuffixRune(textRunes[afterIdx])
 }
 
 // levenshteinDistance 计算两个 rune 切片的 Levenshtein 编辑距离。

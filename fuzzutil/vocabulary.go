@@ -101,6 +101,7 @@ type matchOpts struct {
 	minOverlap         int
 	maxEditDistance    int
 	nameAliases        map[string][]string
+	functionalZones    map[string]string // 功能区名 → 规范区县名（链尾）
 	stripAdminSuffixes bool
 }
 
@@ -157,9 +158,32 @@ func (o *matchOpts) NameAliases(m map[string][]string) *matchOpts {
 	return o
 }
 
+// WithDefaultFunctionalZones 合并内建国家级高频功能区 → 规范区县名映射。
+func (o *matchOpts) WithDefaultFunctionalZones() *matchOpts {
+	o.functionalZones = mergeFunctionalZoneMap(o.functionalZones, DefaultFunctionalZoneAliases())
+	return o
+}
+
+// WithChinaAdminAddress 启用中国行政区划地址匹配预设：规范简称、后缀剥离、国家级功能区映射。
+func (o *matchOpts) WithChinaAdminAddress() *matchOpts {
+	return o.WithDefaultRegionAliases().WithDefaultFunctionalZones()
+}
+
+// FunctionalZones 合并业务侧功能区名 → 规范区县名映射；nil 时忽略。
+func (o *matchOpts) FunctionalZones(m map[string]string) *matchOpts {
+	if m != nil {
+		o.functionalZones = mergeFunctionalZoneMap(o.functionalZones, m)
+	}
+	return o
+}
+
 func (o *matchOpts) aliasConfig() aliasConfig {
+	aliases := o.nameAliases
+	if len(o.functionalZones) > 0 {
+		aliases = mergeAliasMap(aliases, functionalZonesToNameAliases(o.functionalZones))
+	}
 	return aliasConfig{
-		nameAliases:        o.nameAliases,
+		nameAliases:        aliases,
 		stripAdminSuffixes: o.stripAdminSuffixes,
 	}
 }
@@ -290,10 +314,12 @@ func chainWeights(n int) []int {
 // chainScoreResult 是一条链的计分结果。
 type chainScoreResult struct {
 	total         int
+	ancestorScore int // 非链尾节点得分之和
 	tailKind      MatchKind
 	tailMatched   bool
 	kind          MatchKind // 返回用：链尾命中方式，否则链内最高分节点的方式
 	tailFullName  bool      // 链尾是否以节点全名命中（非 alias / 后缀剥离）
+	tailOnlyStrip bool      // 得分仅来自链尾剥离/短 alias 命中
 	tailTermRunes int       // 链尾实际命中候选的 rune 数
 	tailMatchPos  int       // 链尾 contain 命中在 text 中的起始下标；-1 表示未知或未 contain 命中
 }
@@ -309,6 +335,9 @@ func scoreChain(text string, path []string, weights []int, rules matchRules, ali
 		}
 		candidates := matchCandidatesForName(name, aliases)
 		term, kind, ok := matchBest(text, candidates, rules)
+		if ok && kind == MatchContain && isStripAliasStreetFalsePositive(text, term, name) {
+			ok = false
+		}
 		if !ok {
 			continue
 		}
@@ -317,6 +346,10 @@ func scoreChain(text string, path []string, weights []int, rules matchRules, ali
 			pts = weights[i] / 2
 		}
 		res.total += pts
+
+		if i != len(path)-1 {
+			res.ancestorScore += pts
+		}
 
 		if pts > bestNodeScore {
 			bestNodeScore = pts
@@ -337,6 +370,7 @@ func scoreChain(text string, path []string, weights []int, rules matchRules, ali
 	if res.tailMatched {
 		res.kind = res.tailKind
 	}
+	res.tailOnlyStrip = res.total > 0 && res.ancestorScore == 0 && res.tailMatched && !res.tailFullName
 
 	return res
 }
@@ -355,6 +389,8 @@ func kindRank(k MatchKind) int {
 // chainCompare 汇总链间同分决胜字段。
 type chainCompare struct {
 	total         int
+	ancestorScore int
+	tailOnlyStrip bool
 	tailKind      MatchKind
 	pathLen       int
 	tailRuneLen   int
@@ -366,6 +402,8 @@ type chainCompare struct {
 func chainCompareFrom(pathLen, tailRuneLen int, scored chainScoreResult) chainCompare {
 	return chainCompare{
 		total:         scored.total,
+		ancestorScore: scored.ancestorScore,
+		tailOnlyStrip: scored.tailOnlyStrip,
 		tailKind:      scored.tailKind,
 		pathLen:       pathLen,
 		tailRuneLen:   tailRuneLen,
@@ -377,6 +415,13 @@ func chainCompareFrom(pathLen, tailRuneLen int, scored chainScoreResult) chainCo
 
 // betterChain 判断候选链是否优于当前最佳链（用于同分决胜）。
 func betterChain(cur, best chainCompare) bool {
+	// 孤立链尾剥离 alias 不应压过有上级节点命中的链（表外功能区兜底）。
+	if best.tailOnlyStrip && cur.ancestorScore > 0 {
+		return true
+	}
+	if cur.tailOnlyStrip && best.ancestorScore > 0 {
+		return false
+	}
 	if cur.total != best.total {
 		return cur.total > best.total
 	}

@@ -1,0 +1,3967 @@
+{
+  "zones": [
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "天津滨海高新技术产业开发区",
+      "district": "滨海新区",
+      "aliases": [
+        "天津滨海高新技术产业开发区",
+        "天津滨海高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "石家庄高新技术产业开发区",
+      "district": "裕华区",
+      "aliases": [
+        "石家庄高新技术产业开发区",
+        "石家庄高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "保定高新技术产业开发区",
+      "district": "竞秀区",
+      "aliases": [
+        "保定高新技术产业开发区",
+        "保定高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "唐山高新技术产业开发区",
+      "district": "路北区",
+      "aliases": [
+        "唐山高新技术产业开发区",
+        "唐山高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "燕郊高新技术产业开发区",
+      "district": "三河市",
+      "aliases": [
+        "燕郊高新技术产业开发区",
+        "燕郊高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "承德高新技术产业开发区",
+      "district": "双桥区",
+      "aliases": [
+        "承德高新技术产业开发区",
+        "承德高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "太原高新技术产业开发区",
+      "district": "小店区",
+      "aliases": [
+        "太原高新技术产业开发区",
+        "太原高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "长治高新技术产业开发区",
+      "district": "潞州区",
+      "aliases": [
+        "长治高新技术产业开发区",
+        "长治高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "包头稀土高新技术产业开发区",
+      "district": "稀土高新区",
+      "aliases": [
+        "包头稀土高新技术产业开发区",
+        "包头稀土高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "呼和浩特金山高新技术产业开发区",
+      "district": "赛罕区",
+      "aliases": [
+        "呼和浩特金山高新技术产业开发区",
+        "呼和浩特金山高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "鄂尔多斯高新技术产业开发区",
+      "district": "康巴什区",
+      "aliases": [
+        "鄂尔多斯高新技术产业开发区",
+        "鄂尔多斯高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "沈阳高新技术产业开发区",
+      "district": "浑南区",
+      "aliases": [
+        "沈阳高新技术产业开发区",
+        "沈阳高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "鞍山高新技术产业开发区",
+      "district": "立山区",
+      "aliases": [
+        "鞍山高新技术产业开发区",
+        "鞍山高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "营口高新技术产业开发区",
+      "district": "西市区",
+      "aliases": [
+        "营口高新技术产业开发区",
+        "营口高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "辽阳高新技术产业开发区",
+      "district": "宏伟区",
+      "aliases": [
+        "辽阳高新技术产业开发区",
+        "辽阳高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "本溪高新技术产业开发区",
+      "district": "明山区",
+      "aliases": [
+        "本溪高新技术产业开发区",
+        "本溪高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "锦州高新技术产业开发区",
+      "district": "太和区",
+      "aliases": [
+        "锦州高新技术产业开发区",
+        "锦州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "阜新高新技术产业开发区",
+      "district": "细河区",
+      "aliases": [
+        "阜新高新技术产业开发区",
+        "阜新高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "长春高新技术产业开发区",
+      "district": "朝阳区",
+      "aliases": [
+        "长春高新技术产业开发区",
+        "长春高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "长春净月高新技术产业开发区",
+      "district": "净月区",
+      "aliases": [
+        "长春净月高新技术产业开发区",
+        "长春净月高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "吉林高新技术产业开发区",
+      "district": "丰满区",
+      "aliases": [
+        "吉林高新技术产业开发区",
+        "吉林高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "延吉高新技术产业开发区",
+      "district": "延吉市",
+      "aliases": [
+        "延吉高新技术产业开发区",
+        "延吉高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "通化医药高新技术产业开发区",
+      "district": "东昌区",
+      "aliases": [
+        "通化医药高新技术产业开发区",
+        "通化医药高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "哈尔滨高新技术产业开发区",
+      "district": "松北区",
+      "aliases": [
+        "哈尔滨高新技术产业开发区",
+        "哈尔滨高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "大庆高新技术产业开发区",
+      "district": "萨尔图区",
+      "aliases": [
+        "大庆高新技术产业开发区",
+        "大庆高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "齐齐哈尔高新技术产业开发区",
+      "district": "龙沙区",
+      "aliases": [
+        "齐齐哈尔高新技术产业开发区",
+        "齐齐哈尔高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "上海张江高新技术产业开发区",
+      "district": "浦东新区",
+      "aliases": [
+        "上海张江高新技术产业开发区",
+        "上海张江高新区",
+        "张江高新区",
+        "张江高科技园区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "上海紫竹高新技术产业开发区",
+      "district": "闵行区",
+      "aliases": [
+        "上海紫竹高新技术产业开发区",
+        "上海紫竹高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "南京高新技术产业开发区",
+      "district": "玄武区",
+      "aliases": [
+        "南京高新技术产业开发区",
+        "南京高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "苏州高新技术产业开发区",
+      "district": "虎丘区",
+      "aliases": [
+        "苏州高新技术产业开发区",
+        "苏州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "昆山高新技术产业开发区",
+      "district": "昆山市",
+      "aliases": [
+        "昆山高新技术产业开发区",
+        "昆山高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "无锡高新技术产业开发区",
+      "district": "新吴区",
+      "aliases": [
+        "无锡高新技术产业开发区",
+        "无锡高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "江阴高新技术产业开发区",
+      "district": "江阴市",
+      "aliases": [
+        "江阴高新技术产业开发区",
+        "江阴高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "常州高新技术产业开发区",
+      "district": "新北区",
+      "aliases": [
+        "常州高新技术产业开发区",
+        "常州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "武进高新技术产业开发区",
+      "district": "武进区",
+      "aliases": [
+        "武进高新技术产业开发区",
+        "武进高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "泰州医药高新技术产业开发区",
+      "district": "医药高新区",
+      "aliases": [
+        "泰州医药高新技术产业开发区",
+        "泰州医药高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "徐州高新技术产业开发区",
+      "district": "铜山区",
+      "aliases": [
+        "徐州高新技术产业开发区",
+        "徐州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "南通高新技术产业开发区",
+      "district": "崇川区",
+      "aliases": [
+        "南通高新技术产业开发区",
+        "南通高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "镇江高新技术产业开发区",
+      "district": "丹徒区",
+      "aliases": [
+        "镇江高新技术产业开发区",
+        "镇江高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "盐城高新技术产业开发区",
+      "district": "盐都区",
+      "aliases": [
+        "盐城高新技术产业开发区",
+        "盐城高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "连云港高新技术产业开发区",
+      "district": "海州区",
+      "aliases": [
+        "连云港高新技术产业开发区",
+        "连云港高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "扬州高新技术产业开发区",
+      "district": "邗江区",
+      "aliases": [
+        "扬州高新技术产业开发区",
+        "扬州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "常熟高新技术产业开发区",
+      "district": "常熟市",
+      "aliases": [
+        "常熟高新技术产业开发区",
+        "常熟高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "宿迁高新技术产业开发区",
+      "district": "宿城区",
+      "aliases": [
+        "宿迁高新技术产业开发区",
+        "宿迁高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "淮安高新技术产业开发区",
+      "district": "清江浦区",
+      "aliases": [
+        "淮安高新技术产业开发区",
+        "淮安高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "杭州高新技术产业开发区",
+      "district": "滨江区",
+      "aliases": [
+        "杭州高新技术产业开发区",
+        "杭州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "萧山临江高新技术产业开发区",
+      "district": "萧山区",
+      "aliases": [
+        "萧山临江高新技术产业开发区",
+        "萧山临江高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "宁波高新技术产业开发区",
+      "district": "鄞州区",
+      "aliases": [
+        "宁波高新技术产业开发区",
+        "宁波高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "绍兴高新技术产业开发区",
+      "district": "越城区",
+      "aliases": [
+        "绍兴高新技术产业开发区",
+        "绍兴高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "温州高新技术产业开发区",
+      "district": "龙湾区",
+      "aliases": [
+        "温州高新技术产业开发区",
+        "温州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "衢州高新技术产业开发区",
+      "district": "柯城区",
+      "aliases": [
+        "衢州高新技术产业开发区",
+        "衢州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "湖州莫干山高新技术产业开发区",
+      "district": "德清县",
+      "aliases": [
+        "湖州莫干山高新技术产业开发区",
+        "湖州莫干山高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "嘉兴高新技术产业开发区",
+      "district": "秀洲区",
+      "aliases": [
+        "嘉兴高新技术产业开发区",
+        "嘉兴高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "合肥高新技术产业开发区",
+      "district": "蜀山区",
+      "aliases": [
+        "合肥高新技术产业开发区",
+        "合肥高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "蚌埠高新技术产业开发区",
+      "district": "禹会区",
+      "aliases": [
+        "蚌埠高新技术产业开发区",
+        "蚌埠高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "芜湖高新技术产业开发区",
+      "district": "弋江区",
+      "aliases": [
+        "芜湖高新技术产业开发区",
+        "芜湖高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "马鞍山慈湖高新技术产业开发区",
+      "district": "花山区",
+      "aliases": [
+        "马鞍山慈湖高新技术产业开发区",
+        "马鞍山慈湖高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "铜陵狮子山高新技术产业开发区",
+      "district": "铜官区",
+      "aliases": [
+        "铜陵狮子山高新技术产业开发区",
+        "铜陵狮子山高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "淮南高新技术产业开发区",
+      "district": "田家庵区",
+      "aliases": [
+        "淮南高新技术产业开发区",
+        "淮南高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "滁州高新技术产业开发区",
+      "district": "南谯区",
+      "aliases": [
+        "滁州高新技术产业开发区",
+        "滁州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "福州高新技术产业开发区",
+      "district": "马尾区",
+      "aliases": [
+        "福州高新技术产业开发区",
+        "福州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "泉州高新技术产业开发区",
+      "district": "丰泽区",
+      "aliases": [
+        "泉州高新技术产业开发区",
+        "泉州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "莆田高新技术产业开发区",
+      "district": "城厢区",
+      "aliases": [
+        "莆田高新技术产业开发区",
+        "莆田高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "漳州高新技术产业开发区",
+      "district": "龙文区",
+      "aliases": [
+        "漳州高新技术产业开发区",
+        "漳州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "三明高新技术产业开发区",
+      "district": "三元区",
+      "aliases": [
+        "三明高新技术产业开发区",
+        "三明高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "龙岩高新技术产业开发区",
+      "district": "新罗区",
+      "aliases": [
+        "龙岩高新技术产业开发区",
+        "龙岩高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "南昌高新技术产业开发区",
+      "district": "青山湖区",
+      "aliases": [
+        "南昌高新技术产业开发区",
+        "南昌高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "新余高新技术产业开发区",
+      "district": "渝水区",
+      "aliases": [
+        "新余高新技术产业开发区",
+        "新余高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "景德镇高新技术产业开发区",
+      "district": "昌江区",
+      "aliases": [
+        "景德镇高新技术产业开发区",
+        "景德镇高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "鹰潭高新技术产业开发区",
+      "district": "月湖区",
+      "aliases": [
+        "鹰潭高新技术产业开发区",
+        "鹰潭高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "抚州高新技术产业开发区",
+      "district": "临川区",
+      "aliases": [
+        "抚州高新技术产业开发区",
+        "抚州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "吉安高新技术产业开发区",
+      "district": "吉州区",
+      "aliases": [
+        "吉安高新技术产业开发区",
+        "吉安高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "赣州高新技术产业开发区",
+      "district": "章贡区",
+      "aliases": [
+        "赣州高新技术产业开发区",
+        "赣州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "九江共青城高新技术产业开发区",
+      "district": "共青城市",
+      "aliases": [
+        "九江共青城高新技术产业开发区",
+        "九江共青城高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "宜春丰城高新技术产业开发区",
+      "district": "丰城市",
+      "aliases": [
+        "宜春丰城高新技术产业开发区",
+        "宜春丰城高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "济南高新技术产业开发区",
+      "district": "历下区",
+      "aliases": [
+        "济南高新技术产业开发区",
+        "济南高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "青岛高新技术产业开发区",
+      "district": "城阳区",
+      "aliases": [
+        "青岛高新技术产业开发区",
+        "青岛高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "潍坊高新技术产业开发区",
+      "district": "奎文区",
+      "aliases": [
+        "潍坊高新技术产业开发区",
+        "潍坊高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "淄博高新技术产业开发区",
+      "district": "张店区",
+      "aliases": [
+        "淄博高新技术产业开发区",
+        "淄博高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "济宁高新技术产业开发区",
+      "district": "任城区",
+      "aliases": [
+        "济宁高新技术产业开发区",
+        "济宁高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "烟台高新技术产业开发区",
+      "district": "莱山区",
+      "aliases": [
+        "烟台高新技术产业开发区",
+        "烟台高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "临沂高新技术产业开发区",
+      "district": "罗庄区",
+      "aliases": [
+        "临沂高新技术产业开发区",
+        "临沂高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "泰安高新技术产业开发区",
+      "district": "泰山区",
+      "aliases": [
+        "泰安高新技术产业开发区",
+        "泰安高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "枣庄高新技术产业开发区",
+      "district": "薛城区",
+      "aliases": [
+        "枣庄高新技术产业开发区",
+        "枣庄高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "德州高新技术产业开发区",
+      "district": "德城区",
+      "aliases": [
+        "德州高新技术产业开发区",
+        "德州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "莱芜高新技术产业开发区",
+      "district": "莱城区",
+      "aliases": [
+        "莱芜高新技术产业开发区",
+        "莱芜高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "郑州高新技术产业开发区",
+      "district": "中原区",
+      "aliases": [
+        "郑州高新技术产业开发区",
+        "郑州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "洛阳高新技术产业开发区",
+      "district": "涧西区",
+      "aliases": [
+        "洛阳高新技术产业开发区",
+        "洛阳高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "安阳高新技术产业开发区",
+      "district": "龙安区",
+      "aliases": [
+        "安阳高新技术产业开发区",
+        "安阳高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "南阳高新技术产业开发区",
+      "district": "卧龙区",
+      "aliases": [
+        "南阳高新技术产业开发区",
+        "南阳高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "新乡高新技术产业开发区",
+      "district": "红旗区",
+      "aliases": [
+        "新乡高新技术产业开发区",
+        "新乡高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "平顶山高新技术产业开发区",
+      "district": "卫东区",
+      "aliases": [
+        "平顶山高新技术产业开发区",
+        "平顶山高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "焦作高新技术产业开发区",
+      "district": "山阳区",
+      "aliases": [
+        "焦作高新技术产业开发区",
+        "焦作高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "信阳高新技术产业开发区",
+      "district": "平桥区",
+      "aliases": [
+        "信阳高新技术产业开发区",
+        "信阳高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "襄阳高新技术产业开发区",
+      "district": "襄州区",
+      "aliases": [
+        "襄阳高新技术产业开发区",
+        "襄阳高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "宜昌高新技术产业开发区",
+      "district": "西陵区",
+      "aliases": [
+        "宜昌高新技术产业开发区",
+        "宜昌高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "孝感高新技术产业开发区",
+      "district": "孝南区",
+      "aliases": [
+        "孝感高新技术产业开发区",
+        "孝感高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "荆门高新技术产业开发区",
+      "district": "掇刀区",
+      "aliases": [
+        "荆门高新技术产业开发区",
+        "荆门高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "仙桃高新技术产业开发区",
+      "district": "仙桃市",
+      "aliases": [
+        "仙桃高新技术产业开发区",
+        "仙桃高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "随州高新技术产业开发区",
+      "district": "曾都区",
+      "aliases": [
+        "随州高新技术产业开发区",
+        "随州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "黄冈高新技术产业开发区",
+      "district": "黄州区",
+      "aliases": [
+        "黄冈高新技术产业开发区",
+        "黄冈高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "咸宁高新技术产业开发区",
+      "district": "咸安区",
+      "aliases": [
+        "咸宁高新技术产业开发区",
+        "咸宁高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "荆州高新技术产业开发区",
+      "district": "荆州区",
+      "aliases": [
+        "荆州高新技术产业开发区",
+        "荆州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "黄石大冶湖高新技术产业开发区",
+      "district": "大冶市",
+      "aliases": [
+        "黄石大冶湖高新技术产业开发区",
+        "黄石大冶湖高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "潜江高新技术产业开发区",
+      "district": "潜江市",
+      "aliases": [
+        "潜江高新技术产业开发区",
+        "潜江高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "长沙高新技术产业开发区",
+      "district": "岳麓区",
+      "aliases": [
+        "长沙高新技术产业开发区",
+        "长沙高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "株洲高新技术产业开发区",
+      "district": "天元区",
+      "aliases": [
+        "株洲高新技术产业开发区",
+        "株洲高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "湘潭高新技术产业开发区",
+      "district": "岳塘区",
+      "aliases": [
+        "湘潭高新技术产业开发区",
+        "湘潭高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "益阳高新技术产业开发区",
+      "district": "赫山区",
+      "aliases": [
+        "益阳高新技术产业开发区",
+        "益阳高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "衡阳高新技术产业开发区",
+      "district": "蒸湘区",
+      "aliases": [
+        "衡阳高新技术产业开发区",
+        "衡阳高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "郴州高新技术产业开发区",
+      "district": "苏仙区",
+      "aliases": [
+        "郴州高新技术产业开发区",
+        "郴州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "常德高新技术产业开发区",
+      "district": "武陵区",
+      "aliases": [
+        "常德高新技术产业开发区",
+        "常德高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "怀化高新技术产业开发区",
+      "district": "鹤城区",
+      "aliases": [
+        "怀化高新技术产业开发区",
+        "怀化高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "广州高新技术产业开发区",
+      "district": "黄埔区",
+      "aliases": [
+        "广州高新技术产业开发区",
+        "广州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "佛山高新技术产业开发区",
+      "district": "禅城区",
+      "aliases": [
+        "佛山高新技术产业开发区",
+        "佛山高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "惠州仲恺高新技术产业开发区",
+      "district": "仲恺区",
+      "aliases": [
+        "惠州仲恺高新技术产业开发区",
+        "惠州仲恺高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "珠海高新技术产业开发区",
+      "district": "香洲区",
+      "aliases": [
+        "珠海高新技术产业开发区",
+        "珠海高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "东莞松山湖高新技术产业开发区",
+      "district": "大岭山镇",
+      "aliases": [
+        "东莞松山湖高新技术产业开发区",
+        "东莞松山湖高新区",
+        "松山湖高新区",
+        "东莞松山湖"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "肇庆高新技术产业开发区",
+      "district": "肇庆高新区",
+      "aliases": [
+        "肇庆高新技术产业开发区",
+        "肇庆高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "江门高新技术产业开发区",
+      "district": "江海区",
+      "aliases": [
+        "江门高新技术产业开发区",
+        "江门高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "源城高新技术产业开发区",
+      "district": "源城区",
+      "aliases": [
+        "源城高新技术产业开发区",
+        "源城高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "清远高新技术产业开发区",
+      "district": "清城区",
+      "aliases": [
+        "清远高新技术产业开发区",
+        "清远高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "汕头高新技术产业开发区",
+      "district": "龙湖区",
+      "aliases": [
+        "汕头高新技术产业开发区",
+        "汕头高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "湛江高新技术产业开发区",
+      "district": "坡头区",
+      "aliases": [
+        "湛江高新技术产业开发区",
+        "湛江高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "茂名高新技术产业开发区",
+      "district": "茂南区",
+      "aliases": [
+        "茂名高新技术产业开发区",
+        "茂名高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "南宁高新技术产业开发区",
+      "district": "西乡塘区",
+      "aliases": [
+        "南宁高新技术产业开发区",
+        "南宁高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "桂林高新技术产业开发区",
+      "district": "七星区",
+      "aliases": [
+        "桂林高新技术产业开发区",
+        "桂林高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "柳州高新技术产业开发区",
+      "district": "柳东区",
+      "aliases": [
+        "柳州高新技术产业开发区",
+        "柳州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "北海高新技术产业开发区",
+      "district": "银海区",
+      "aliases": [
+        "北海高新技术产业开发区",
+        "北海高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "海口高新技术产业开发区",
+      "district": "秀英区",
+      "aliases": [
+        "海口高新技术产业开发区",
+        "海口高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "重庆高新技术产业开发区",
+      "district": "九龙坡区",
+      "aliases": [
+        "重庆高新技术产业开发区",
+        "重庆高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "璧山高新技术产业开发区",
+      "district": "璧山区",
+      "aliases": [
+        "璧山高新技术产业开发区",
+        "璧山高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "荣昌高新技术产业开发区",
+      "district": "荣昌区",
+      "aliases": [
+        "荣昌高新技术产业开发区",
+        "荣昌高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "永川高新技术产业开发区",
+      "district": "永川区",
+      "aliases": [
+        "永川高新技术产业开发区",
+        "永川高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "成都高新技术产业开发区",
+      "district": "武侯区",
+      "aliases": [
+        "成都高新技术产业开发区",
+        "成都高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "绵阳高新技术产业开发区",
+      "district": "涪城区",
+      "aliases": [
+        "绵阳高新技术产业开发区",
+        "绵阳高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "自贡高新技术产业开发区",
+      "district": "自流井区",
+      "aliases": [
+        "自贡高新技术产业开发区",
+        "自贡高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "内江高新技术产业开发区",
+      "district": "东兴区",
+      "aliases": [
+        "内江高新技术产业开发区",
+        "内江高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "乐山高新技术产业开发区",
+      "district": "市中区",
+      "aliases": [
+        "乐山高新技术产业开发区",
+        "乐山高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "泸州高新技术产业开发区",
+      "district": "江阳区",
+      "aliases": [
+        "泸州高新技术产业开发区",
+        "泸州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "攀枝花钒钛高新技术产业开发区",
+      "district": "东区",
+      "aliases": [
+        "攀枝花钒钛高新技术产业开发区",
+        "攀枝花钒钛高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "德阳高新技术产业开发区",
+      "district": "旌阳区",
+      "aliases": [
+        "德阳高新技术产业开发区",
+        "德阳高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "贵阳高新技术产业开发区",
+      "district": "观山湖区",
+      "aliases": [
+        "贵阳高新技术产业开发区",
+        "贵阳高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "安顺高新技术产业开发区",
+      "district": "西秀区",
+      "aliases": [
+        "安顺高新技术产业开发区",
+        "安顺高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "遵义高新技术产业开发区",
+      "district": "红花岗区",
+      "aliases": [
+        "遵义高新技术产业开发区",
+        "遵义高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "昆明高新技术产业开发区",
+      "district": "五华区",
+      "aliases": [
+        "昆明高新技术产业开发区",
+        "昆明高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "玉溪高新技术产业开发区",
+      "district": "红塔区",
+      "aliases": [
+        "玉溪高新技术产业开发区",
+        "玉溪高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "楚雄高新技术产业开发区",
+      "district": "楚雄市",
+      "aliases": [
+        "楚雄高新技术产业开发区",
+        "楚雄高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "西安高新技术产业开发区",
+      "district": "雁塔区",
+      "aliases": [
+        "西安高新技术产业开发区",
+        "西安高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "宝鸡高新技术产业开发区",
+      "district": "渭滨区",
+      "aliases": [
+        "宝鸡高新技术产业开发区",
+        "宝鸡高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "渭南高新技术产业开发区",
+      "district": "临渭区",
+      "aliases": [
+        "渭南高新技术产业开发区",
+        "渭南高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "榆林高新技术产业开发区",
+      "district": "榆阳区",
+      "aliases": [
+        "榆林高新技术产业开发区",
+        "榆林高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "咸阳高新技术产业开发区",
+      "district": "秦都区",
+      "aliases": [
+        "咸阳高新技术产业开发区",
+        "咸阳高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "安康高新技术产业开发区",
+      "district": "汉滨区",
+      "aliases": [
+        "安康高新技术产业开发区",
+        "安康高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "兰州高新技术产业开发区",
+      "district": "城关区",
+      "aliases": [
+        "兰州高新技术产业开发区",
+        "兰州高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "白银高新技术产业开发区",
+      "district": "白银区",
+      "aliases": [
+        "白银高新技术产业开发区",
+        "白银高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "青海高新技术产业开发区",
+      "district": "城东区",
+      "aliases": [
+        "青海高新技术产业开发区",
+        "青海高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "银川高新技术产业开发区",
+      "district": "金凤区",
+      "aliases": [
+        "银川高新技术产业开发区",
+        "银川高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "石嘴山高新技术产业开发区",
+      "district": "大武口区",
+      "aliases": [
+        "石嘴山高新技术产业开发区",
+        "石嘴山高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "乌鲁木齐高新技术产业开发区",
+      "district": "新市区",
+      "aliases": [
+        "乌鲁木齐高新技术产业开发区",
+        "乌鲁木齐高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "昌吉高新技术产业开发区",
+      "district": "昌吉市",
+      "aliases": [
+        "昌吉高新技术产业开发区",
+        "昌吉高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "新疆生产建设兵团石河子高新技术产业开发区",
+      "district": "石河子市",
+      "aliases": [
+        "新疆生产建设兵团石河子高新技术产业开发区",
+        "新疆生产建设兵团石河子高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "克拉玛依高新技术产业开发区",
+      "district": "克拉玛依区",
+      "aliases": [
+        "克拉玛依高新技术产业开发区",
+        "克拉玛依高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "大连高新技术产业园区",
+      "district": "甘井子区",
+      "aliases": [
+        "大连高新技术产业园区",
+        "大连高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "深圳市高新技术产业园区",
+      "district": "南山区",
+      "aliases": [
+        "深圳市高新技术产业园区",
+        "深圳市高新区",
+        "深圳高新区",
+        "深圳高新技术产业园区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "厦门火炬高技术产业开发区",
+      "district": "湖里区",
+      "aliases": [
+        "厦门火炬高技术产业开发区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "威海火炬高技术产业开发区",
+      "district": "环翠区",
+      "aliases": [
+        "威海火炬高技术产业开发区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "中山火炬高技术产业开发区",
+      "district": "火炬开发区",
+      "aliases": [
+        "中山火炬高技术产业开发区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "黄河三角洲农业高新技术产业示范区",
+      "district": "东营区",
+      "aliases": [
+        "黄河三角洲农业高新技术产业示范区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "杨凌农业高新技术产业示范区",
+      "district": "杨陵区",
+      "aliases": [
+        "杨凌农业高新技术产业示范区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "中关村科技园区",
+      "district": "海淀区",
+      "aliases": [
+        "中关村科技园区",
+        "中关村科技园"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "苏州工业园区",
+      "district": "虎丘区",
+      "aliases": [
+        "苏州工业园区",
+        "苏州工业园"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "hitech",
+      "name": "河北雄安高新技术产业开发区",
+      "district": "雄县",
+      "aliases": [
+        "河北雄安高新技术产业开发区",
+        "河北雄安高新区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "北京经济技术开发区",
+      "district": "大兴区",
+      "aliases": [
+        "北京经济技术开发区",
+        "北京经开区",
+        "亦庄经济技术开发区",
+        "亦庄开发区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "天津经济技术开发区",
+      "district": "滨海新区",
+      "aliases": [
+        "天津经济技术开发区",
+        "天津经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "西青经济技术开发区",
+      "district": "西青区",
+      "aliases": [
+        "西青经济技术开发区",
+        "西青经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "武清经济技术开发区",
+      "district": "武清区",
+      "aliases": [
+        "武清经济技术开发区",
+        "武清经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "天津子牙经济技术开发区",
+      "district": "天津子牙区",
+      "aliases": [
+        "天津子牙经济技术开发区",
+        "天津子牙经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "北辰经济技术开发区",
+      "district": "北辰区",
+      "aliases": [
+        "北辰经济技术开发区",
+        "北辰经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "东丽经济技术开发区",
+      "district": "东丽区",
+      "aliases": [
+        "东丽经济技术开发区",
+        "东丽经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "秦皇岛经济技术开发区",
+      "district": "秦皇岛区",
+      "aliases": [
+        "秦皇岛经济技术开发区",
+        "秦皇岛经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "廊坊经济技术开发区",
+      "district": "廊坊区",
+      "aliases": [
+        "廊坊经济技术开发区",
+        "廊坊经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "沧州临港经济技术开发区",
+      "district": "沧州临港区",
+      "aliases": [
+        "沧州临港经济技术开发区",
+        "沧州临港经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "石家庄经济技术开发区",
+      "district": "石家庄区",
+      "aliases": [
+        "石家庄经济技术开发区",
+        "石家庄经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "唐山曹妃甸经济技术开发区",
+      "district": "唐山曹妃甸区",
+      "aliases": [
+        "唐山曹妃甸经济技术开发区",
+        "唐山曹妃甸经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "邯郸经济技术开发区",
+      "district": "邯郸区",
+      "aliases": [
+        "邯郸经济技术开发区",
+        "邯郸经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "太原经济技术开发区",
+      "district": "太原区",
+      "aliases": [
+        "太原经济技术开发区",
+        "太原经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "大同经济技术开发区",
+      "district": "大同区",
+      "aliases": [
+        "大同经济技术开发区",
+        "大同经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "晋中经济技术开发区",
+      "district": "晋中区",
+      "aliases": [
+        "晋中经济技术开发区",
+        "晋中经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "晋城经济技术开发区",
+      "district": "晋城区",
+      "aliases": [
+        "晋城经济技术开发区",
+        "晋城经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "呼和浩特经济技术开发区",
+      "district": "呼和浩特区",
+      "aliases": [
+        "呼和浩特经济技术开发区",
+        "呼和浩特经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "巴彦淖尔经济技术开发区",
+      "district": "巴彦淖尔区",
+      "aliases": [
+        "巴彦淖尔经济技术开发区",
+        "巴彦淖尔经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "呼伦贝尔经济技术开发区",
+      "district": "呼伦贝尔区",
+      "aliases": [
+        "呼伦贝尔经济技术开发区",
+        "呼伦贝尔经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "大连经济技术开发区",
+      "district": "金州区",
+      "aliases": [
+        "大连经济技术开发区",
+        "大连经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "营口经济技术开发区",
+      "district": "营口区",
+      "aliases": [
+        "营口经济技术开发区",
+        "营口经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "沈阳经济技术开发区",
+      "district": "沈阳区",
+      "aliases": [
+        "沈阳经济技术开发区",
+        "沈阳经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "大连长兴岛经济技术开发区",
+      "district": "大连长兴岛区",
+      "aliases": [
+        "大连长兴岛经济技术开发区",
+        "大连长兴岛经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "锦州经济技术开发区",
+      "district": "锦州区",
+      "aliases": [
+        "锦州经济技术开发区",
+        "锦州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "盘锦辽滨沿海经济技术开发区",
+      "district": "盘锦辽滨沿海区",
+      "aliases": [
+        "盘锦辽滨沿海经济技术开发区",
+        "盘锦辽滨沿海经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "沈阳辉山经济技术开发区",
+      "district": "沈阳辉山区",
+      "aliases": [
+        "沈阳辉山经济技术开发区",
+        "沈阳辉山经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "铁岭经济技术开发区",
+      "district": "铁岭区",
+      "aliases": [
+        "铁岭经济技术开发区",
+        "铁岭经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "旅顺经济技术开发区",
+      "district": "旅顺区",
+      "aliases": [
+        "旅顺经济技术开发区",
+        "旅顺经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "长春经济技术开发区",
+      "district": "长春区",
+      "aliases": [
+        "长春经济技术开发区",
+        "长春经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "吉林经济技术开发区",
+      "district": "吉林区",
+      "aliases": [
+        "吉林经济技术开发区",
+        "吉林经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "四平红嘴经济技术开发区",
+      "district": "四平红嘴区",
+      "aliases": [
+        "四平红嘴经济技术开发区",
+        "四平红嘴经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "长春汽车经济技术开发区",
+      "district": "长春汽车区",
+      "aliases": [
+        "长春汽车经济技术开发区",
+        "长春汽车经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "松原经济技术开发区",
+      "district": "松原区",
+      "aliases": [
+        "松原经济技术开发区",
+        "松原经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "哈尔滨经济技术开发区",
+      "district": "哈尔滨区",
+      "aliases": [
+        "哈尔滨经济技术开发区",
+        "哈尔滨经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "宾西经济技术开发区",
+      "district": "宾西区",
+      "aliases": [
+        "宾西经济技术开发区",
+        "宾西经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "海林经济技术开发区",
+      "district": "海林区",
+      "aliases": [
+        "海林经济技术开发区",
+        "海林经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "哈尔滨利民经济技术开发区",
+      "district": "哈尔滨利民区",
+      "aliases": [
+        "哈尔滨利民经济技术开发区",
+        "哈尔滨利民经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "大庆经济技术开发区",
+      "district": "大庆区",
+      "aliases": [
+        "大庆经济技术开发区",
+        "大庆经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "绥化经济技术开发区",
+      "district": "绥化区",
+      "aliases": [
+        "绥化经济技术开发区",
+        "绥化经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "牡丹江经济技术开发区",
+      "district": "牡丹江区",
+      "aliases": [
+        "牡丹江经济技术开发区",
+        "牡丹江经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "双鸭山经济技术开发区",
+      "district": "双鸭山区",
+      "aliases": [
+        "双鸭山经济技术开发区",
+        "双鸭山经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "闵行经济技术开发区",
+      "district": "闵行区",
+      "aliases": [
+        "闵行经济技术开发区",
+        "闵行经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "虹桥经济技术开发区",
+      "district": "虹桥区",
+      "aliases": [
+        "虹桥经济技术开发区",
+        "虹桥经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "上海漕河泾新兴技术开发区",
+      "district": "徐汇区",
+      "aliases": [
+        "上海漕河泾新兴技术开发区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "上海金桥出口加工区",
+      "district": "上海金桥区",
+      "aliases": [
+        "上海金桥出口加工区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "上海化学工业经济技术开发区",
+      "district": "上海化学工业区",
+      "aliases": [
+        "上海化学工业经济技术开发区",
+        "上海化学工业经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "上海松江经济开发区",
+      "district": "上海松江区",
+      "aliases": [
+        "上海松江经济开发区",
+        "上海松江经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "南通经济技术开发区",
+      "district": "南通区",
+      "aliases": [
+        "南通经济技术开发区",
+        "南通经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "连云港经济技术开发区",
+      "district": "连云港区",
+      "aliases": [
+        "连云港经济技术开发区",
+        "连云港经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "昆山经济技术开发区",
+      "district": "昆山市",
+      "aliases": [
+        "昆山经济技术开发区",
+        "昆山经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "南京经济技术开发区",
+      "district": "栖霞区",
+      "aliases": [
+        "南京经济技术开发区",
+        "南京经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "扬州经济技术开发区",
+      "district": "扬州区",
+      "aliases": [
+        "扬州经济技术开发区",
+        "扬州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "徐州经济技术开发区",
+      "district": "徐州区",
+      "aliases": [
+        "徐州经济技术开发区",
+        "徐州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "镇江经济技术开发区",
+      "district": "镇江区",
+      "aliases": [
+        "镇江经济技术开发区",
+        "镇江经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "吴江经济技术开发区",
+      "district": "吴江区",
+      "aliases": [
+        "吴江经济技术开发区",
+        "吴江经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "江宁经济技术开发区",
+      "district": "江宁区",
+      "aliases": [
+        "江宁经济技术开发区",
+        "江宁经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "常熟经济技术开发区",
+      "district": "常熟区",
+      "aliases": [
+        "常熟经济技术开发区",
+        "常熟经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "淮安经济技术开发区",
+      "district": "淮安区",
+      "aliases": [
+        "淮安经济技术开发区",
+        "淮安经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "盐城经济技术开发区",
+      "district": "盐城区",
+      "aliases": [
+        "盐城经济技术开发区",
+        "盐城经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "锡山经济技术开发区",
+      "district": "锡山区",
+      "aliases": [
+        "锡山经济技术开发区",
+        "锡山经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "太仓港经济技术开发区",
+      "district": "太仓港区",
+      "aliases": [
+        "太仓港经济技术开发区",
+        "太仓港经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "张家港经济技术开发区",
+      "district": "张家港区",
+      "aliases": [
+        "张家港经济技术开发区",
+        "张家港经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "海安经济技术开发区",
+      "district": "海安区",
+      "aliases": [
+        "海安经济技术开发区",
+        "海安经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "靖江经济技术开发区",
+      "district": "靖江区",
+      "aliases": [
+        "靖江经济技术开发区",
+        "靖江经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "吴中经济开发区",
+      "district": "吴中区",
+      "aliases": [
+        "吴中经济开发区",
+        "吴中经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "宿迁经济技术开发区",
+      "district": "宿迁区",
+      "aliases": [
+        "宿迁经济技术开发区",
+        "宿迁经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "海门经济技术开发区",
+      "district": "海门区",
+      "aliases": [
+        "海门经济技术开发区",
+        "海门经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "如皋经济技术开发区",
+      "district": "如皋区",
+      "aliases": [
+        "如皋经济技术开发区",
+        "如皋经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "宜兴经济技术开发区",
+      "district": "宜兴区",
+      "aliases": [
+        "宜兴经济技术开发区",
+        "宜兴经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "浒墅关经济技术开发区",
+      "district": "浒墅关区",
+      "aliases": [
+        "浒墅关经济技术开发区",
+        "浒墅关经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "沭阳县经济技术开发区",
+      "district": "沭阳县",
+      "aliases": [
+        "沭阳县经济技术开发区",
+        "沭阳县经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "苏州相城经济技术开发区",
+      "district": "苏州相城区",
+      "aliases": [
+        "苏州相城经济技术开发区",
+        "苏州相城经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "宁波经济技术开发区",
+      "district": "北仑区",
+      "aliases": [
+        "宁波经济技术开发区",
+        "宁波经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "温州经济技术开发区",
+      "district": "温州区",
+      "aliases": [
+        "温州经济技术开发区",
+        "温州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "宁波大榭开发区",
+      "district": "宁波大榭开发区",
+      "aliases": [
+        "宁波大榭开发区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "杭州经济技术开发区",
+      "district": "钱塘区",
+      "aliases": [
+        "杭州经济技术开发区",
+        "杭州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "萧山经济技术开发区",
+      "district": "萧山区",
+      "aliases": [
+        "萧山经济技术开发区",
+        "萧山经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "嘉兴经济技术开发区",
+      "district": "嘉兴区",
+      "aliases": [
+        "嘉兴经济技术开发区",
+        "嘉兴经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "湖州经济技术开发区",
+      "district": "湖州区",
+      "aliases": [
+        "湖州经济技术开发区",
+        "湖州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "袍江经济开发区",
+      "district": "袍江区",
+      "aliases": [
+        "袍江经济开发区",
+        "袍江经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "金华经济技术开发区",
+      "district": "金华区",
+      "aliases": [
+        "金华经济技术开发区",
+        "金华经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "长兴经济技术开发区",
+      "district": "长兴区",
+      "aliases": [
+        "长兴经济技术开发区",
+        "长兴经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "宁波石化经济技术开发区",
+      "district": "宁波石化区",
+      "aliases": [
+        "宁波石化经济技术开发区",
+        "宁波石化经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "嘉善经济技术开发区",
+      "district": "嘉善区",
+      "aliases": [
+        "嘉善经济技术开发区",
+        "嘉善经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "衢州经济技术开发区",
+      "district": "衢州区",
+      "aliases": [
+        "衢州经济技术开发区",
+        "衢州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "义乌经济技术开发区",
+      "district": "义乌区",
+      "aliases": [
+        "义乌经济技术开发区",
+        "义乌经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "杭州余杭经济技术开发区",
+      "district": "杭州余杭区",
+      "aliases": [
+        "杭州余杭经济技术开发区",
+        "杭州余杭经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "绍兴柯桥经济开发区",
+      "district": "绍兴柯桥区",
+      "aliases": [
+        "绍兴柯桥经济开发区",
+        "绍兴柯桥经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "富阳经济技术开发区",
+      "district": "富阳区",
+      "aliases": [
+        "富阳经济技术开发区",
+        "富阳经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "平湖经济技术开发区",
+      "district": "平湖区",
+      "aliases": [
+        "平湖经济技术开发区",
+        "平湖经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "慈溪经济开发区",
+      "district": "慈溪区",
+      "aliases": [
+        "慈溪经济开发区",
+        "慈溪经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "丽水经济开发区",
+      "district": "丽水区",
+      "aliases": [
+        "丽水经济开发区",
+        "丽水经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "芜湖经济技术开发区",
+      "district": "芜湖区",
+      "aliases": [
+        "芜湖经济技术开发区",
+        "芜湖经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "合肥经济技术开发区",
+      "district": "蜀山区",
+      "aliases": [
+        "合肥经济技术开发区",
+        "合肥经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "马鞍山经济技术开发区",
+      "district": "马鞍山区",
+      "aliases": [
+        "马鞍山经济技术开发区",
+        "马鞍山经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "安庆经济技术开发区",
+      "district": "安庆区",
+      "aliases": [
+        "安庆经济技术开发区",
+        "安庆经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "铜陵经济技术开发区",
+      "district": "铜陵区",
+      "aliases": [
+        "铜陵经济技术开发区",
+        "铜陵经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "滁州经济技术开发区",
+      "district": "滁州区",
+      "aliases": [
+        "滁州经济技术开发区",
+        "滁州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "池州经济技术开发区",
+      "district": "池州区",
+      "aliases": [
+        "池州经济技术开发区",
+        "池州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "六安经济技术开发区",
+      "district": "六安区",
+      "aliases": [
+        "六安经济技术开发区",
+        "六安经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "淮南经济技术开发区",
+      "district": "淮南区",
+      "aliases": [
+        "淮南经济技术开发区",
+        "淮南经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "宁国经济技术开发区",
+      "district": "宁国区",
+      "aliases": [
+        "宁国经济技术开发区",
+        "宁国经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "桐城经济技术开发区",
+      "district": "桐城区",
+      "aliases": [
+        "桐城经济技术开发区",
+        "桐城经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "宣城经济技术开发区",
+      "district": "宣城区",
+      "aliases": [
+        "宣城经济技术开发区",
+        "宣城经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "福州经济技术开发区",
+      "district": "福州区",
+      "aliases": [
+        "福州经济技术开发区",
+        "福州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "厦门海沧台商投资区",
+      "district": "海沧区",
+      "aliases": [
+        "厦门海沧台商投资区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "福清融侨经济技术开发区",
+      "district": "福清融侨区",
+      "aliases": [
+        "福清融侨经济技术开发区",
+        "福清融侨经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "东山经济技术开发区",
+      "district": "东山区",
+      "aliases": [
+        "东山经济技术开发区",
+        "东山经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "漳州招商局经济技术开发区",
+      "district": "漳州招商局区",
+      "aliases": [
+        "漳州招商局经济技术开发区",
+        "漳州招商局经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "泉州经济技术开发区",
+      "district": "泉州区",
+      "aliases": [
+        "泉州经济技术开发区",
+        "泉州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "漳州台商投资区",
+      "district": "漳州区",
+      "aliases": [
+        "漳州台商投资区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "泉州台商投资区",
+      "district": "泉州区",
+      "aliases": [
+        "泉州台商投资区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "龙岩经济技术开发区",
+      "district": "龙岩区",
+      "aliases": [
+        "龙岩经济技术开发区",
+        "龙岩经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "东侨经济技术开发区",
+      "district": "东侨区",
+      "aliases": [
+        "东侨经济技术开发区",
+        "东侨经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "南昌经济技术开发区",
+      "district": "南昌区",
+      "aliases": [
+        "南昌经济技术开发区",
+        "南昌经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "九江经济技术开发区",
+      "district": "九江区",
+      "aliases": [
+        "九江经济技术开发区",
+        "九江经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "赣州经济技术开发区",
+      "district": "赣州区",
+      "aliases": [
+        "赣州经济技术开发区",
+        "赣州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "井冈山经济技术开发区",
+      "district": "井冈山区",
+      "aliases": [
+        "井冈山经济技术开发区",
+        "井冈山经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "上饶经济技术开发区",
+      "district": "上饶区",
+      "aliases": [
+        "上饶经济技术开发区",
+        "上饶经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "萍乡经济技术开发区",
+      "district": "萍乡区",
+      "aliases": [
+        "萍乡经济技术开发区",
+        "萍乡经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "南昌小蓝经济技术开发区",
+      "district": "南昌小蓝区",
+      "aliases": [
+        "南昌小蓝经济技术开发区",
+        "南昌小蓝经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "宜春经济技术开发区",
+      "district": "宜春区",
+      "aliases": [
+        "宜春经济技术开发区",
+        "宜春经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "龙南经济技术开发区",
+      "district": "龙南区",
+      "aliases": [
+        "龙南经济技术开发区",
+        "龙南经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "瑞金经济技术开发区",
+      "district": "瑞金区",
+      "aliases": [
+        "瑞金经济技术开发区",
+        "瑞金经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "青岛经济技术开发区",
+      "district": "黄岛区",
+      "aliases": [
+        "青岛经济技术开发区",
+        "青岛经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "烟台经济技术开发区",
+      "district": "烟台区",
+      "aliases": [
+        "烟台经济技术开发区",
+        "烟台经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "威海经济技术开发区",
+      "district": "威海区",
+      "aliases": [
+        "威海经济技术开发区",
+        "威海经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "东营经济技术开发区",
+      "district": "东营区",
+      "aliases": [
+        "东营经济技术开发区",
+        "东营经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "日照经济技术开发区",
+      "district": "日照区",
+      "aliases": [
+        "日照经济技术开发区",
+        "日照经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "潍坊滨海经济技术开发区",
+      "district": "潍坊滨海区",
+      "aliases": [
+        "潍坊滨海经济技术开发区",
+        "潍坊滨海经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "邹平经济技术开发区",
+      "district": "邹平区",
+      "aliases": [
+        "邹平经济技术开发区",
+        "邹平经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "临沂经济技术开发区",
+      "district": "临沂区",
+      "aliases": [
+        "临沂经济技术开发区",
+        "临沂经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "招远经济技术开发区",
+      "district": "招远区",
+      "aliases": [
+        "招远经济技术开发区",
+        "招远经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "德州经济技术开发区",
+      "district": "德州区",
+      "aliases": [
+        "德州经济技术开发区",
+        "德州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "明水经济技术开发区",
+      "district": "明水区",
+      "aliases": [
+        "明水经济技术开发区",
+        "明水经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "胶州经济技术开发区",
+      "district": "胶州区",
+      "aliases": [
+        "胶州经济技术开发区",
+        "胶州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "聊城经济技术开发区",
+      "district": "聊城区",
+      "aliases": [
+        "聊城经济技术开发区",
+        "聊城经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "滨州经济开发区",
+      "district": "滨州区",
+      "aliases": [
+        "滨州经济开发区",
+        "滨州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "威海临港经济技术开发区",
+      "district": "威海临港区",
+      "aliases": [
+        "威海临港经济技术开发区",
+        "威海临港经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "郑州经济技术开发区",
+      "district": "管城回族区",
+      "aliases": [
+        "郑州经济技术开发区",
+        "郑州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "漯河经济技术开发区",
+      "district": "漯河区",
+      "aliases": [
+        "漯河经济技术开发区",
+        "漯河经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "鹤壁经济技术开发区",
+      "district": "鹤壁区",
+      "aliases": [
+        "鹤壁经济技术开发区",
+        "鹤壁经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "开封经济技术开发区",
+      "district": "开封区",
+      "aliases": [
+        "开封经济技术开发区",
+        "开封经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "许昌经济技术开发区",
+      "district": "许昌区",
+      "aliases": [
+        "许昌经济技术开发区",
+        "许昌经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "洛阳经济技术开发区",
+      "district": "洛阳区",
+      "aliases": [
+        "洛阳经济技术开发区",
+        "洛阳经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "新乡经济技术开发区",
+      "district": "新乡区",
+      "aliases": [
+        "新乡经济技术开发区",
+        "新乡经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "红旗渠经济技术开发区",
+      "district": "红旗渠区",
+      "aliases": [
+        "红旗渠经济技术开发区",
+        "红旗渠经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "濮阳经济技术开发区",
+      "district": "濮阳区",
+      "aliases": [
+        "濮阳经济技术开发区",
+        "濮阳经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "武汉经济技术开发区",
+      "district": "蔡甸区",
+      "aliases": [
+        "武汉经济技术开发区",
+        "武汉经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "黄石经济技术开发区",
+      "district": "黄石区",
+      "aliases": [
+        "黄石经济技术开发区",
+        "黄石经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "襄阳经济技术开发区",
+      "district": "襄阳区",
+      "aliases": [
+        "襄阳经济技术开发区",
+        "襄阳经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "武汉临空港经济技术开发区",
+      "district": "武汉临空港区",
+      "aliases": [
+        "武汉临空港经济技术开发区",
+        "武汉临空港经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "荆州开发区",
+      "district": "荆州开发区",
+      "aliases": [
+        "荆州开发区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "葛店经济技术开发区",
+      "district": "葛店区",
+      "aliases": [
+        "葛店经济技术开发区",
+        "葛店经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "武汉东湖新技术产业开发区",
+      "district": "武汉东湖区",
+      "aliases": [
+        "武汉东湖新技术产业开发区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "十堰经济技术开发区",
+      "district": "十堰区",
+      "aliases": [
+        "十堰经济技术开发区",
+        "十堰经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "长沙经济技术开发区",
+      "district": "长沙县",
+      "aliases": [
+        "长沙经济技术开发区",
+        "长沙经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "岳阳经济技术开发区",
+      "district": "岳阳区",
+      "aliases": [
+        "岳阳经济技术开发区",
+        "岳阳经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "常德经济技术开发区",
+      "district": "常德区",
+      "aliases": [
+        "常德经济技术开发区",
+        "常德经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "宁乡经济技术开发区",
+      "district": "宁乡区",
+      "aliases": [
+        "宁乡经济技术开发区",
+        "宁乡经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "湘潭经济技术开发区",
+      "district": "湘潭区",
+      "aliases": [
+        "湘潭经济技术开发区",
+        "湘潭经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "浏阳经济技术开发区",
+      "district": "浏阳区",
+      "aliases": [
+        "浏阳经济技术开发区",
+        "浏阳经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "娄底经济技术开发区",
+      "district": "娄底区",
+      "aliases": [
+        "娄底经济技术开发区",
+        "娄底经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "望城经济技术开发区",
+      "district": "望城区",
+      "aliases": [
+        "望城经济技术开发区",
+        "望城经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "湛江经济技术开发区",
+      "district": "湛江区",
+      "aliases": [
+        "湛江经济技术开发区",
+        "湛江经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "广州经济技术开发区",
+      "district": "黄埔区",
+      "aliases": [
+        "广州经济技术开发区",
+        "广州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "广州南沙经济技术开发区",
+      "district": "广州南沙区",
+      "aliases": [
+        "广州南沙经济技术开发区",
+        "广州南沙经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "惠州大亚湾经济技术开发区",
+      "district": "惠州大亚湾区",
+      "aliases": [
+        "惠州大亚湾经济技术开发区",
+        "惠州大亚湾经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "增城经济技术开发区",
+      "district": "增城区",
+      "aliases": [
+        "增城经济技术开发区",
+        "增城经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "珠海经济技术开发区",
+      "district": "珠海区",
+      "aliases": [
+        "珠海经济技术开发区",
+        "珠海经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "南宁经济技术开发区",
+      "district": "南宁区",
+      "aliases": [
+        "南宁经济技术开发区",
+        "南宁经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "钦州港经济技术开发区",
+      "district": "钦州港区",
+      "aliases": [
+        "钦州港经济技术开发区",
+        "钦州港经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "中国-马来西亚钦州产业园区",
+      "district": "中国-马来西亚钦州产业园区",
+      "aliases": [
+        "中国-马来西亚钦州产业园区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "南宁东盟经济开发区",
+      "district": "南宁东盟区",
+      "aliases": [
+        "南宁东盟经济开发区",
+        "南宁东盟经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "洋浦经济开发区",
+      "district": "洋浦区",
+      "aliases": [
+        "洋浦经济开发区",
+        "洋浦经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "重庆经济技术开发区",
+      "district": "重庆区",
+      "aliases": [
+        "重庆经济技术开发区",
+        "重庆经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "万州经济技术开发区",
+      "district": "万州区",
+      "aliases": [
+        "万州经济技术开发区",
+        "万州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "长寿经济技术开发区",
+      "district": "长寿区",
+      "aliases": [
+        "长寿经济技术开发区",
+        "长寿经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "成都经济技术开发区",
+      "district": "龙泉驿区",
+      "aliases": [
+        "成都经济技术开发区",
+        "成都经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "广安经济技术开发区",
+      "district": "广安区",
+      "aliases": [
+        "广安经济技术开发区",
+        "广安经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "德阳经济技术开发区",
+      "district": "德阳区",
+      "aliases": [
+        "德阳经济技术开发区",
+        "德阳经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "遂宁经济技术开发区",
+      "district": "遂宁区",
+      "aliases": [
+        "遂宁经济技术开发区",
+        "遂宁经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "绵阳经济技术开发区",
+      "district": "绵阳区",
+      "aliases": [
+        "绵阳经济技术开发区",
+        "绵阳经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "广元经济技术开发区",
+      "district": "广元区",
+      "aliases": [
+        "广元经济技术开发区",
+        "广元经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "宜宾临港经济技术开发区",
+      "district": "宜宾临港区",
+      "aliases": [
+        "宜宾临港经济技术开发区",
+        "宜宾临港经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "内江经济技术开发区",
+      "district": "内江区",
+      "aliases": [
+        "内江经济技术开发区",
+        "内江经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "贵阳经济技术开发区",
+      "district": "贵阳区",
+      "aliases": [
+        "贵阳经济技术开发区",
+        "贵阳经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "遵义经济技术开发区",
+      "district": "遵义区",
+      "aliases": [
+        "遵义经济技术开发区",
+        "遵义经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "昆明经济技术开发区",
+      "district": "昆明区",
+      "aliases": [
+        "昆明经济技术开发区",
+        "昆明经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "曲靖经济技术开发区",
+      "district": "曲靖区",
+      "aliases": [
+        "曲靖经济技术开发区",
+        "曲靖经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "蒙自经济技术开发区",
+      "district": "蒙自区",
+      "aliases": [
+        "蒙自经济技术开发区",
+        "蒙自经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "嵩明杨林经济技术开发区",
+      "district": "嵩明杨林区",
+      "aliases": [
+        "嵩明杨林经济技术开发区",
+        "嵩明杨林经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "大理经济技术开发区",
+      "district": "大理区",
+      "aliases": [
+        "大理经济技术开发区",
+        "大理经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "拉萨经济技术开发区",
+      "district": "拉萨区",
+      "aliases": [
+        "拉萨经济技术开发区",
+        "拉萨经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "西安经济技术开发区",
+      "district": "西安区",
+      "aliases": [
+        "西安经济技术开发区",
+        "西安经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "陕西航空经济技术开发区",
+      "district": "陕西航空区",
+      "aliases": [
+        "陕西航空经济技术开发区",
+        "陕西航空经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "陕西航天经济技术开发区",
+      "district": "陕西航天区",
+      "aliases": [
+        "陕西航天经济技术开发区",
+        "陕西航天经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "汉中经济技术开发区",
+      "district": "汉中区",
+      "aliases": [
+        "汉中经济技术开发区",
+        "汉中经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "神府经济技术开发区",
+      "district": "神府区",
+      "aliases": [
+        "神府经济技术开发区",
+        "神府经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "兰州经济技术开发区",
+      "district": "兰州区",
+      "aliases": [
+        "兰州经济技术开发区",
+        "兰州经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "金昌经济技术开发区",
+      "district": "金昌区",
+      "aliases": [
+        "金昌经济技术开发区",
+        "金昌经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "天水经济技术开发区",
+      "district": "天水区",
+      "aliases": [
+        "天水经济技术开发区",
+        "天水经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "酒泉经济技术开发区",
+      "district": "酒泉区",
+      "aliases": [
+        "酒泉经济技术开发区",
+        "酒泉经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "张掖经济技术开发区",
+      "district": "张掖区",
+      "aliases": [
+        "张掖经济技术开发区",
+        "张掖经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "西宁经济技术开发区",
+      "district": "西宁区",
+      "aliases": [
+        "西宁经济技术开发区",
+        "西宁经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "格尔木昆仑经济开发区",
+      "district": "格尔木昆仑区",
+      "aliases": [
+        "格尔木昆仑经济开发区",
+        "格尔木昆仑经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "银川经济技术开发区",
+      "district": "银川区",
+      "aliases": [
+        "银川经济技术开发区",
+        "银川经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "石嘴山经济技术开发区",
+      "district": "石嘴山区",
+      "aliases": [
+        "石嘴山经济技术开发区",
+        "石嘴山经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "乌鲁木齐经济技术开发区",
+      "district": "乌鲁木齐区",
+      "aliases": [
+        "乌鲁木齐经济技术开发区",
+        "乌鲁木齐经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "石河子经济技术开发区",
+      "district": "石河子区",
+      "aliases": [
+        "石河子经济技术开发区",
+        "石河子经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "库尔勒经济技术开发区",
+      "district": "库尔勒区",
+      "aliases": [
+        "库尔勒经济技术开发区",
+        "库尔勒经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "奎屯-独山子经济技术开发区",
+      "district": "奎屯-独山子区",
+      "aliases": [
+        "奎屯-独山子经济技术开发区",
+        "奎屯-独山子经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "阿拉尔经济技术开发区",
+      "district": "阿拉尔区",
+      "aliases": [
+        "阿拉尔经济技术开发区",
+        "阿拉尔经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "五家渠经济技术开发区",
+      "district": "五家渠区",
+      "aliases": [
+        "五家渠经济技术开发区",
+        "五家渠经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "准东经济技术开发区",
+      "district": "准东区",
+      "aliases": [
+        "准东经济技术开发区",
+        "准东经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "甘泉堡经济技术开发区",
+      "district": "甘泉堡区",
+      "aliases": [
+        "甘泉堡经济技术开发区",
+        "甘泉堡经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "库车经济技术开发区",
+      "district": "库车区",
+      "aliases": [
+        "库车经济技术开发区",
+        "库车经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "高新技术产业开发区",
+      "district": "区",
+      "aliases": [
+        "高新技术产业开发区"
+      ]
+    },
+    {
+      "zone_id": "_145_",
+      "type": "etdz",
+      "name": "全国共145家国家级经济技术开发区。",
+      "district": "全国共145家国家级经济技术开发区。区",
+      "aliases": [
+        "全国共145家国家级经济技术开发区。",
+        "全国共145家国家级经济技术开发区。经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "广州花都经济技术开发区",
+      "district": "花都区",
+      "aliases": [
+        "广州花都经济技术开发区",
+        "广州花都经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "贵溪经济技术开发区",
+      "district": "贵溪市",
+      "aliases": [
+        "贵溪经济技术开发区",
+        "贵溪经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "涪陵经济技术开发区",
+      "district": "涪陵区",
+      "aliases": [
+        "涪陵经济技术开发区",
+        "涪陵经开区"
+      ]
+    },
+    {
+      "zone_id": "_",
+      "type": "etdz",
+      "name": "沈阳金融商贸经济技术开发区",
+      "district": "沈河区",
+      "aliases": [
+        "沈阳金融商贸经济技术开发区",
+        "沈阳金融商贸经开区"
+      ]
+    }
+  ]
+}
