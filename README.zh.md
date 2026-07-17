@@ -21,7 +21,7 @@ go get -u github.com/lontten/lutil
 | 包 | 说明 |
 |----|------|
 | `lutil` | 协程池与按键互斥锁等基础工具 |
-| `codeutil` | 编码、哈希、随机字符串与密码工具 |
+| `codeutil` | 编码、哈希、随机字符串；密码请用 `HashPassword`/`VerifyPassword`（bcrypt；`EnPwd` 已弃用） |
 | `dateutil` | `LocalDate` 的比较与聚合工具 |
 | `datetimeutil` | `LocalDateTime` 的比较与聚合工具 |
 | `decimalutil` | `decimal.Decimal` 的运算工具 |
@@ -37,6 +37,16 @@ go get -u github.com/lontten/lutil
 | `perfutil` | 简单的性能计时工具 |
 | `structutil` | 结构体与 map 之间的转换工具 |
 | `strutil` | 字符串判断与截取工具 |
+
+## 迁移到 v0.5.0
+
+本版本包含破坏性变更：
+
+- 已移除 `netutil.CleanString`：请自行处理空格/控制字符，或文件名场景改用 `SafeFileName`。
+- 请优先使用 `netutil.SafeFileName`，`SafeURL` 已弃用（输出可能变化：`filepath.Base`、截断时保留扩展名）。
+- `DownloadFileToLocal` 仅接受 HTTP 200、默认上限 500MB、30s 超时；其他大小限制请用 `DownloadFileToLocalLimit`。
+- `netutil` 的 HTTP 助手（`Get`、`PostJson*`、`PostForm*`）默认 30s 超时。
+- 协程池 `SubmitErr` 改为哨兵错误：请用 `errors.Is(err, lutil.ErrQueueFull)` / `ErrPoolClosed`，勿比对错误字符串。
 
 ## 开发与测试
 

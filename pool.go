@@ -5,6 +5,7 @@ import (
 	"runtime"
 	"sync"
 	"sync/atomic"
+	"time"
 )
 
 var (
@@ -30,8 +31,15 @@ type Pool struct {
 	closed       atomic.Bool
 }
 
-// NewPool 创建一个新的协程池
+// NewPool 创建一个新的协程池。
+// maxWorkers 必须 > 0；queueSize 必须 >= 0（0 表示无缓冲队列）。
 func NewPool(maxWorkers int, queueSize int, rejectPolicy RejectPolicy) *Pool {
+	if maxWorkers <= 0 {
+		panic("lutil: NewPool maxWorkers must be > 0")
+	}
+	if queueSize < 0 {
+		panic("lutil: NewPool queueSize must be >= 0")
+	}
 	if rejectPolicy == nil {
 		rejectPolicy = CallerRunsPolicy
 	}
@@ -63,8 +71,12 @@ func (p *Pool) runTask(task Task) {
 	task()
 }
 
-// Submit 提交任务；队列满时走拒绝策略。池已关闭则直接返回。
+// Submit 提交任务；队列满时走拒绝策略。
+// 池已关闭时直接返回且不执行任务（无 error）。若需要感知关闭，请使用 SubmitErr。
 func (p *Pool) Submit(task Task) {
+	if p.closed.Load() {
+		return
+	}
 	if !p.trySend(task) {
 		if p.closed.Load() {
 			return
@@ -130,9 +142,11 @@ func CallerRunsPolicy(task Task, pool *Pool) {
 func DiscardPolicy(task Task, pool *Pool) {
 }
 
-// DiscardOldestPolicy 丢弃队列中最老的任务，然后重新提交新任务
+// DiscardOldestPolicy 丢弃队列中最老的任务，然后重新提交新任务。
+// 在无缓冲队列或短暂争用下会有限次让出/短暂休眠；仍无法入队时回退为 CallerRunsPolicy，避免无限忙等。
 func DiscardOldestPolicy(task Task, pool *Pool) {
-	for {
+	const maxAttempts = 32
+	for i := 0; i < maxAttempts; i++ {
 		pool.mu.Lock()
 		if pool.closed.Load() {
 			pool.mu.Unlock()
@@ -149,6 +163,10 @@ func DiscardOldestPolicy(task Task, pool *Pool) {
 		default:
 			pool.mu.Unlock()
 			runtime.Gosched()
+			if i&7 == 7 {
+				time.Sleep(time.Microsecond)
+			}
 		}
 	}
+	CallerRunsPolicy(task, pool)
 }

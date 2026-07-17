@@ -8,6 +8,7 @@ require (
 	github.com/lontten/lcore/v2 v2.23.1
 	github.com/shopspring/decimal v1.4.0
 	github.com/stretchr/testify v1.11.1
+	golang.org/x/crypto v0.54.0
 	golang.org/x/sync v0.21.0
 )
 

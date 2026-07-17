@@ -21,7 +21,7 @@ go get -u github.com/lontten/lutil
 | Package | Description |
 |---------|-------------|
 | `lutil` | Goroutine pool, key-based mutex (`KeyLock`) |
-| `codeutil` | Encoding, hashing, random strings, password helpers |
+| `codeutil` | Encoding, hashing, random strings; `HashPassword`/`VerifyPassword` (bcrypt; prefer over deprecated `EnPwd`) |
 | `dateutil` | `LocalDate` comparison and aggregation |
 | `datetimeutil` | `LocalDateTime` comparison and aggregation |
 | `decimalutil` | `decimal.Decimal` arithmetic helpers |
@@ -37,6 +37,16 @@ go get -u github.com/lontten/lutil
 | `perfutil` | Simple performance timing |
 | `structutil` | Struct ↔ map conversion |
 | `strutil` | String checks and substring helpers |
+
+## Migrating to v0.5.0
+
+This release includes breaking changes:
+
+- `netutil.CleanString` was removed. Map spaces/controls yourself, or use `SafeFileName` for filenames.
+- Prefer `netutil.SafeFileName` over deprecated `SafeURL` (output may differ: `filepath.Base`, extension-preserving truncate).
+- `DownloadFileToLocal` accepts HTTP 200 only, caps at 500MB, and uses a 30s timeout; use `DownloadFileToLocalLimit` for other size limits.
+- `netutil` HTTP helpers (`Get`, `PostJson*`, `PostForm*`) use a 30s default timeout.
+- Pool `SubmitErr` returns sentinel errors: use `errors.Is(err, lutil.ErrQueueFull)` / `ErrPoolClosed` instead of matching error strings.
 
 ## Development
 

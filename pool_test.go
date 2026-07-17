@@ -131,3 +131,52 @@ func TestWorkerRecoversFromPanic(t *testing.T) {
 	}
 	pool.Shutdown()
 }
+
+func TestNewPool_invalidArgs(t *testing.T) {
+	assert.Panics(t, func() { NewPool(0, 1, DiscardPolicy) })
+	assert.Panics(t, func() { NewPool(-1, 1, DiscardPolicy) })
+	assert.Panics(t, func() { NewPool(1, -1, DiscardPolicy) })
+}
+
+func TestSubmit_closedDoesNotRun(t *testing.T) {
+	pool := NewPool(1, 1, CallerRunsPolicy)
+	pool.Shutdown()
+
+	var ran int32
+	pool.Submit(func() { atomic.StoreInt32(&ran, 1) })
+	assert.Equal(t, int32(0), atomic.LoadInt32(&ran))
+}
+
+func TestDiscardOldestPolicy_unbufferedFallsBack(t *testing.T) {
+	// queueSize=0：无法“丢弃最老”，策略在有限次重试后回退 CallerRuns，避免忙等挂死。
+	pool := NewPool(1, 0, DiscardOldestPolicy)
+	block := make(chan struct{})
+	started := make(chan struct{})
+	// 无缓冲队列需 worker 已在接收，SubmitErr 可能短暂失败，重试至入队成功。
+	require.Eventually(t, func() bool {
+		return pool.SubmitErr(func() {
+			close(started)
+			<-block
+		}) == nil
+	}, time.Second, time.Millisecond)
+	<-started
+
+	var ran int32
+	done := make(chan struct{})
+	go func() {
+		pool.Submit(func() {
+			atomic.StoreInt32(&ran, 1)
+			close(done)
+		})
+	}()
+
+	select {
+	case <-done:
+	case <-time.After(2 * time.Second):
+		t.Fatal("DiscardOldestPolicy did not fall back / complete")
+	}
+	assert.Equal(t, int32(1), atomic.LoadInt32(&ran))
+
+	close(block)
+	pool.Shutdown()
+}

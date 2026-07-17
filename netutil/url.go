@@ -1,60 +1,85 @@
 package netutil
 
 import (
+	"path/filepath"
 	"strings"
 	"unicode"
 )
 
-// 定义RFC 3986规定的保留字符集合
-var reservedChars = map[rune]struct{}{
+// unsafeFileNameChars 为 OSS object key / 下载 URL 中不安全、以及本地非法的字符。
+// 前半与实战验证过的 reservedChars 一致；后半叠加 Windows 本地非法字符 " < > |。
+var unsafeFileNameChars = map[rune]struct{}{
 	':': {}, '/': {}, '?': {}, '#': {}, '[': {}, ']': {},
 	'@': {}, '!': {}, '$': {}, '&': {}, '\'': {}, '\\': {}, '(': {},
 	')': {}, '*': {}, '+': {}, ',': {}, ';': {}, '=': {}, '%': {},
+	'"': {}, '<': {}, '>': {}, '|': {},
 }
 
-// SafeURL 转换为URL安全的格式
-func SafeURL(url string, size ...int) string {
-	url = strings.TrimSpace(url)
+// SafeFileName 将上传原始文件名消毒为可作 OSS object key 的名称，尽量保留可读原文。
+// 会替换 URL/OSS 保留字符（含 %）与 Windows 非法字符，避免对象无法下载。
+// maxLen == 0 表示不截断；截断时优先保留扩展名。
+func SafeFileName(name string, maxLen int) string {
+	name = strings.TrimSpace(name)
+	name = filepath.Base(name)
+
 	var sb strings.Builder
-	sb.Grow(len(url)) // 预分配内存提高效率
-
-	for _, c := range url {
-		if _, ok := reservedChars[c]; ok {
+	sb.Grow(len(name))
+	for _, r := range name {
+		if unicode.IsSpace(r) || isInvisibleControlCharacter(r) {
 			sb.WriteByte('_')
-		} else {
-			sb.WriteRune(c)
+			continue
 		}
+		if _, ok := unsafeFileNameChars[r]; ok {
+			sb.WriteByte('_')
+			continue
+		}
+		sb.WriteRune(r)
 	}
-
 	s := sb.String()
-	s = CleanString(s)
-	runes := []rune(s)
-	l := 0
-	if len(size) > 0 {
-		l = size[0]
+
+	if s == "" || s == "." || s == ".." {
+		s = "file"
 	}
 
-	// 如果字符总数小于等于15，直接返回原字符串
-	if l == 0 || len(runes) <= l {
+	if maxLen <= 0 {
 		return s
 	}
-	// 否则返回前15个字符
-	return string(runes[:l])
+	return truncateKeepingExt(s, maxLen)
 }
 
-// CleanString 将字符串中的空格、空字符和不可见字符替换为下划线
-func CleanString(s string) string {
-	return strings.Map(func(r rune) rune {
-		// 检查字符是否为空格、空字符或不可见字符
-		if unicode.IsSpace(r) || isInvisibleControlCharacter(r) {
-			return '_' // 替换为下划线
+// SafeURL 将字符串消毒为可作 OSS object key 的文件名。
+//
+// Deprecated: 请使用 SafeFileName。
+func SafeURL(url string, size ...int) string {
+	maxLen := 0
+	if len(size) > 0 {
+		maxLen = size[0]
+	}
+	return SafeFileName(url, maxLen)
+}
+
+// truncateKeepingExt 按 rune 截断，尽量保留扩展名，使总长度 ≤ maxLen。
+func truncateKeepingExt(s string, maxLen int) string {
+	runes := []rune(s)
+	if len(runes) <= maxLen {
+		return s
+	}
+
+	ext := filepath.Ext(s)
+	extRunes := []rune(ext)
+	if len(extRunes) > 0 && len(extRunes) < maxLen {
+		keep := maxLen - len(extRunes)
+		base := string(runes[:len(runes)-len(extRunes)])
+		baseRunes := []rune(base)
+		if keep > len(baseRunes) {
+			keep = len(baseRunes)
 		}
-		return r // 保留原字符
-	}, s)
+		return string(baseRunes[:keep]) + ext
+	}
+	return string(runes[:maxLen])
 }
 
-// isInvisibleControlCharacter 检查字符是否为不可见的控制字符
+// isInvisibleControlCharacter 检查字符是否为不可见的控制字符。
 func isInvisibleControlCharacter(r rune) bool {
-	// 控制字符的 Unicode 范围是 0x0000 到 0x001F 和 0x007F 到 0x009F
 	return (r >= 0x0000 && r <= 0x001F) || (r >= 0x007F && r <= 0x009F)
 }

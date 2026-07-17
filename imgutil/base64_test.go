@@ -27,17 +27,3 @@ func TestBytesToURLSafeBase64(t *testing.T) {
 	req.NoError(err)
 	as.NotEmpty(s)
 }
-
-func TestGetImgSrcForHtml(t *testing.T) {
-	as := assert.New(t)
-	req := require.New(t)
-
-	html := `<html><body><img src="a.png"/><img src="b.jpg"/></body></html>`
-	srcs, err := GetImgSrcForHtml(html)
-	req.NoError(err)
-	as.Equal([]string{"a.png", "b.jpg"}, srcs)
-
-	srcs, err = GetImgSrcForHtml("<p>no image</p>")
-	req.NoError(err)
-	as.Empty(srcs)
-}

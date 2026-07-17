@@ -2,66 +2,67 @@
 package lutil
 
 import (
-	"github.com/hashicorp/golang-lru/v2"
 	"sync"
+
+	"github.com/hashicorp/golang-lru/v2"
 )
+
+// keyMutex 带引用计数的互斥锁；refs 统计已进入 Lock、尚未完成 Unlock 的调用数。
+type keyMutex struct {
+	mu   sync.Mutex
+	refs int
+}
 
 // KeyLock 提供基于键的互斥锁功能
 type KeyLock struct {
-	mu    sync.RWMutex
-	locks map[string]*sync.Mutex
-	cache *lru.Cache[string, *sync.Mutex]
+	mu    sync.Mutex
+	locks map[string]*keyMutex
+	cache *lru.Cache[string, *keyMutex]
 }
 
 // NewKeyLock 创建带 LRU 缓存的按键互斥锁，size 为缓存容量。
 func NewKeyLock(size int) *KeyLock {
-	l, _ := lru.New[string, *sync.Mutex](size)
+	l, _ := lru.New[string, *keyMutex](size)
 	if l == nil {
 		return nil
 	}
 	return &KeyLock{
-		mu:    sync.RWMutex{},
-		locks: make(map[string]*sync.Mutex),
+		locks: make(map[string]*keyMutex),
 		cache: l,
 	}
 }
 
 // Lock 获取指定键的锁
 func (kl *KeyLock) Lock(key string) {
-	kl.mu.RLock()
-	mtx, ok := kl.locks[key]
-	if ok {
-		kl.mu.RUnlock()
-		mtx.Lock()
-		return
-	}
-	kl.mu.RUnlock()
 	kl.mu.Lock()
-
-	mtx, ok = kl.cache.Get(key)
-	if ok {
-		mtx.Lock()
-		kl.cache.Remove(key)
-		kl.locks[key] = mtx
-		kl.mu.Unlock()
-		return
+	km, ok := kl.locks[key]
+	if !ok {
+		if cached, hit := kl.cache.Get(key); hit {
+			km = cached
+			kl.cache.Remove(key)
+		} else {
+			km = &keyMutex{}
+		}
+		kl.locks[key] = km
 	}
-
-	mtx = &sync.Mutex{}
-	mtx.Lock()
-	kl.locks[key] = mtx
+	km.refs++
 	kl.mu.Unlock()
+	km.mu.Lock()
 }
 
-// Unlock 释放指定键的锁
+// Unlock 释放指定键的锁。无等待者时从 locks 移除并放入 LRU，避免 locks 随键无限增长。
 func (kl *KeyLock) Unlock(key string) {
 	kl.mu.Lock()
 	defer kl.mu.Unlock()
 
-	mtx, ok := kl.locks[key]
+	km, ok := kl.locks[key]
 	if !ok {
 		panic("unlock of unlocked mutex")
 	}
-	mtx.Unlock()
-	kl.cache.Add(key, mtx)
+	km.mu.Unlock()
+	km.refs--
+	if km.refs == 0 {
+		delete(kl.locks, key)
+		kl.cache.Add(key, km)
+	}
 }

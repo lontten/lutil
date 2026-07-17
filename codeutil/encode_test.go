@@ -43,6 +43,16 @@ func TestRandomNumAndCaptcha(t *testing.T) {
 	as.Len(GenCaptcha(4), 4)
 }
 
+func TestHashPasswordVerifyPassword(t *testing.T) {
+	as := assert.New(t)
+	req := require.New(t)
+	hash, err := HashPassword("secret")
+	req.NoError(err)
+	as.True(VerifyPassword("secret", hash))
+	as.False(VerifyPassword("wrong", hash))
+	as.False(VerifyPassword("secret", "not-a-bcrypt-hash"))
+}
+
 func TestEnPwdCheckPassword(t *testing.T) {
 	as := assert.New(t)
 	cipher := EnPwd("secret")
