@@ -15,6 +15,25 @@ type treeNode struct {
 	Children []*treeNode
 }
 
+func findNodeByID(nodes []*treeNode, id int) *treeNode {
+	for _, n := range nodes {
+		if n != nil && n.ID == id {
+			return n
+		}
+	}
+	return nil
+}
+
+func nodeIDs(nodes []*treeNode) []int {
+	ids := make([]int, 0, len(nodes))
+	for _, n := range nodes {
+		if n != nil {
+			ids = append(ids, n.ID)
+		}
+	}
+	return ids
+}
+
 func TestTreeBuilder_ToTree_Basic(t *testing.T) {
 	as := assert.New(t)
 
@@ -31,13 +50,19 @@ func TestTreeBuilder_ToTree_Basic(t *testing.T) {
 		}).
 		ToTree(nodes)
 
+	// 无 SortFun 时兄弟顺序未定义，只断言结构。
 	require.Len(t, roots, 1)
 	as.Equal(1, roots[0].ID)
-	require.Len(t, roots[0].Children, 2)
-	as.Equal(2, roots[0].Children[0].ID)
-	as.Equal(3, roots[0].Children[1].ID)
-	require.Len(t, roots[0].Children[0].Children, 1)
-	as.Equal(4, roots[0].Children[0].Children[0].ID)
+	as.ElementsMatch([]int{2, 3}, nodeIDs(roots[0].Children))
+
+	childA := findNodeByID(roots[0].Children, 2)
+	require.NotNil(t, childA)
+	require.Len(t, childA.Children, 1)
+	as.Equal(4, childA.Children[0].ID)
+
+	childB := findNodeByID(roots[0].Children, 3)
+	require.NotNil(t, childB)
+	as.Empty(childB.Children)
 }
 
 func TestTreeBuilder_ToTree_IsRootNode(t *testing.T) {
@@ -59,11 +84,16 @@ func TestTreeBuilder_ToTree_IsRootNode(t *testing.T) {
 		ToTree(nodes)
 
 	require.Len(t, roots, 2)
-	as.Equal(1, roots[0].ID)
-	as.Equal(3, roots[1].ID)
-	require.Len(t, roots[0].Children, 1)
-	as.Equal(2, roots[0].Children[0].ID)
-	as.Empty(roots[1].Children)
+	as.ElementsMatch([]int{1, 3}, nodeIDs(roots))
+
+	rootA := findNodeByID(roots, 1)
+	require.NotNil(t, rootA)
+	require.Len(t, rootA.Children, 1)
+	as.Equal(2, rootA.Children[0].ID)
+
+	orphan := findNodeByID(roots, 3)
+	require.NotNil(t, orphan)
+	as.Empty(orphan.Children)
 }
 
 func TestTreeBuilder_ToTree_SortAndTransforms(t *testing.T) {
