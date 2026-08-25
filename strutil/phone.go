@@ -5,23 +5,20 @@ import (
 )
 
 var (
-	phoneRegex     = regexp.MustCompile(`^1[3-9][0-9]{9}$`)
-	landlineRegex  = regexp.MustCompile(`^0\d{2,3}-\d{7,8}(-\d{2,4})?$`)
-	phoneLikeRegex = regexp.MustCompile(`^\d+(?:-\d+)*$`)
+	phoneRegex        = regexp.MustCompile(`^1[3-9][0-9]{9}$`)
+	landlineRegex     = regexp.MustCompile(`^0\d{2,3}-\d{7,8}(-\d{2,4})?$`)
+	servicePhoneRegex = regexp.MustCompile(`^(400|800)-?\d{3}-?\d{4}$`)
+	phoneLikeRegex    = regexp.MustCompile(`^\d+(?:-\d+)*$`)
 )
 
 func CheckPhoneAll(phoneNumber string) bool {
-	// 手机号
-	phone := CheckPhone(phoneNumber)
-	if phone {
+	if CheckPhone(phoneNumber) {
 		return true
 	}
-
-	hyphen := CheckLandline(phoneNumber)
-	if hyphen {
+	if CheckLandline(phoneNumber) {
 		return true
 	}
-	return false
+	return CheckServicePhone(phoneNumber)
 }
 
 func CheckPhone(phoneNumber string) bool {
@@ -31,6 +28,12 @@ func CheckPhone(phoneNumber string) bool {
 func CheckLandline(phoneNumber string) bool {
 	// 固话 区号（2-3位） + 连字符 + 本地号码（7-8位） + 连字符 + 分机号（2-4位）
 	return landlineRegex.MatchString(phoneNumber)
+}
+
+// CheckServicePhone 校验 400/800 企业服务号（非地理号码，不是固话）。
+// 支持 4006162020、400-6162020、400-616-2020 及对应 800 写法。
+func CheckServicePhone(phoneNumber string) bool {
+	return servicePhoneRegex.MatchString(phoneNumber)
 }
 
 // 广义范围的电话号码
